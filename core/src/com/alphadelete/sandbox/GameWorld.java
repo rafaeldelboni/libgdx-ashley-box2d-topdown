@@ -74,7 +74,7 @@ public class GameWorld {
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(PlayerComponent.WIDTH / 2, PlayerComponent.HEIGHT / 2);
 		BodyComponent body = new BodyComponent(world, BodyType.DynamicBody, shape, startPosition, 9f, 0.5f, 0.5f);
-		body.body.setTransform(5f, 0.5f, 0f);
+		body.body.setLinearDamping(1f);
 		body.body.setFixedRotation(true);
 		body.body.setUserData(entity);
 		shape.dispose();
