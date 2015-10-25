@@ -1,0 +1,27 @@
+dungeon.png
+size: 480,560
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+wall-1
+  rotate: false
+  xy: 0, 64
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+wall-2
+  rotate: false
+  xy: 16, 64
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+wall-3
+  rotate: false
+  xy: 32, 64
+  size: 16, 32
+  orig: 16, 32
+  offset: 0, 0
+  index: -1
+  
