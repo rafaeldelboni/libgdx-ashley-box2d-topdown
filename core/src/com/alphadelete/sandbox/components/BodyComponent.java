@@ -11,7 +11,7 @@ import com.badlogic.gdx.physics.box2d.World;
 public class BodyComponent implements Component {
 
 	public Body body;
-
+	
 	public BodyComponent(World world, BodyDef.BodyType type, Shape shape, Vector3 pos, float density, float friction, float restitution) {
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = type;

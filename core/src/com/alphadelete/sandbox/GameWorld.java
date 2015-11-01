@@ -86,7 +86,7 @@ public class GameWorld {
 		bounds.bounds.width = PlayerComponent.WIDTH;
 		bounds.bounds.height = PlayerComponent.HEIGHT;
 
-		position.pos.set(startPosition);
+		position.setPosition(body.body.getPosition().x, body.body.getPosition().y);
 
 		state.set(PlayerComponent.STATE_IDLE);
 		

@@ -1,5 +1,6 @@
 package com.alphadelete.sandbox.systems;
 
+import com.alphadelete.utils.Box2DUtils;
 import com.alphadelete.sandbox.components.BodyComponent;
 import com.alphadelete.sandbox.components.MovementComponent;
 import com.alphadelete.sandbox.components.TransformComponent;
@@ -38,9 +39,7 @@ public class MovementSystem extends IteratingSystem {
 			tmp.set(mov.velocity).scl(deltaTime);
 			body.body.setLinearVelocity(tmp.x, tmp.y);		
 			
-			pos.pos.x = body.body.getPosition().x;
-			pos.pos.y = body.body.getPosition().y;
-
+			pos.setPosition(body.body.getPosition().x, body.body.getPosition().y + Box2DUtils.getHeight(body.body) / 2f);
 
 		} else {
 			tmp.set(mov.accel).scl(deltaTime);
