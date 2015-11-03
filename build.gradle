@@ -15,7 +15,7 @@ allprojects {
     version = '1.0'
     ext {
         appName = "Sandbox"
-        gdxVersion = '1.7.0'
+        gdxVersion = '1.7.1'
         roboVMVersion = '1.8.0'
         box2DLightsVersion = '1.4'
         ashleyVersion = '1.6.0'
@@ -40,7 +40,7 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
-        compile "com.badlogicgames.ashley:ashley:1.6.0"
+        compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
     }
 }
 
@@ -63,7 +63,7 @@ project(":android") {
         compile "com.badlogicgames.gdx:gdx-controllers-android:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-ai:$aiVersion"
         compile "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
-        compile "com.badlogicgames.ashley:ashley:1.6.0"
+        compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
     }
 }
 
@@ -77,7 +77,7 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-ai:$aiVersion"
         compile "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
-        compile "com.badlogicgames.ashley:ashley:1.6.0"
+        compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
     }
 }
 
