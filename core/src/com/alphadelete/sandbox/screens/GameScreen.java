@@ -118,6 +118,9 @@ public class GameScreen extends ScreenAdapter {
 	}
 
 	private void updateRunning(float deltaTime) {
+		boolean attack = false;
+		Vector3 attackPos = new Vector3();;
+		
 		if (Gdx.input.justTouched()) {
 			guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
 
@@ -125,6 +128,10 @@ public class GameScreen extends ScreenAdapter {
 				state = Constants.GAME_PAUSED;
 				pauseSystems();
 				return;
+			} else {
+				attack = true;
+				OrthographicCamera camera = engine.getSystem(RenderingSystem.class).getCamera();
+				camera.unproject(attackPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
 			}
 		}
 
@@ -133,11 +140,9 @@ public class GameScreen extends ScreenAdapter {
 
 		if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT)) {
 			accelX = 5f;
-			engine.getSystem(PlayerSystem.class).setScaleX(Constants.SCALE_LEFT);
 		}
 		if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) {
 			accelX = -5f;
-			engine.getSystem(PlayerSystem.class).setScaleX(Constants.SCALE_RIGHT);
 		}
 		if (Gdx.input.isKeyPressed(Keys.DPAD_DOWN)) {
 			accelY = 5f;
@@ -148,6 +153,7 @@ public class GameScreen extends ScreenAdapter {
 
 		engine.getSystem(PlayerSystem.class).setAccelX(accelX);
 		engine.getSystem(PlayerSystem.class).setAccelY(accelY);
+		engine.getSystem(PlayerSystem.class).setAttack(attack, attackPos.x, attackPos.y);
 		
 	}
 

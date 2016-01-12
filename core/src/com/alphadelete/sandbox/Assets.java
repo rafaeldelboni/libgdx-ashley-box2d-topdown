@@ -15,6 +15,7 @@ public class Assets {
 	public static TextureAtlas menuAtlas = new TextureAtlas(Gdx.files.internal("images/menu.atlas"));
 	public static TextureAtlas dungeonAtlas = new TextureAtlas(Gdx.files.internal("images/dungeon.atlas"));
 	public static TextureAtlas warriorAtlas = new TextureAtlas(Gdx.files.internal("images/warrior.atlas"));
+	public static TextureRegion attackEffect;
 	public static TextureRegion menuMain;
 	public static TextureRegion menuPause;
 	public static TextureRegion menuReady;
@@ -32,6 +33,7 @@ public class Assets {
 		loadMenu();
 		loadWarrior();
 		loadDungeon();
+		loadEffects();
 	}	
 
 	public static Texture loadTexture (String file) {
@@ -70,6 +72,10 @@ public class Assets {
 	
 	private static void loadDungeon () {
 		dungeonWall1 = Assets.loadAtlasTextureRegion("wall-1", Assets.dungeonAtlas);
+	}
+	
+	private static void loadEffects ()	{
+		attackEffect = new TextureRegion(loadTexture("images/circular.png"), 0, 0, 366, 366);
 	}
 
 }
