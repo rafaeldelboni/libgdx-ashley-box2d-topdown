@@ -8,6 +8,7 @@ import com.alphadelete.sandbox.systems.AnimationSystem;
 import com.alphadelete.sandbox.systems.BackgroundSystem;
 import com.alphadelete.sandbox.systems.BoundsSystem;
 import com.alphadelete.sandbox.systems.CameraSystem;
+import com.alphadelete.sandbox.systems.EffectsSystem;
 import com.alphadelete.sandbox.systems.MovementSystem;
 import com.alphadelete.sandbox.systems.PlayerSystem;
 import com.alphadelete.sandbox.systems.RenderingSystem;
@@ -69,6 +70,7 @@ public class GameScreen extends ScreenAdapter {
 		engine.addSystem(new BoundsSystem());
 		engine.addSystem(new StateSystem());
 		engine.addSystem(new AnimationSystem());
+		engine.addSystem(new EffectsSystem());
 		engine.addSystem(new RenderingSystem(game.batcher, world));
 
 		engine.getSystem(BackgroundSystem.class).setCamera(engine.getSystem(RenderingSystem.class).getCamera());
@@ -253,6 +255,7 @@ public class GameScreen extends ScreenAdapter {
 		engine.getSystem(MovementSystem.class).setProcessing(false);
 		engine.getSystem(BoundsSystem.class).setProcessing(false);
 		engine.getSystem(StateSystem.class).setProcessing(false);
+		engine.getSystem(EffectsSystem.class).setProcessing(false);
 		engine.getSystem(AnimationSystem.class).setProcessing(false);
 	}
 
@@ -261,6 +264,7 @@ public class GameScreen extends ScreenAdapter {
 		engine.getSystem(MovementSystem.class).setProcessing(true);
 		engine.getSystem(BoundsSystem.class).setProcessing(true);
 		engine.getSystem(StateSystem.class).setProcessing(true);
+		engine.getSystem(EffectsSystem.class).setProcessing(true);
 		engine.getSystem(AnimationSystem.class).setProcessing(true);
 	}
 

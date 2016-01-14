@@ -5,6 +5,8 @@ import com.alphadelete.sandbox.Constants;
 import com.alphadelete.sandbox.GameWorld;
 import com.alphadelete.sandbox.components.PlayerComponent;
 import com.alphadelete.sandbox.components.BackgroundComponent;
+import com.alphadelete.sandbox.components.BodyComponent;
+import com.alphadelete.sandbox.components.EffectsComponent;
 import com.alphadelete.sandbox.components.MovementComponent;
 import com.alphadelete.sandbox.components.TransformComponent;
 import com.alphadelete.sandbox.components.StateComponent;
@@ -15,6 +17,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class PlayerSystem extends IteratingSystem {
 	@SuppressWarnings("unchecked")
@@ -25,7 +28,6 @@ public class PlayerSystem extends IteratingSystem {
 	
 	private float accelX = 0.0f;
 	private float accelY = 0.0f;
-	private float scaleX = Constants.SCALE_RIGHT;
 	private boolean attack = false;
 	private float attackX = 0.0f;
 	private float attackY = 0.0f;
@@ -71,7 +73,7 @@ public class PlayerSystem extends IteratingSystem {
 		TransformComponent t = tm.get(entity);
 		StateComponent state = sm.get(entity);
 		MovementComponent mov = mm.get(entity);
-				
+		
 		if (attack) {
 			createEffectAttack(attackX, attackY);
 		}
@@ -102,14 +104,17 @@ public class PlayerSystem extends IteratingSystem {
 
 		TransformComponent position = engine.createComponent(TransformComponent.class);
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
-		
+		EffectsComponent effect = new EffectsComponent(200);
+
 		position.scale.set(0.1f, 0.1f);
 		position.pos.set(attackX, attackY, 0.0f);
 		texture.region = Assets.attackEffect;
-
+		
+		
 		entity.add(position);
 		entity.add(texture);
-
+		entity.add(effect);
+		
 		engine.addEntity(entity);	
 	}
 	
