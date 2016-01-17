@@ -79,7 +79,8 @@ public class PlayerSystem extends IteratingSystem {
 
 		if (attack) {
 			Vector2 attack = Vector2DUtils.getPointInBetweenByLen(new Vector2(t.pos.x,t.pos.y), new Vector2(attackX,attackY), 2f);
-			createEffectAttack(attack.x, attack.y);
+			float angle = Vector2DUtils.getAngleInBetween(new Vector2(t.pos.x,t.pos.y), new Vector2(attackX,attackY));
+			createEffectAttack(attack.x, attack.y, angle);
 		}
 		
 		mov.velocity.x = -accelX * PlayerComponent.MOVE_VELOCITY;
@@ -101,7 +102,7 @@ public class PlayerSystem extends IteratingSystem {
 
 	}
 	
-	private void createEffectAttack(float attackX, float attackY) {
+	private void createEffectAttack(float attackX, float attackY, float angle) {
 		PooledEngine engine = ((PooledEngine)getEngine());
 		
 		Entity entity = engine.createEntity();
@@ -111,6 +112,7 @@ public class PlayerSystem extends IteratingSystem {
 		EffectsComponent effect = new EffectsComponent(200);
 
 		position.scale.set(0.1f, 0.1f);
+		position.rotation = angle;
 		position.pos.set(attackX, attackY, 0.0f);
 		texture.region = Assets.attackEffect;
 		

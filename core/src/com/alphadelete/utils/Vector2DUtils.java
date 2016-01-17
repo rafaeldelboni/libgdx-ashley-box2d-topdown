@@ -21,5 +21,13 @@ public abstract class Vector2DUtils {
 	    return pointA.add(dir);
 
 	}
+	
+	public static float getAngleInBetween(Vector2 pointA, Vector2 pointB) {
+
+		double dx = pointB.x - pointA.x; 
+		double dy = pointB.y - pointA.y;
+		return (float)Math.atan2(dy, dx);
+
+	}
 
 }
