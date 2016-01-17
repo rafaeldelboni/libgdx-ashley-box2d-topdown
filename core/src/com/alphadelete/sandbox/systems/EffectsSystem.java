@@ -24,9 +24,7 @@ public class EffectsSystem extends IteratingSystem {
 	@Override
 	public void processEntity(Entity entity, float deltaTime) {
 		EffectsComponent effect = em.get(entity);
-		
-		Gdx.app.debug("Delete", System.currentTimeMillis() + "-" + effect.startTimeMillis);
-		
+
 		if (System.currentTimeMillis() - effect.startTimeMillis > effect.durationTimeMillis )
 		{
             this.getEngine().removeEntity(entity);

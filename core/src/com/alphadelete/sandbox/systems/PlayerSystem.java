@@ -9,6 +9,7 @@ import com.alphadelete.sandbox.components.BodyComponent;
 import com.alphadelete.sandbox.components.EffectsComponent;
 import com.alphadelete.sandbox.components.MovementComponent;
 import com.alphadelete.sandbox.components.TransformComponent;
+import com.alphadelete.utils.Vector2DUtils;
 import com.alphadelete.sandbox.components.StateComponent;
 import com.alphadelete.sandbox.components.TextureComponent;
 import com.badlogic.ashley.core.ComponentMapper;
@@ -17,6 +18,8 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class PlayerSystem extends IteratingSystem {
@@ -73,9 +76,10 @@ public class PlayerSystem extends IteratingSystem {
 		TransformComponent t = tm.get(entity);
 		StateComponent state = sm.get(entity);
 		MovementComponent mov = mm.get(entity);
-		
+
 		if (attack) {
-			createEffectAttack(attackX, attackY);
+			Vector2 attack = Vector2DUtils.getPointInBetweenByLen(new Vector2(t.pos.x,t.pos.y), new Vector2(attackX,attackY), 2f);
+			createEffectAttack(attack.x, attack.y);
 		}
 		
 		mov.velocity.x = -accelX * PlayerComponent.MOVE_VELOCITY;
@@ -117,6 +121,5 @@ public class PlayerSystem extends IteratingSystem {
 		
 		engine.addEntity(entity);	
 	}
-	
-
+		
 }
