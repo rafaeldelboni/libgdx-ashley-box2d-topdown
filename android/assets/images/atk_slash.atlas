@@ -1,0 +1,12 @@
+atk_slash.png
+size: 320,320
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+attack_slash
+  rotate: false
+  xy: 0, 0
+  size: 280, 90
+  orig: 280, 90
+  offset: 0, 0
+  index: -1

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 public class Assets {
 	public static Texture background;
@@ -15,7 +16,7 @@ public class Assets {
 	public static TextureAtlas menuAtlas = new TextureAtlas(Gdx.files.internal("images/menu.atlas"));
 	public static TextureAtlas dungeonAtlas = new TextureAtlas(Gdx.files.internal("images/dungeon.atlas"));
 	public static TextureAtlas warriorAtlas = new TextureAtlas(Gdx.files.internal("images/warrior.atlas"));
-	public static TextureRegion attackEffect;
+	public static TextureAtlas attackAtlas = new TextureAtlas(Gdx.files.internal("images/atk_slash.atlas"));
 	public static TextureRegion menuMain;
 	public static TextureRegion menuPause;
 	public static TextureRegion menuReady;
@@ -24,6 +25,7 @@ public class Assets {
 	public static BitmapFont font;
 	public static Animation warriorIdleAnimation;
 	public static Animation warriorWalkAnimation;
+	public static Animation attackEffect;
 	public static TextureRegion dungeonWall1;
 	
 	public static Texture items;
@@ -40,11 +42,11 @@ public class Assets {
 		return new Texture(Gdx.files.internal(file));
 	}
 		
-	public static Animation loadAtlasAnimations(String animationName, TextureAtlas atlas) {
+	public static Animation loadAtlasAnimations(String animationName, TextureAtlas atlas, PlayMode playmode, Vector2 size ) {
 		TextureRegion r = atlas.findRegion(animationName);
-		TextureRegion[][] grid = r.split(32, 32);
+		TextureRegion[][] grid = r.split((int)size.x, (int)size.y);
 		Animation a = new Animation(0.08f, grid[0]);
-		a.setPlayMode(PlayMode.LOOP);
+		a.setPlayMode(playmode);
 		return a;
 	}
 	
@@ -66,8 +68,8 @@ public class Assets {
 	}
 	
 	private static void loadWarrior () {
-		warriorIdleAnimation = Assets.loadAtlasAnimations("warrior-idle-1", Assets.warriorAtlas);
-		warriorWalkAnimation = Assets.loadAtlasAnimations("warrior-walk", Assets.warriorAtlas);
+		warriorIdleAnimation = Assets.loadAtlasAnimations("warrior-idle-1", Assets.warriorAtlas, PlayMode.LOOP, new Vector2(32,32));
+		warriorWalkAnimation = Assets.loadAtlasAnimations("warrior-walk", Assets.warriorAtlas, PlayMode.LOOP, new Vector2(32,32));
 	}
 	
 	private static void loadDungeon () {
@@ -75,7 +77,7 @@ public class Assets {
 	}
 	
 	private static void loadEffects ()	{
-		attackEffect = new TextureRegion(loadTexture("images/circular.png"), 0, 0, 366, 366);
+		attackEffect = Assets.loadAtlasAnimations("attack_slash", Assets.attackAtlas, PlayMode.REVERSED, new Vector2(70,90));
 	}
 
 }

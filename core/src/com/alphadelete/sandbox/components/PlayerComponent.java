@@ -1,5 +1,6 @@
 package com.alphadelete.sandbox.components;
 
+import com.alphadelete.sandbox.Constants;
 import com.badlogic.ashley.core.Component;
 
 public class PlayerComponent implements Component {
@@ -10,4 +11,6 @@ public class PlayerComponent implements Component {
 	public static final float MOVE_VELOCITY = 50;
 	public static final float WIDTH = 1f;
 	public static final float HEIGHT = 1f;
+	
+	public static float SCALE_SIDE = Constants.SCALE_RIGHT;
 }

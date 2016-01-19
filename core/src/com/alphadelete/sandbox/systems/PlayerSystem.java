@@ -4,6 +4,7 @@ import com.alphadelete.sandbox.Assets;
 import com.alphadelete.sandbox.Constants;
 import com.alphadelete.sandbox.GameWorld;
 import com.alphadelete.sandbox.components.PlayerComponent;
+import com.alphadelete.sandbox.components.AnimationComponent;
 import com.alphadelete.sandbox.components.BackgroundComponent;
 import com.alphadelete.sandbox.components.BodyComponent;
 import com.alphadelete.sandbox.components.EffectsComponent;
@@ -78,7 +79,7 @@ public class PlayerSystem extends IteratingSystem {
 		MovementComponent mov = mm.get(entity);
 
 		if (attack) {
-			Vector2 attack = Vector2DUtils.getPointInBetweenByLen(new Vector2(t.pos.x,t.pos.y), new Vector2(attackX,attackY), 2f);
+			Vector2 attack = Vector2DUtils.getPointInBetweenByLen(new Vector2(t.pos.x,t.pos.y), new Vector2(attackX,attackY), 1.5f);
 			float angle = Vector2DUtils.getAngleInBetween(new Vector2(t.pos.x,t.pos.y), new Vector2(attackX,attackY));
 			createEffectAttack(attack.x, attack.y, angle);
 		}
@@ -95,10 +96,11 @@ public class PlayerSystem extends IteratingSystem {
 		}
 	
 		if (accelX < 0) {
-			t.scale.x = Math.abs(t.scale.x) * Constants.SCALE_LEFT;
+			PlayerComponent.SCALE_SIDE = Constants.SCALE_LEFT;
 		} else if (accelX > 0) {
-			t.scale.x = Math.abs(t.scale.x) * Constants.SCALE_RIGHT;
+			PlayerComponent.SCALE_SIDE = Constants.SCALE_RIGHT;
 		}
+		t.scale.x = Math.abs(t.scale.x) * PlayerComponent.SCALE_SIDE;
 
 	}
 	
@@ -106,17 +108,21 @@ public class PlayerSystem extends IteratingSystem {
 		PooledEngine engine = ((PooledEngine)getEngine());
 		
 		Entity entity = engine.createEntity();
-
+		
+		StateComponent state = engine.createComponent(StateComponent.class);
+		AnimationComponent animation = engine.createComponent(AnimationComponent.class);
 		TransformComponent position = engine.createComponent(TransformComponent.class);
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
-		EffectsComponent effect = new EffectsComponent(200);
+		EffectsComponent effect = new EffectsComponent(150);
 
-		position.scale.set(0.1f, 0.1f);
+		position.scale.set(0.65f, 0.65f);
 		position.rotation = angle;
 		position.pos.set(attackX, attackY, 0.0f);
-		texture.region = Assets.attackEffect;
+		animation.animations.put(0, Assets.attackEffect);
+		state.set(0);
 		
-		
+		entity.add(state);
+		entity.add(animation);
 		entity.add(position);
 		entity.add(texture);
 		entity.add(effect);
