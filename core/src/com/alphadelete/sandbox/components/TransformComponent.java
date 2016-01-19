@@ -18,4 +18,8 @@ public class TransformComponent implements Component {
 		this.pos.x = pos.x;
 		this.pos.y = pos.y;
 	}
+	
+	public Vector2 getPosition(){
+		return new Vector2(this.pos.x, this.pos.y);
+	}
 }

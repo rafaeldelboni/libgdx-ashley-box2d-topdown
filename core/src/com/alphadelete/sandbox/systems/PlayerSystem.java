@@ -74,22 +74,42 @@ public class PlayerSystem extends IteratingSystem {
 		MovementComponent mov = mm.get(entity);
 
 		if (attack) {
-			Vector2 attack = Vector2DUtils.getPointInBetweenByLen(new Vector2(t.pos.x,t.pos.y), new Vector2(attackX,attackY), 1.5f);
-			float angle = Vector2DUtils.getAngleInBetween(new Vector2(t.pos.x,t.pos.y), new Vector2(attackX,attackY));
+			// Attack position and angle
+			Vector2 attack = Vector2DUtils.getPointInBetweenByLen(t.getPosition(), new Vector2(attackX,attackY), 1.5f);
+			float angle = Vector2DUtils.getAngleInBetween(t.getPosition(), new Vector2(attackX,attackY));
+			// Move towards the attack, if stopped
+			if(accelX == 0f && accelY == 0f) {
+				Vector2 att = new Vector2(attackX,attackY).sub(t.getPosition());
+				if (att.x < 1) {
+					accelX = 5f;
+				}
+				if (att.x > 1) {
+					accelX = -5f;
+				}
+				if (att.y < 1) {
+					accelY = 5f;
+				}
+				if (att.y > 1) {
+					accelY = -5f;
+				}
+			}
+			// Attack effect
 			createEffectAttack(attack.x, attack.y, angle);
 		}
 		
+		// Move
 		mov.velocity.x = -accelX * PlayerComponent.MOVE_VELOCITY;
 		mov.velocity.y = -accelY * PlayerComponent.MOVE_VELOCITY;
 		
+		// State: Idle or Walk 
 		if (state.get() != PlayerComponent.STATE_WALK && (mov.velocity.y != 0 || mov.velocity.x != 0) ) {
 			state.set(PlayerComponent.STATE_WALK);
 		}
-		
 		if (state.get() != PlayerComponent.STATE_IDLE && mov.velocity.y == 0 && mov.velocity.x == 0 ) {
 			state.set(PlayerComponent.STATE_IDLE);
 		}
 	
+		// Sprite side (scale)
 		if (accelX < 0) {
 			player.setSide(Constants.SCALE_LEFT);
 		} else if (accelX > 0) {
