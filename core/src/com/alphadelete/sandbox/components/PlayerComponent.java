@@ -12,5 +12,13 @@ public class PlayerComponent implements Component {
 	public static final float WIDTH = 1f;
 	public static final float HEIGHT = 1f;
 	
-	public static float SCALE_SIDE = Constants.SCALE_RIGHT;
+	private float scaleSide = Constants.SCALE_RIGHT;
+	
+	public float getSide() {
+		return scaleSide;
+	}
+	
+	public void setSide(float newScaleSide) {
+		scaleSide = newScaleSide;
+	}
 }

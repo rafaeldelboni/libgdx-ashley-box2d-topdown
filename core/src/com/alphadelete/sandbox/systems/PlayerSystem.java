@@ -2,11 +2,8 @@ package com.alphadelete.sandbox.systems;
 
 import com.alphadelete.sandbox.Assets;
 import com.alphadelete.sandbox.Constants;
-import com.alphadelete.sandbox.GameWorld;
 import com.alphadelete.sandbox.components.PlayerComponent;
 import com.alphadelete.sandbox.components.AnimationComponent;
-import com.alphadelete.sandbox.components.BackgroundComponent;
-import com.alphadelete.sandbox.components.BodyComponent;
 import com.alphadelete.sandbox.components.EffectsComponent;
 import com.alphadelete.sandbox.components.MovementComponent;
 import com.alphadelete.sandbox.components.TransformComponent;
@@ -18,10 +15,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class PlayerSystem extends IteratingSystem {
 	@SuppressWarnings("unchecked")
@@ -74,6 +68,7 @@ public class PlayerSystem extends IteratingSystem {
 	
 	@Override
 	public void processEntity(Entity entity, float deltaTime) {
+		PlayerComponent player = bm.get(entity);
 		TransformComponent t = tm.get(entity);
 		StateComponent state = sm.get(entity);
 		MovementComponent mov = mm.get(entity);
@@ -96,11 +91,11 @@ public class PlayerSystem extends IteratingSystem {
 		}
 	
 		if (accelX < 0) {
-			PlayerComponent.SCALE_SIDE = Constants.SCALE_LEFT;
+			player.setSide(Constants.SCALE_LEFT);
 		} else if (accelX > 0) {
-			PlayerComponent.SCALE_SIDE = Constants.SCALE_RIGHT;
+			player.setSide(Constants.SCALE_RIGHT);
 		}
-		t.scale.x = Math.abs(t.scale.x) * PlayerComponent.SCALE_SIDE;
+		t.scale.x = Math.abs(t.scale.x) * player.getSide();
 
 	}
 	
