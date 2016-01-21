@@ -8,11 +8,13 @@ import com.alphadelete.sandbox.systems.AnimationSystem;
 import com.alphadelete.sandbox.systems.BackgroundSystem;
 import com.alphadelete.sandbox.systems.BoundsSystem;
 import com.alphadelete.sandbox.systems.CameraSystem;
+import com.alphadelete.sandbox.systems.ControllerSystem;
 import com.alphadelete.sandbox.systems.EffectsSystem;
 import com.alphadelete.sandbox.systems.MovementSystem;
 import com.alphadelete.sandbox.systems.PlayerSystem;
 import com.alphadelete.sandbox.systems.RenderingSystem;
 import com.alphadelete.sandbox.systems.StateSystem;
+import com.alphadelete.sandbox.systems.WeaponSystem;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -71,6 +73,8 @@ public class GameScreen extends ScreenAdapter {
 		engine.addSystem(new StateSystem());
 		engine.addSystem(new AnimationSystem());
 		engine.addSystem(new EffectsSystem());
+		engine.addSystem(new WeaponSystem());
+		engine.addSystem(new ControllerSystem());
 		engine.addSystem(new RenderingSystem(game.batcher, world));
 
 		engine.getSystem(BackgroundSystem.class).setCamera(engine.getSystem(RenderingSystem.class).getCamera());
@@ -121,7 +125,7 @@ public class GameScreen extends ScreenAdapter {
 
 	private void updateRunning(float deltaTime) {
 		boolean attack = false;
-		Vector3 attackPos = new Vector3();;
+		Vector3 attackPos = new Vector3();
 		
 		if (Gdx.input.justTouched()) {
 			guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
@@ -153,9 +157,8 @@ public class GameScreen extends ScreenAdapter {
 			accelY = -5f;
 		}
 
-		engine.getSystem(PlayerSystem.class).setAccelX(accelX);
-		engine.getSystem(PlayerSystem.class).setAccelY(accelY);
-		engine.getSystem(PlayerSystem.class).setAttack(attack, attackPos.x, attackPos.y);
+		engine.getSystem(ControllerSystem.class).setAccel(accelX, accelY);
+		engine.getSystem(ControllerSystem.class).setAttack(attack, attackPos.x, attackPos.y);
 		
 	}
 
@@ -256,7 +259,9 @@ public class GameScreen extends ScreenAdapter {
 		engine.getSystem(BoundsSystem.class).setProcessing(false);
 		engine.getSystem(StateSystem.class).setProcessing(false);
 		engine.getSystem(EffectsSystem.class).setProcessing(false);
+		engine.getSystem(WeaponSystem.class).setProcessing(false);
 		engine.getSystem(AnimationSystem.class).setProcessing(false);
+		engine.getSystem(ControllerSystem.class).setProcessing(false);
 	}
 
 	private void resumeSystems() {
@@ -265,7 +270,9 @@ public class GameScreen extends ScreenAdapter {
 		engine.getSystem(BoundsSystem.class).setProcessing(true);
 		engine.getSystem(StateSystem.class).setProcessing(true);
 		engine.getSystem(EffectsSystem.class).setProcessing(true);
+		engine.getSystem(WeaponSystem.class).setProcessing(true);
 		engine.getSystem(AnimationSystem.class).setProcessing(true);
+		engine.getSystem(ControllerSystem.class).setProcessing(true);
 	}
 
 	@Override

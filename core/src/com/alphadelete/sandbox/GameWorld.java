@@ -13,6 +13,7 @@ import com.alphadelete.sandbox.components.StateComponent;
 import com.alphadelete.sandbox.components.TextureComponent;
 import com.alphadelete.sandbox.components.TransformComponent;
 import com.alphadelete.sandbox.components.WallComponent;
+import com.alphadelete.sandbox.components.WeaponComponent;
 import com.alphadelete.sandbox.systems.RenderingSystem;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
@@ -70,7 +71,9 @@ public class GameWorld {
 		TransformComponent position = engine.createComponent(TransformComponent.class);
 		StateComponent state = engine.createComponent(StateComponent.class);
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
-
+		
+		WeaponComponent weapon = new WeaponComponent(engine, new Vector3(startPosition.x, startPosition.y, -4f), Assets.weapon1, WeaponComponent.TYPE_PLAYER);
+		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(PlayerComponent.WIDTH / 2, PlayerComponent.HEIGHT / 2);
 		BodyComponent body = new BodyComponent(world, BodyType.DynamicBody, shape, startPosition, 9f, 0.5f, 0.5f);
@@ -98,6 +101,7 @@ public class GameWorld {
 		entity.add(position);
 		entity.add(state);
 		entity.add(texture);
+		entity.add(weapon);
 
 		engine.addEntity(entity);
 

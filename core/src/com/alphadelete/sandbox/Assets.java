@@ -27,6 +27,7 @@ public class Assets {
 	public static Animation warriorWalkAnimation;
 	public static Animation attackEffect;
 	public static TextureRegion dungeonWall1;
+	public static TextureRegion weapon1;
 	
 	public static Texture items;
 	public static Animation bobJump;
@@ -74,6 +75,7 @@ public class Assets {
 	
 	private static void loadDungeon () {
 		dungeonWall1 = Assets.loadAtlasTextureRegion("wall-1", Assets.dungeonAtlas);
+		weapon1 = Assets.loadAtlasTextureRegion("weapon-1", Assets.dungeonAtlas);
 	}
 	
 	private static void loadEffects ()	{

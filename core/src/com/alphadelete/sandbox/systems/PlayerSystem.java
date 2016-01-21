@@ -15,6 +15,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 public class PlayerSystem extends IteratingSystem {
@@ -23,13 +24,7 @@ public class PlayerSystem extends IteratingSystem {
 													   StateComponent.class,
 													   TransformComponent.class,
 													   MovementComponent.class).get();
-	
-	private float accelX = 0.0f;
-	private float accelY = 0.0f;
-	private boolean attack = false;
-	private float attackX = 0.0f;
-	private float attackY = 0.0f;
-	
+
 	private ComponentMapper<PlayerComponent> bm;
 	private ComponentMapper<StateComponent> sm;
 	private ComponentMapper<TransformComponent> tm;
@@ -44,26 +39,9 @@ public class PlayerSystem extends IteratingSystem {
 		mm = ComponentMapper.getFor(MovementComponent.class);		
 	}
 	
-	public void setAccelX(float accelX) {
-		this.accelX = accelX;
-	}
-	
-	public void setAccelY(float accelY) {
-		this.accelY = accelY;
-	}
-	
-	public void setAttack(boolean attack, float x, float y) {
-		this.attack = attack;
-		this.attackX = x;
-		this.attackY = y;
-	}
-	
 	@Override
 	public void update(float deltaTime) {
 		super.update(deltaTime);
-		
-		accelX = 0.0f;
-		accelY = 0.0f;
 	}
 	
 	@Override
@@ -72,34 +50,40 @@ public class PlayerSystem extends IteratingSystem {
 		TransformComponent t = tm.get(entity);
 		StateComponent state = sm.get(entity);
 		MovementComponent mov = mm.get(entity);
-
-		if (attack) {
-			// Attack position and angle
-			Vector2 attack = Vector2DUtils.getPointInBetweenByLen(t.getPosition(), new Vector2(attackX,attackY), 1.5f);
-			float angle = Vector2DUtils.getAngleInBetween(t.getPosition(), new Vector2(attackX,attackY));
+		
+		if (player.isAttacking) {
+			// Copy Vectors
+			Vector2 _attackPos = player.attackPos.cpy();
+			Vector2 _playerPos = t.getPosition();
+			
+			// Attack position and angle	
+			Vector2 attack = Vector2DUtils.getPointInBetweenByLen(_playerPos, _attackPos, 1.5f);
+			float angle = Vector2DUtils.getAngleInBetween(_playerPos, _attackPos);
+		   	
 			// Move towards the attack, if stopped
-			if(accelX == 0f && accelY == 0f) {
-				Vector2 att = new Vector2(attackX,attackY).sub(t.getPosition());
+			if(!player.getPlayerIsMoving()) {
+				Vector2 att = _attackPos.cpy().sub(_playerPos);
 				if (att.x < 1) {
-					accelX = 5f;
+					player.accel.x = 5f;
 				}
 				if (att.x > 1) {
-					accelX = -5f;
+					player.accel.x = -5f;
 				}
 				if (att.y < 1) {
-					accelY = 5f;
+					player.accel.y = 5f;
 				}
 				if (att.y > 1) {
-					accelY = -5f;
+					player.accel.y = -5f;
 				}
 			}
+			
 			// Attack effect
 			createEffectAttack(attack.x, attack.y, angle);
 		}
 		
 		// Move
-		mov.velocity.x = -accelX * PlayerComponent.MOVE_VELOCITY;
-		mov.velocity.y = -accelY * PlayerComponent.MOVE_VELOCITY;
+		mov.velocity.x = -player.accel.x * PlayerComponent.MOVE_VELOCITY;
+		mov.velocity.y = -player.accel.y * PlayerComponent.MOVE_VELOCITY;
 		
 		// State: Idle or Walk 
 		if (state.get() != PlayerComponent.STATE_WALK && (mov.velocity.y != 0 || mov.velocity.x != 0) ) {
@@ -110,12 +94,12 @@ public class PlayerSystem extends IteratingSystem {
 		}
 	
 		// Sprite side (scale)
-		if (accelX < 0) {
-			player.setSide(Constants.SCALE_LEFT);
-		} else if (accelX > 0) {
-			player.setSide(Constants.SCALE_RIGHT);
+		if (player.accel.x < 0) {
+			player.scaleSide = Constants.SCALE_LEFT;
+		} else if (player.accel.x > 0) {
+			player.scaleSide = Constants.SCALE_RIGHT;
 		}
-		t.scale.x = Math.abs(t.scale.x) * player.getSide();
+		t.scale.x = Math.abs(t.scale.x) * player.scaleSide;
 
 	}
 	
