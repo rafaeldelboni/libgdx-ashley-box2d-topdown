@@ -17,7 +17,6 @@ import com.alphadelete.sandbox.systems.StateSystem;
 import com.alphadelete.sandbox.systems.WeaponSystem;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -124,8 +123,11 @@ public class GameScreen extends ScreenAdapter {
 	}
 
 	private void updateRunning(float deltaTime) {
-		boolean attack = false;
-		Vector3 attackPos = new Vector3();
+		boolean isAttacking = false;
+		Vector3 targetPos = new Vector3();
+		
+		OrthographicCamera camera = engine.getSystem(RenderingSystem.class).getCamera();
+		camera.unproject(targetPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
 		
 		if (Gdx.input.justTouched()) {
 			guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
@@ -135,30 +137,11 @@ public class GameScreen extends ScreenAdapter {
 				pauseSystems();
 				return;
 			} else {
-				attack = true;
-				OrthographicCamera camera = engine.getSystem(RenderingSystem.class).getCamera();
-				camera.unproject(attackPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+				isAttacking = true;
 			}
 		}
 
-		float accelX = 0.0f;
-		float accelY = 0.0f;
-
-		if (Gdx.input.isKeyPressed(Keys.DPAD_LEFT)) {
-			accelX = 5f;
-		}
-		if (Gdx.input.isKeyPressed(Keys.DPAD_RIGHT)) {
-			accelX = -5f;
-		}
-		if (Gdx.input.isKeyPressed(Keys.DPAD_DOWN)) {
-			accelY = 5f;
-		}
-		if (Gdx.input.isKeyPressed(Keys.DPAD_UP)) {
-			accelY = -5f;
-		}
-
-		engine.getSystem(ControllerSystem.class).setAccel(accelX, accelY);
-		engine.getSystem(ControllerSystem.class).setAttack(attack, attackPos.x, attackPos.y);
+		engine.getSystem(ControllerSystem.class).setControls(Gdx.input, isAttacking, targetPos);
 		
 	}
 

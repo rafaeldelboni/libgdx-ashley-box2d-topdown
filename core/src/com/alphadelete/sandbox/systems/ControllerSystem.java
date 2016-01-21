@@ -5,8 +5,10 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 public class ControllerSystem extends IteratingSystem {
 	@SuppressWarnings("unchecked")
@@ -14,7 +16,7 @@ public class ControllerSystem extends IteratingSystem {
 	private ComponentMapper<PlayerComponent> pm;
 	
 	private Vector2 accel = new Vector2 (0,0);
-	private Vector2 attackPos = new Vector2 (0,0);
+	private Vector2 target = new Vector2 (0,0);
 	private Boolean isAttacking = false;
 	
 	public ControllerSystem() {
@@ -31,21 +33,32 @@ public class ControllerSystem extends IteratingSystem {
 	@Override
 	public void processEntity(Entity entity, float deltaTime) {
 		PlayerComponent player = pm.get(entity);
+		
 		player.accel.set(this.accel);
+		player.target.set(this.target);
 		player.isAttacking = this.isAttacking;
-		player.attackPos.set(this.attackPos);
-		
-	}
-
-	public void setAttack(boolean isAttacking, float attkX, float attkY) {
-		this.attackPos = new Vector2(attkX, attkY);
-		this.isAttacking = isAttacking;
-		
-	}
-
-	public void setAccel(float accelX, float accelY) {
-		this.accel = new Vector2(accelX, accelY);
 	}
 	
+	public void setControls(Input inputCtrl, boolean isAttacking, Vector3 targetPos) {
+		this.isAttacking = isAttacking;
+		this.target = new Vector2(targetPos.x, targetPos.y);
 		
+		float accelX = 0.0f, accelY = 0.0f;
+
+		if (inputCtrl.isKeyPressed(Keys.DPAD_LEFT)) {
+			accelX = 5f;
+		}
+		if (inputCtrl.isKeyPressed(Keys.DPAD_RIGHT)) {
+			accelX = -5f;
+		}
+		if (inputCtrl.isKeyPressed(Keys.DPAD_DOWN)) {
+			accelY = 5f;
+		}
+		if (inputCtrl.isKeyPressed(Keys.DPAD_UP)) {
+			accelY = -5f;
+		}
+
+		this.accel = new Vector2(accelX, accelY);
+	}
+
 }

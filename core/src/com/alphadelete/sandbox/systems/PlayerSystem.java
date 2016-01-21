@@ -15,7 +15,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 public class PlayerSystem extends IteratingSystem {
@@ -51,18 +50,19 @@ public class PlayerSystem extends IteratingSystem {
 		StateComponent state = sm.get(entity);
 		MovementComponent mov = mm.get(entity);
 		
+		// Copy Vectors
+		Vector2 targetPos = player.target.cpy();
+		Vector2 playerPos = t.getPosition();
+		
+		// Target position and angle	
+		Vector2 relativeTarget = Vector2DUtils.getPointInBetweenByLen(playerPos, targetPos, 1.5f);
+		float angle = Vector2DUtils.getAngleInBetween(playerPos, targetPos);
+		
 		if (player.isAttacking) {
-			// Copy Vectors
-			Vector2 _attackPos = player.attackPos.cpy();
-			Vector2 _playerPos = t.getPosition();
-			
-			// Attack position and angle	
-			Vector2 attack = Vector2DUtils.getPointInBetweenByLen(_playerPos, _attackPos, 1.5f);
-			float angle = Vector2DUtils.getAngleInBetween(_playerPos, _attackPos);
-		   	
+
 			// Move towards the attack, if stopped
 			if(!player.getPlayerIsMoving()) {
-				Vector2 att = _attackPos.cpy().sub(_playerPos);
+				Vector2 att = targetPos.cpy().sub(playerPos);
 				if (att.x < 1) {
 					player.accel.x = 5f;
 				}
@@ -78,7 +78,7 @@ public class PlayerSystem extends IteratingSystem {
 			}
 			
 			// Attack effect
-			createEffectAttack(attack.x, attack.y, angle);
+			createEffectAttack(relativeTarget.x, relativeTarget.y, angle);
 		}
 		
 		// Move
@@ -92,11 +92,12 @@ public class PlayerSystem extends IteratingSystem {
 		if (state.get() != PlayerComponent.STATE_IDLE && mov.velocity.y == 0 && mov.velocity.x == 0 ) {
 			state.set(PlayerComponent.STATE_IDLE);
 		}
-	
+		
+		Vector2 side = targetPos.cpy().sub(playerPos);
 		// Sprite side (scale)
-		if (player.accel.x < 0) {
+		if (player.accel.x < 0 || side.x > 0) {
 			player.scaleSide = Constants.SCALE_LEFT;
-		} else if (player.accel.x > 0) {
+		} else if (player.accel.x > 0 || side.x < 0) {
 			player.scaleSide = Constants.SCALE_RIGHT;
 		}
 		t.scale.x = Math.abs(t.scale.x) * player.scaleSide;

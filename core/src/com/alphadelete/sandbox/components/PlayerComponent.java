@@ -2,7 +2,6 @@ package com.alphadelete.sandbox.components;
 
 import com.alphadelete.sandbox.Constants;
 import com.badlogic.ashley.core.Component;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 public class PlayerComponent implements Component {
@@ -16,7 +15,7 @@ public class PlayerComponent implements Component {
 	
 	public float scaleSide = Constants.SCALE_RIGHT;
 	public Vector2 accel = new Vector2(0,0);
-	public Vector2 attackPos = new Vector2();
+	public Vector2 target = new Vector2();
 	public Boolean isAttacking = false;
 	
 	public Boolean getPlayerIsMoving() {
