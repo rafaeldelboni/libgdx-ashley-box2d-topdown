@@ -72,7 +72,7 @@ public class GameWorld {
 		StateComponent state = engine.createComponent(StateComponent.class);
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
 		
-		WeaponComponent weapon = new WeaponComponent(engine, new Vector3(startPosition.x, startPosition.y, -4f), Assets.weapon1, WeaponComponent.TYPE_PLAYER);
+		WeaponComponent weapon = new WeaponComponent(engine, new Vector3(startPosition.x, startPosition.y, -4f), Assets.warriorWeapon1, WeaponComponent.TYPE_PLAYER);
 		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(PlayerComponent.WIDTH / 2, PlayerComponent.HEIGHT / 2);
@@ -92,6 +92,7 @@ public class GameWorld {
 		position.setPosition(body.body.getPosition().x, body.body.getPosition().y);
 
 		state.set(PlayerComponent.STATE_IDLE);
+		state.frameRate = 0.1f;
 		
 		entity.add(body);
 		entity.add(animation);

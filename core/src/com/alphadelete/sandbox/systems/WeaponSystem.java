@@ -8,7 +8,6 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
 
 public class WeaponSystem extends IteratingSystem {
 	
@@ -39,11 +38,9 @@ public class WeaponSystem extends IteratingSystem {
 			float angle = Vector2DUtils.getAngleInBetween(t.getPosition(), player.target);
 			
 			weapon.position.scale.y = Math.abs(weapon.position.scale.y) * player.scaleSide;
-			weapon.position.rotation = angle;
-			Gdx.app.debug("WeaponAngle", String.valueOf(angle));
-			Gdx.app.debug("PlayerSide", String.valueOf(player.scaleSide));
+			weapon.position.rotation = angle + (player.attackStance * player.scaleSide);
+
+			weapon.position.pos.set(t.pos.x - 0.30f * player.scaleSide, t.pos.y + 0.4f, -4f);
 		}
-		
-		weapon.position.pos.set(t.pos.x, t.pos.y, -4f);
 	}
 }

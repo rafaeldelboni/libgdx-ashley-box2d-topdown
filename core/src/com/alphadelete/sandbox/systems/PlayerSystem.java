@@ -59,6 +59,12 @@ public class PlayerSystem extends IteratingSystem {
 		float angle = Vector2DUtils.getAngleInBetween(playerPos, targetPos);
 		
 		if (player.isAttacking) {
+			
+			if(player.attackStance == 0) {
+				player.attackStance = 1f;
+			} else {
+				player.attackStance = 0;
+			}
 
 			// Move towards the attack, if stopped
 			if(!player.getPlayerIsMoving()) {
@@ -84,7 +90,7 @@ public class PlayerSystem extends IteratingSystem {
 		// Move
 		mov.velocity.x = -player.accel.x * PlayerComponent.MOVE_VELOCITY;
 		mov.velocity.y = -player.accel.y * PlayerComponent.MOVE_VELOCITY;
-		
+	
 		// State: Idle or Walk 
 		if (state.get() != PlayerComponent.STATE_WALK && (mov.velocity.y != 0 || mov.velocity.x != 0) ) {
 			state.set(PlayerComponent.STATE_WALK);
@@ -93,13 +99,19 @@ public class PlayerSystem extends IteratingSystem {
 			state.set(PlayerComponent.STATE_IDLE);
 		}
 		
-		Vector2 side = targetPos.cpy().sub(playerPos);
 		// Sprite side (scale)
-		if (player.accel.x < 0 || side.x > 0) {
+		Vector2 side = targetPos.cpy().sub(playerPos);
+		if (player.accel.x < 0) {
 			player.scaleSide = Constants.SCALE_LEFT;
-		} else if (player.accel.x > 0 || side.x < 0) {
+		} else {
 			player.scaleSide = Constants.SCALE_RIGHT;
 		}
+		if (side.x > 0){
+			player.scaleSide = Constants.SCALE_LEFT;
+		} else {
+			player.scaleSide = Constants.SCALE_RIGHT;
+		}
+	
 		t.scale.x = Math.abs(t.scale.x) * player.scaleSide;
 
 	}

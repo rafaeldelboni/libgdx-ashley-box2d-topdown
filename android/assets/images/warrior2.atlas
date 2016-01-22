@@ -1,0 +1,33 @@
+warrior2.png
+size: 320,320
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+warrior-idle-1
+  rotate: false
+  xy: 0, 0
+  size: 320, 32
+  orig: 320, 32
+  offset: 0, 0
+  index: -1
+warrior-walk
+  rotate: false
+  xy: 0, 32
+  size: 320, 32
+  orig: 320, 32
+  offset: 0, 0
+  index: -1
+warrior-dying
+  rotate: false
+  xy: 0, 64
+  size: 320, 32
+  orig: 320, 32
+  offset: 0, 0
+  index: -1
+warrior-arm-1
+  rotate: false
+  xy: 0, 96
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1

@@ -15,7 +15,7 @@ public class Assets {
 	
 	public static TextureAtlas menuAtlas = new TextureAtlas(Gdx.files.internal("images/menu.atlas"));
 	public static TextureAtlas dungeonAtlas = new TextureAtlas(Gdx.files.internal("images/dungeon.atlas"));
-	public static TextureAtlas warriorAtlas = new TextureAtlas(Gdx.files.internal("images/warrior.atlas"));
+	public static TextureAtlas warriorAtlas = new TextureAtlas(Gdx.files.internal("images/warrior2.atlas"));
 	public static TextureAtlas attackAtlas = new TextureAtlas(Gdx.files.internal("images/atk_slash.atlas"));
 	public static TextureRegion menuMain;
 	public static TextureRegion menuPause;
@@ -27,7 +27,7 @@ public class Assets {
 	public static Animation warriorWalkAnimation;
 	public static Animation attackEffect;
 	public static TextureRegion dungeonWall1;
-	public static TextureRegion weapon1;
+	public static TextureRegion warriorWeapon1;
 	
 	public static Texture items;
 	public static Animation bobJump;
@@ -71,11 +71,11 @@ public class Assets {
 	private static void loadWarrior () {
 		warriorIdleAnimation = Assets.loadAtlasAnimations("warrior-idle-1", Assets.warriorAtlas, PlayMode.LOOP, new Vector2(32,32));
 		warriorWalkAnimation = Assets.loadAtlasAnimations("warrior-walk", Assets.warriorAtlas, PlayMode.LOOP, new Vector2(32,32));
+		warriorWeapon1 = Assets.loadAtlasTextureRegion("warrior-arm-1", Assets.warriorAtlas);
 	}
 	
 	private static void loadDungeon () {
 		dungeonWall1 = Assets.loadAtlasTextureRegion("wall-1", Assets.dungeonAtlas);
-		weapon1 = Assets.loadAtlasTextureRegion("weapon-1", Assets.dungeonAtlas);
 	}
 	
 	private static void loadEffects ()	{

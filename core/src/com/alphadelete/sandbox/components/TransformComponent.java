@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 public class TransformComponent implements Component {
 	public final Vector3 pos = new Vector3();
 	public final Vector2 scale = new Vector2(1.0f, 1.0f);
+	public Vector2 origin = null;
 	public float rotation = 0.0f;
 	
 	
@@ -19,7 +20,22 @@ public class TransformComponent implements Component {
 		this.pos.y = pos.y;
 	}
 	
+	public void setOrigin(float x, float y){
+		setOrigin(new Vector2 (x,y));
+	}
+	
+	public void setOrigin(Vector2 orig){
+		this.origin = new Vector2 (orig.x, orig.y);
+	}
+	
 	public Vector2 getPosition(){
 		return new Vector2(this.pos.x, this.pos.y);
+	}
+	
+	public Boolean isOriginSet(){
+		if(origin != null) {
+			return true;
+		}
+		return false;
 	}
 }

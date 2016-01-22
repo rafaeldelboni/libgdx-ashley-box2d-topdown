@@ -83,15 +83,27 @@ public class RenderingSystem extends IteratingSystem {
 		
 			float width = tex.region.getRegionWidth();
 			float height = tex.region.getRegionHeight();
+			
 			float originX = width * 0.5f;
 			float originY = height * 0.5f;
-						
-			batch.draw(tex.region,
-					   t.pos.x - originX, t.pos.y - originY,
-					   originX, originY,
-					   width, height,
-					   t.scale.x * 2 * Constants.PIXELS_TO_METRES, t.scale.y * 2 * Constants.PIXELS_TO_METRES,
-					   MathUtils.radiansToDegrees * t.rotation);
+			// if origin is set on transform use it
+			if (t.isOriginSet()) {
+				batch.draw(tex.region,
+							t.pos.x - t.origin.x, t.pos.y - t.origin.y,
+							t.origin.x, t.origin.y,
+							width, height,
+							t.scale.x * 2 * Constants.PIXELS_TO_METRES, t.scale.y * 2 * Constants.PIXELS_TO_METRES,
+							MathUtils.radiansToDegrees * t.rotation);
+			// else get the middle point in texture
+			} else {
+				batch.draw(tex.region,
+							t.pos.x - originX, t.pos.y - originY,
+							originX, originY,
+							width, height,
+							t.scale.x * 2 * Constants.PIXELS_TO_METRES, t.scale.y * 2 * Constants.PIXELS_TO_METRES,
+							MathUtils.radiansToDegrees * t.rotation);
+			}	
+
 		}
 		
 		batch.end();
