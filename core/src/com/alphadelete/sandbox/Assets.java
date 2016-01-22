@@ -16,6 +16,7 @@ public class Assets {
 	public static TextureAtlas menuAtlas = new TextureAtlas(Gdx.files.internal("images/menu.atlas"));
 	public static TextureAtlas dungeonAtlas = new TextureAtlas(Gdx.files.internal("images/dungeon.atlas"));
 	public static TextureAtlas warriorAtlas = new TextureAtlas(Gdx.files.internal("images/warrior2.atlas"));
+	public static TextureAtlas goblinAtlas = new TextureAtlas(Gdx.files.internal("images/goblin.atlas"));
 	public static TextureAtlas attackAtlas = new TextureAtlas(Gdx.files.internal("images/atk_slash.atlas"));
 	public static TextureRegion menuMain;
 	public static TextureRegion menuPause;
@@ -25,6 +26,8 @@ public class Assets {
 	public static BitmapFont font;
 	public static Animation warriorIdleAnimation;
 	public static Animation warriorWalkAnimation;
+	public static Animation goblinIdleAnimation;
+	public static Animation goblinWalkAnimation;
 	public static Animation attackEffect;
 	public static TextureRegion dungeonWall1;
 	public static TextureRegion warriorWeapon1;
@@ -35,6 +38,7 @@ public class Assets {
 	public static void load () {
 		loadMenu();
 		loadWarrior();
+		loadGoblin();
 		loadDungeon();
 		loadEffects();
 	}	
@@ -72,6 +76,11 @@ public class Assets {
 		warriorIdleAnimation = Assets.loadAtlasAnimations("warrior-idle-1", Assets.warriorAtlas, PlayMode.LOOP, new Vector2(32,32));
 		warriorWalkAnimation = Assets.loadAtlasAnimations("warrior-walk", Assets.warriorAtlas, PlayMode.LOOP, new Vector2(32,32));
 		warriorWeapon1 = Assets.loadAtlasTextureRegion("warrior-arm-1", Assets.warriorAtlas);
+	}
+	
+	private static void loadGoblin () {
+		goblinIdleAnimation = Assets.loadAtlasAnimations("goblin-idle-1", Assets.goblinAtlas, PlayMode.LOOP, new Vector2(32,32));
+		goblinWalkAnimation = Assets.loadAtlasAnimations("goblin-walk", Assets.goblinAtlas, PlayMode.LOOP, new Vector2(32,32));
 	}
 	
 	private static void loadDungeon () {

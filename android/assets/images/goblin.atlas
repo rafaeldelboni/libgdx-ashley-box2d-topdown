@@ -1,0 +1,75 @@
+goblin.png
+size: 320,320
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+goblin-idle-1
+  rotate: false
+  xy: 0, 0
+  size: 320, 32
+  orig: 320, 32
+  offset: 0, 0
+  index: -1
+goblin-idle-2
+  rotate: false
+  xy: 0, 32
+  size: 320, 32
+  orig: 320, 32
+  offset: 0, 0
+  index: -1
+goblin-walk
+  rotate: false
+  xy: 0, 64
+  size: 320, 32
+  orig: 320, 32
+  offset: 0, 0
+  index: -1
+goblin-attack
+  rotate: false
+  xy: 0, 96
+  size: 320, 32
+  orig: 320, 32
+  offset: 0, 0
+  index: -1
+goblin-dying
+  rotate: false
+  xy: 0, 128
+  size: 320, 32
+  orig: 320, 32
+  offset: 0, 0
+  index: -1
+goblin-warrior-idle-1
+  rotate: false
+  xy: 0, 160
+  size: 320, 32
+  orig: 320, 32
+  offset: 0, 0
+  index: -1
+goblin-warrior-idle-2
+  rotate: false
+  xy: 0, 192
+  size: 320, 32
+  orig: 320, 32
+  offset: 0, 0
+  index: -1
+goblin-warrior-walk
+  rotate: false
+  xy: 0, 224
+  size: 320, 32
+  orig: 320, 32
+  offset: 0, 0
+  index: -1
+goblin-warrior-attack
+  rotate: false
+  xy: 0, 256
+  size: 320, 32
+  orig: 320, 32
+  offset: 0, 0
+  index: -1
+goblin-warrior-dying
+  rotate: false
+  xy: 0, 228
+  size: 320, 32
+  orig: 320, 32
+  offset: 0, 0
+  index: -1
