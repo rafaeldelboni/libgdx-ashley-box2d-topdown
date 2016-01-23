@@ -54,7 +54,7 @@ public class GameScreen extends ScreenAdapter {
 	public GameScreen(Sandbox game) {
 		this.game = game;
 
-		state = Constants.GAME_READY;
+		state = Constants.GAME_RUNNING;
 		guiCam = new OrthographicCamera(Constants.APP_WIDTH, Constants.APP_HEIGHT);
 		guiCam.position.set(Constants.APP_WIDTH / 2, Constants.APP_HEIGHT / 2, 0);
 		touchPoint = new Vector3();
@@ -97,10 +97,8 @@ public class GameScreen extends ScreenAdapter {
 		world.clearForces();
 		
 		switch (state) {
-		case Constants.GAME_READY:
-			updateReady();
-			break;
 		case Constants.GAME_RUNNING:
+			resumeSystems();
 			updateRunning(deltaTime);
 			break;
 		case Constants.GAME_PAUSED:
@@ -112,13 +110,6 @@ public class GameScreen extends ScreenAdapter {
 		case Constants.GAME_OVER:
 			updateGameOver();
 			break;
-		}
-	}
-
-	private void updateReady() {
-		if (Gdx.input.justTouched()) {
-			state = Constants.GAME_RUNNING;
-			resumeSystems();
 		}
 	}
 
@@ -166,7 +157,7 @@ public class GameScreen extends ScreenAdapter {
 		if (Gdx.input.justTouched()) {
 			engine.removeAllEntities();
 			gameWorld = new GameWorld(engine, world);
-			state = Constants.GAME_READY;
+			state = Constants.GAME_RUNNING;
 		}
 	}
 
@@ -181,9 +172,6 @@ public class GameScreen extends ScreenAdapter {
 		game.batcher.setProjectionMatrix(guiCam.combined);
 		game.batcher.begin();
 		switch (state) {
-		case Constants.GAME_READY:
-			presentReady();
-			break;
 		case Constants.GAME_RUNNING:
 			presentRunning();
 			break;
@@ -198,10 +186,6 @@ public class GameScreen extends ScreenAdapter {
 			break;
 		}
 		game.batcher.end();
-	}
-
-	private void presentReady() {
-		game.batcher.draw(Assets.menuReady, Constants.APP_WIDTH / 2 - 192 / 2, Constants.APP_HEIGHT / 2 - 32 / 2, 192, 32);
 	}
 
 	private void presentRunning() {

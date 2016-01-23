@@ -69,16 +69,16 @@ public class PlayerSystem extends IteratingSystem {
 			// Move towards the attack, if stopped
 			if(!player.getPlayerIsMoving()) {
 				Vector2 att = targetPos.cpy().sub(playerPos);
-				if (att.x < 1) {
+				if (att.x < 0) {
 					player.accel.x = 5f;
 				}
-				if (att.x > 1) {
+				if (att.x > 0) {
 					player.accel.x = -5f;
 				}
-				if (att.y < 1) {
+				if (att.y < 0) {
 					player.accel.y = 5f;
 				}
-				if (att.y > 1) {
+				if (att.y > 0) {
 					player.accel.y = -5f;
 				}
 			}
@@ -127,7 +127,7 @@ public class PlayerSystem extends IteratingSystem {
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
 		EffectsComponent effect = new EffectsComponent(150);
 
-		position.scale.set(0.65f, 0.65f);
+		position.scale.set(0.35f, 0.35f);
 		position.rotation = angle;
 		position.pos.set(attackX, attackY, 0.0f);
 		animation.animations.put(0, Assets.attackEffect);

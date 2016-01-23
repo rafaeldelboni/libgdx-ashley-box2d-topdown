@@ -4,7 +4,6 @@ public class Constants {
 	public static final int APP_WIDTH = 800;
     public static final int APP_HEIGHT = 480;
     
-    public static final int GAME_READY = 0;
     public static final int GAME_RUNNING = 1;
     public static final int GAME_PAUSED = 2;
     public static final int GAME_LEVEL_END = 3;

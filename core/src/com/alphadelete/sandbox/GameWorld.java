@@ -7,6 +7,7 @@ import com.alphadelete.sandbox.components.BackgroundComponent;
 import com.alphadelete.sandbox.components.BodyComponent;
 import com.alphadelete.sandbox.components.BoundsComponent;
 import com.alphadelete.sandbox.components.CameraComponent;
+import com.alphadelete.sandbox.components.EnemyComponent;
 import com.alphadelete.sandbox.components.MovementComponent;
 import com.alphadelete.sandbox.components.PlayerComponent;
 import com.alphadelete.sandbox.components.StateComponent;
@@ -55,6 +56,8 @@ public class GameWorld {
 
 		createWall(6.0f, 1.0f);
 		createWall(7.0f, 1.0f);
+		
+		createEnemy(10, 2);
 		
 		this.heightSoFar = 0;
 		this.score = 0;
@@ -168,6 +171,51 @@ public class GameWorld {
 		entity.add(texture);
 
 		engine.addEntity(entity);
+	}
+	
+	private Entity createEnemy(float x, float y) {
+		Entity entity = engine.createEntity();
+
+		AnimationComponent animation = engine.createComponent(AnimationComponent.class);
+		EnemyComponent player = engine.createComponent(EnemyComponent.class);
+		BoundsComponent bounds = engine.createComponent(BoundsComponent.class);
+		MovementComponent movement = engine.createComponent(MovementComponent.class);
+		TransformComponent position = engine.createComponent(TransformComponent.class);
+		StateComponent state = engine.createComponent(StateComponent.class);
+		TextureComponent texture = engine.createComponent(TextureComponent.class);
+		
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(EnemyComponent.WIDTH / 2, EnemyComponent.HEIGHT / 2);
+		BodyComponent body = new BodyComponent(world, BodyType.DynamicBody, shape, new Vector3(x,y,0), 9f, 0.5f, 0.5f);
+		body.body.setLinearDamping(1f);
+		body.body.setFixedRotation(true);
+		body.body.setUserData(entity);
+		shape.dispose();
+
+		animation.animations.put(EnemyComponent.STATE_WALK, Assets.goblinWalkAnimation);
+		animation.animations.put(EnemyComponent.STATE_HIT, Assets.goblinIdleAnimation);
+		animation.animations.put(EnemyComponent.STATE_IDLE, Assets.goblinIdleAnimation);
+
+		bounds.bounds.width = EnemyComponent.WIDTH;
+		bounds.bounds.height = EnemyComponent.HEIGHT;
+
+		position.setPosition(body.body.getPosition().x, body.body.getPosition().y);
+
+		state.set(EnemyComponent.STATE_IDLE);
+		state.frameRate = 0.1f;
+		
+		entity.add(body);
+		entity.add(animation);
+		entity.add(player);
+		entity.add(bounds);
+		entity.add(movement);
+		entity.add(position);
+		entity.add(state);
+		entity.add(texture);
+
+		engine.addEntity(entity);
+
+		return entity;
 	}
 
 }
