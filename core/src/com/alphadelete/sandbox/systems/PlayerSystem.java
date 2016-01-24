@@ -4,13 +4,16 @@ import com.alphadelete.sandbox.Assets;
 import com.alphadelete.sandbox.Constants;
 import com.alphadelete.sandbox.components.PlayerComponent;
 import com.alphadelete.sandbox.components.AnimationComponent;
+import com.alphadelete.sandbox.components.BoundsComponent;
 import com.alphadelete.sandbox.components.EffectsComponent;
+import com.alphadelete.sandbox.components.EnemyComponent;
 import com.alphadelete.sandbox.components.MovementComponent;
 import com.alphadelete.sandbox.components.TransformComponent;
 import com.alphadelete.utils.Vector2DUtils;
 import com.alphadelete.sandbox.components.StateComponent;
 import com.alphadelete.sandbox.components.TextureComponent;
 import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
@@ -29,9 +32,13 @@ public class PlayerSystem extends IteratingSystem {
 	private ComponentMapper<TransformComponent> tm;
 	private ComponentMapper<MovementComponent> mm;
 	
-	public PlayerSystem() {
+	private PooledEngine engine;
+	
+	public PlayerSystem(PooledEngine engine) {
 		super(family);
-				
+		
+		this.engine = engine;
+		
 		bm = ComponentMapper.getFor(PlayerComponent.class);
 		sm = ComponentMapper.getFor(StateComponent.class);
 		tm = ComponentMapper.getFor(TransformComponent.class);
@@ -117,11 +124,11 @@ public class PlayerSystem extends IteratingSystem {
 	}
 	
 	private void createEffectAttack(float attackX, float attackY, float angle) {
-		PooledEngine engine = ((PooledEngine)getEngine());
 		
 		Entity entity = engine.createEntity();
 		
 		StateComponent state = engine.createComponent(StateComponent.class);
+		BoundsComponent bounds = engine.createComponent(BoundsComponent.class);
 		AnimationComponent animation = engine.createComponent(AnimationComponent.class);
 		TransformComponent position = engine.createComponent(TransformComponent.class);
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
@@ -133,7 +140,11 @@ public class PlayerSystem extends IteratingSystem {
 		animation.animations.put(0, Assets.attackEffect);
 		state.set(0);
 		
+		bounds.bounds.width = 0.35f;
+		bounds.bounds.height = 0.35f;
+		
 		entity.add(state);
+		entity.add(bounds);
 		entity.add(animation);
 		entity.add(position);
 		entity.add(texture);

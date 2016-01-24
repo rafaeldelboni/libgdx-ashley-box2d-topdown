@@ -19,7 +19,7 @@ public class EnemyComponent implements Component {
 	public Boolean isAttacking = false;
 	public float attackStance = 0f;
 	
-	public Boolean getPlayerIsMoving() {
+	public Boolean getEnemyIsMoving() {
 		if (this.accel.x == 0f && this.accel.y == 0f) {
 			return false;
 		}
