@@ -22,6 +22,7 @@ public class CollisionSystem extends EntitySystem {
 	private ComponentMapper<MovementComponent> mm;
 	private ComponentMapper<StateComponent> sm;
 	private ComponentMapper<TransformComponent> tm;
+	private ComponentMapper<EffectsComponent> em;
 	
 	private Engine engine;
 	private World world;
@@ -37,6 +38,7 @@ public class CollisionSystem extends EntitySystem {
 		mm = ComponentMapper.getFor(MovementComponent.class);
 		sm = ComponentMapper.getFor(StateComponent.class);
 		tm = ComponentMapper.getFor(TransformComponent.class);
+		em = ComponentMapper.getFor(EffectsComponent.class);
 	}
 	
 	@Override
@@ -65,10 +67,10 @@ public class CollisionSystem extends EntitySystem {
 				
 			for (int j = 0; j < effects.size(); ++j) {
 				Entity effect = effects.get(j);
-				
+				EffectsComponent effectComp = em.get(effect);
 				BoundsComponent effectBounds = bm.get(effect);
 				
-				if (effectBounds.bounds.overlaps(enemyBounds.bounds)) {
+				if (effectBounds.bounds.overlaps(enemyBounds.bounds) && (System.currentTimeMillis() - effectComp.startTimeMillis) == 0) {
 					Gdx.app.debug("Hit", "Test");
 				}
 			}

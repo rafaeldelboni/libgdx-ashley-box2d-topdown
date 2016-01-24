@@ -6,14 +6,12 @@ import com.alphadelete.sandbox.components.PlayerComponent;
 import com.alphadelete.sandbox.components.AnimationComponent;
 import com.alphadelete.sandbox.components.BoundsComponent;
 import com.alphadelete.sandbox.components.EffectsComponent;
-import com.alphadelete.sandbox.components.EnemyComponent;
 import com.alphadelete.sandbox.components.MovementComponent;
 import com.alphadelete.sandbox.components.TransformComponent;
 import com.alphadelete.utils.Vector2DUtils;
 import com.alphadelete.sandbox.components.StateComponent;
 import com.alphadelete.sandbox.components.TextureComponent;
 import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
@@ -140,8 +138,8 @@ public class PlayerSystem extends IteratingSystem {
 		animation.animations.put(0, Assets.attackEffect);
 		state.set(0);
 		
-		bounds.bounds.width = 0.35f;
-		bounds.bounds.height = 0.35f;
+		bounds.bounds.width = 2.2f;
+		bounds.bounds.height = 2.8f;
 		
 		entity.add(state);
 		entity.add(bounds);
