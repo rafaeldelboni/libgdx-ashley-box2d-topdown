@@ -113,6 +113,7 @@ public class RenderingSystem extends IteratingSystem {
 			debugMatrix.set(cam.combined);
         	debugRenderer.render(world, debugMatrix);
 		}
+		
 	}
 	
 	@Override

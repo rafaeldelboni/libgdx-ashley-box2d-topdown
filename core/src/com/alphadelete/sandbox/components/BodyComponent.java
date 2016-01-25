@@ -12,7 +12,7 @@ public class BodyComponent implements Component {
 
 	public Body body;
 	
-	public BodyComponent(World world, BodyDef.BodyType type, Shape shape, Vector3 pos, float density, float friction, float restitution) {
+	public BodyComponent(World world, BodyDef.BodyType type, Shape shape, Vector3 pos, float density, float friction, float restitution, Boolean isSensor) {
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = type;
 		bodyDef.position.set(pos.x, pos.y);
@@ -24,6 +24,7 @@ public class BodyComponent implements Component {
 		fixtureDef.shape = shape;
 		fixtureDef.density = density;
 		fixtureDef.restitution = restitution;
+		fixtureDef.isSensor = isSensor; 
 
 		body.createFixture(fixtureDef);
 	}

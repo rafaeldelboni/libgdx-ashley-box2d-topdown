@@ -6,9 +6,7 @@ import com.alphadelete.sandbox.Sandbox;
 import com.alphadelete.sandbox.GameWorld;
 import com.alphadelete.sandbox.systems.AnimationSystem;
 import com.alphadelete.sandbox.systems.BackgroundSystem;
-import com.alphadelete.sandbox.systems.BoundsSystem;
 import com.alphadelete.sandbox.systems.CameraSystem;
-import com.alphadelete.sandbox.systems.CollisionSystem;
 import com.alphadelete.sandbox.systems.ControllerSystem;
 import com.alphadelete.sandbox.systems.EffectsSystem;
 import com.alphadelete.sandbox.systems.EnemySystem;
@@ -66,18 +64,16 @@ public class GameScreen extends ScreenAdapter {
 				
 		gameWorld = new GameWorld(engine, world);
 
-		engine.addSystem(new PlayerSystem(engine));
+		engine.addSystem(new PlayerSystem(gameWorld));
 		engine.addSystem(new EnemySystem());
 		engine.addSystem(new CameraSystem());
 		engine.addSystem(new BackgroundSystem());
 		engine.addSystem(new MovementSystem());
-		engine.addSystem(new BoundsSystem());
 		engine.addSystem(new StateSystem());
 		engine.addSystem(new AnimationSystem());
-		engine.addSystem(new EffectsSystem());
+		engine.addSystem(new EffectsSystem(gameWorld));
 		engine.addSystem(new WeaponSystem());
 		engine.addSystem(new ControllerSystem());
-		engine.addSystem(new CollisionSystem(world));
 		engine.addSystem(new RenderingSystem(game.batcher, world));
 
 		engine.getSystem(BackgroundSystem.class).setCamera(engine.getSystem(RenderingSystem.class).getCamera());
@@ -228,26 +224,22 @@ public class GameScreen extends ScreenAdapter {
 		engine.getSystem(PlayerSystem.class).setProcessing(false);
 		engine.getSystem(EnemySystem.class).setProcessing(false);
 		engine.getSystem(MovementSystem.class).setProcessing(false);
-		engine.getSystem(BoundsSystem.class).setProcessing(false);
 		engine.getSystem(StateSystem.class).setProcessing(false);
 		engine.getSystem(EffectsSystem.class).setProcessing(false);
 		engine.getSystem(WeaponSystem.class).setProcessing(false);
 		engine.getSystem(AnimationSystem.class).setProcessing(false);
 		engine.getSystem(ControllerSystem.class).setProcessing(false);
-		engine.getSystem(CollisionSystem.class).setProcessing(false);
 	}
 
 	private void resumeSystems() {
 		engine.getSystem(PlayerSystem.class).setProcessing(true);
 		engine.getSystem(EnemySystem.class).setProcessing(true);
 		engine.getSystem(MovementSystem.class).setProcessing(true);
-		engine.getSystem(BoundsSystem.class).setProcessing(true);
 		engine.getSystem(StateSystem.class).setProcessing(true);
 		engine.getSystem(EffectsSystem.class).setProcessing(true);
 		engine.getSystem(WeaponSystem.class).setProcessing(true);
 		engine.getSystem(AnimationSystem.class).setProcessing(true);
 		engine.getSystem(ControllerSystem.class).setProcessing(true);
-		engine.getSystem(CollisionSystem.class).setProcessing(true);
 	}
 
 	@Override

@@ -1,12 +1,10 @@
 package com.alphadelete.sandbox;
 
-import java.util.Random;
-
 import com.alphadelete.sandbox.components.AnimationComponent;
 import com.alphadelete.sandbox.components.BackgroundComponent;
 import com.alphadelete.sandbox.components.BodyComponent;
-import com.alphadelete.sandbox.components.BoundsComponent;
 import com.alphadelete.sandbox.components.CameraComponent;
+import com.alphadelete.sandbox.components.EffectsComponent;
 import com.alphadelete.sandbox.components.EnemyComponent;
 import com.alphadelete.sandbox.components.MovementComponent;
 import com.alphadelete.sandbox.components.PlayerComponent;
@@ -18,9 +16,15 @@ import com.alphadelete.sandbox.components.WeaponComponent;
 import com.alphadelete.sandbox.systems.RenderingSystem;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -32,9 +36,6 @@ public class GameWorld {
 	public static final int WORLD_STATE_GAME_OVER = 2;
 	public static final Vector2 gravity = new Vector2(0, -12);
 
-	public final Random rand;
-
-	public float heightSoFar;
 	public int score;
 	public int state;
 
@@ -46,10 +47,34 @@ public class GameWorld {
 	public GameWorld(PooledEngine engine, World world) {
 		this.engine = engine;
 		this.world = world;
-		this.rand = new Random();
 	}
-
+	
+	public PooledEngine getEngine() {
+		return this.engine;
+	}
+	
 	public void create() {
+		
+		 world.setContactListener(new ContactListener() {
+	            @Override
+	            public void beginContact(Contact contact) {
+	            	Gdx.app.debug("Contact", contact.toString());
+	            }
+
+	            @Override
+	            public void endContact(Contact contact) {
+	            }
+
+	            @Override
+	            public void preSolve(Contact contact, Manifold oldManifold) {
+	            }
+
+	            @Override
+	            public void postSolve(Contact contact, ContactImpulse impulse) {
+	            }
+	        }
+		 );
+		 
 		Entity player = createPlayer();
 		createCamera(player);
 		createBackground();
@@ -59,7 +84,6 @@ public class GameWorld {
 		
 		createEnemy(10, 2);
 		
-		this.heightSoFar = 0;
 		this.score = 0;
 		this.state = WORLD_STATE_RUNNING;
 	}
@@ -69,7 +93,6 @@ public class GameWorld {
 
 		AnimationComponent animation = engine.createComponent(AnimationComponent.class);
 		PlayerComponent player = engine.createComponent(PlayerComponent.class);
-		BoundsComponent bounds = engine.createComponent(BoundsComponent.class);
 		MovementComponent movement = engine.createComponent(MovementComponent.class);
 		TransformComponent position = engine.createComponent(TransformComponent.class);
 		StateComponent state = engine.createComponent(StateComponent.class);
@@ -79,7 +102,7 @@ public class GameWorld {
 		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(PlayerComponent.WIDTH / 2, PlayerComponent.HEIGHT / 2);
-		BodyComponent body = new BodyComponent(world, BodyType.DynamicBody, shape, startPosition, 9f, 0.5f, 0.5f);
+		BodyComponent body = new BodyComponent(world, BodyType.DynamicBody, shape, startPosition, 9f, 0.5f, 0.5f, false);
 		body.body.setLinearDamping(1f);
 		body.body.setFixedRotation(true);
 		body.body.setUserData(entity);
@@ -89,9 +112,6 @@ public class GameWorld {
 		animation.animations.put(PlayerComponent.STATE_HIT, Assets.warriorIdleAnimation);
 		animation.animations.put(PlayerComponent.STATE_IDLE, Assets.warriorIdleAnimation);
 
-		bounds.bounds.width = PlayerComponent.WIDTH;
-		bounds.bounds.height = PlayerComponent.HEIGHT;
-
 		position.setPosition(body.body.getPosition().x, body.body.getPosition().y);
 
 		state.set(PlayerComponent.STATE_IDLE);
@@ -100,7 +120,6 @@ public class GameWorld {
 		entity.add(body);
 		entity.add(animation);
 		entity.add(player);
-		entity.add(bounds);
 		entity.add(movement);
 		entity.add(position);
 		entity.add(state);
@@ -145,28 +164,23 @@ public class GameWorld {
 		Entity entity = engine.createEntity();
 
 		WallComponent wall = engine.createComponent(WallComponent.class);
-		BoundsComponent bounds = engine.createComponent(BoundsComponent.class);
 		TransformComponent position = engine.createComponent(TransformComponent.class);
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
 
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(WallComponent.WIDTH, WallComponent.HEIGHT);
-		BodyComponent body = new BodyComponent(world, BodyType.StaticBody, shape, startPosition, 9f, 0.5f, 0.5f);
+		BodyComponent body = new BodyComponent(world, BodyType.StaticBody, shape, startPosition, 9f, 0.5f, 0.5f, false);
 		body.body.setTransform(x, y, 0f);
 		body.body.setFixedRotation(true);
 		body.body.setUserData(entity);
 		shape.dispose();
 		
-		bounds.bounds.width = WallComponent.WIDTH;
-		bounds.bounds.height = WallComponent.HEIGHT;
-
 		position.pos.set(x, y, 2.0f);
 
 		texture.region = Assets.dungeonWall1;
 		
 		entity.add(body);
 		entity.add(wall);
-		entity.add(bounds);
 		entity.add(position);
 		entity.add(texture);
 
@@ -178,15 +192,14 @@ public class GameWorld {
 
 		AnimationComponent animation = engine.createComponent(AnimationComponent.class);
 		EnemyComponent player = engine.createComponent(EnemyComponent.class);
-		BoundsComponent bounds = engine.createComponent(BoundsComponent.class);
 		MovementComponent movement = engine.createComponent(MovementComponent.class);
 		TransformComponent position = engine.createComponent(TransformComponent.class);
 		StateComponent state = engine.createComponent(StateComponent.class);
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
 		
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(EnemyComponent.WIDTH / 2, EnemyComponent.HEIGHT / 2);
-		BodyComponent body = new BodyComponent(world, BodyType.DynamicBody, shape, new Vector3(x,y,0), 9f, 0.5f, 0.5f);
+		shape.setAsBox(EnemyComponent.WIDTH, EnemyComponent.HEIGHT);
+		BodyComponent body = new BodyComponent(world, BodyType.DynamicBody, shape, new Vector3(x,y,0), 9f, 0.5f, 0.5f, false);
 		body.body.setLinearDamping(1f);
 		body.body.setFixedRotation(true);
 		body.body.setUserData(entity);
@@ -196,9 +209,6 @@ public class GameWorld {
 		animation.animations.put(EnemyComponent.STATE_HIT, Assets.goblinIdleAnimation);
 		animation.animations.put(EnemyComponent.STATE_IDLE, Assets.goblinIdleAnimation);
 
-		bounds.bounds.width = EnemyComponent.WIDTH;
-		bounds.bounds.height = EnemyComponent.HEIGHT;
-
 		position.setPosition(body.body.getPosition().x, body.body.getPosition().y);
 
 		state.set(EnemyComponent.STATE_IDLE);
@@ -207,7 +217,6 @@ public class GameWorld {
 		entity.add(body);
 		entity.add(animation);
 		entity.add(player);
-		entity.add(bounds);
 		entity.add(movement);
 		entity.add(position);
 		entity.add(state);
@@ -216,6 +225,46 @@ public class GameWorld {
 		engine.addEntity(entity);
 
 		return entity;
+	}
+	
+	public void createEffectAttack(float attackX, float attackY, float angle) {
+		
+		Entity entity = engine.createEntity();
+		
+		StateComponent state = engine.createComponent(StateComponent.class);
+		AnimationComponent animation = engine.createComponent(AnimationComponent.class);
+		TransformComponent position = engine.createComponent(TransformComponent.class);
+		TextureComponent texture = engine.createComponent(TextureComponent.class);
+		EffectsComponent effect = new EffectsComponent(150);
+		
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(PlayerComponent.WIDTH / 2, PlayerComponent.HEIGHT / 2);
+		BodyComponent body = new BodyComponent(world, BodyType.DynamicBody, shape, new Vector3(attackX, attackY, 0f), 0f, 0f, 0f, true);
+		body.body.setLinearDamping(1f);
+		body.body.setFixedRotation(true);
+		body.body.setUserData(entity);
+		shape.dispose();
+
+		position.scale.set(0.35f, 0.35f);
+		position.rotation = angle;
+		position.pos.set(attackX, attackY, 0.0f);
+		animation.animations.put(0, Assets.attackEffect);
+		state.set(0);
+		
+		entity.add(body);
+		entity.add(state);
+		entity.add(animation);
+		entity.add(position);
+		entity.add(texture);
+		entity.add(effect);
+		
+		engine.addEntity(entity);	
+	}
+	
+	public void destroyBody(Body body) {
+		if(!world.isLocked()) {
+		     world.destroyBody(body);
+		}
 	}
 
 }

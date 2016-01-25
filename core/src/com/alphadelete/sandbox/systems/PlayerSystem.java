@@ -1,20 +1,15 @@
 package com.alphadelete.sandbox.systems;
 
-import com.alphadelete.sandbox.Assets;
 import com.alphadelete.sandbox.Constants;
+import com.alphadelete.sandbox.GameWorld;
 import com.alphadelete.sandbox.components.PlayerComponent;
-import com.alphadelete.sandbox.components.AnimationComponent;
-import com.alphadelete.sandbox.components.BoundsComponent;
-import com.alphadelete.sandbox.components.EffectsComponent;
 import com.alphadelete.sandbox.components.MovementComponent;
 import com.alphadelete.sandbox.components.TransformComponent;
 import com.alphadelete.utils.Vector2DUtils;
 import com.alphadelete.sandbox.components.StateComponent;
-import com.alphadelete.sandbox.components.TextureComponent;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.Vector2;
 
@@ -30,12 +25,12 @@ public class PlayerSystem extends IteratingSystem {
 	private ComponentMapper<TransformComponent> tm;
 	private ComponentMapper<MovementComponent> mm;
 	
-	private PooledEngine engine;
-	
-	public PlayerSystem(PooledEngine engine) {
+	private GameWorld gameWorld;
+		
+	public PlayerSystem(GameWorld gameWorld) {
 		super(family);
 		
-		this.engine = engine;
+		this.gameWorld = gameWorld;
 		
 		bm = ComponentMapper.getFor(PlayerComponent.class);
 		sm = ComponentMapper.getFor(StateComponent.class);
@@ -74,22 +69,27 @@ public class PlayerSystem extends IteratingSystem {
 			// Move towards the attack, if stopped
 			if(!player.getPlayerIsMoving()) {
 				Vector2 att = targetPos.cpy().sub(playerPos);
-				if (att.x < 0) {
-					player.accel.x = 5f;
+				
+				if (att.x < -1 || att.x > 1) {
+					if (att.x < 0) {
+						player.accel.x = 5f;
+					}
+					if (att.x > 0) {
+						player.accel.x = -5f;
+					}
 				}
-				if (att.x > 0) {
-					player.accel.x = -5f;
-				}
-				if (att.y < 0) {
-					player.accel.y = 5f;
-				}
-				if (att.y > 0) {
-					player.accel.y = -5f;
+				if (att.y < -1 || att.y > 1) {
+					if (att.y < 0) {
+						player.accel.y = 5f;
+					}
+					if (att.y > 0) {
+						player.accel.y = -5f;
+					}
 				}
 			}
 			
 			// Attack effect
-			createEffectAttack(relativeTarget.x, relativeTarget.y, angle);
+			gameWorld.createEffectAttack(relativeTarget.x, relativeTarget.y, angle);
 		}
 		
 		// Move
@@ -120,35 +120,5 @@ public class PlayerSystem extends IteratingSystem {
 		t.scale.x = Math.abs(t.scale.x) * player.scaleSide;
 
 	}
-	
-	private void createEffectAttack(float attackX, float attackY, float angle) {
-		
-		Entity entity = engine.createEntity();
-		
-		StateComponent state = engine.createComponent(StateComponent.class);
-		BoundsComponent bounds = engine.createComponent(BoundsComponent.class);
-		AnimationComponent animation = engine.createComponent(AnimationComponent.class);
-		TransformComponent position = engine.createComponent(TransformComponent.class);
-		TextureComponent texture = engine.createComponent(TextureComponent.class);
-		EffectsComponent effect = new EffectsComponent(150);
-
-		position.scale.set(0.35f, 0.35f);
-		position.rotation = angle;
-		position.pos.set(attackX, attackY, 0.0f);
-		animation.animations.put(0, Assets.attackEffect);
-		state.set(0);
-		
-		bounds.bounds.width = 2.2f;
-		bounds.bounds.height = 2.8f;
-		
-		entity.add(state);
-		entity.add(bounds);
-		entity.add(animation);
-		entity.add(position);
-		entity.add(texture);
-		entity.add(effect);
-		
-		engine.addEntity(entity);	
-	}
-		
+			
 }

@@ -9,6 +9,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 public class EnemySystem extends IteratingSystem {
@@ -44,10 +45,16 @@ public class EnemySystem extends IteratingSystem {
 		StateComponent state = sm.get(entity);
 		MovementComponent mov = mm.get(entity);
 		
+		if (enemy.knockbackTimeMillis > 0){
+			enemy.knockbackTimeMillis -= deltaTime * 1000;
+		} else {
+			enemy.accel.x = 0.0f;
+			enemy.accel.y = 0.0f;
+		}
+
 		// Copy Vectors
 		Vector2 targetPos = enemy.target.cpy();
 		Vector2 enemyPos = t.getPosition();
-		
 		
 		// Move
 		mov.velocity.x = -enemy.accel.x * EnemyComponent.MOVE_VELOCITY;
@@ -76,6 +83,35 @@ public class EnemySystem extends IteratingSystem {
 	
 		t.scale.x = Math.abs(t.scale.x) * enemy.scaleSide;
 
+	}
+	public void takeDamage(Entity entity, float attackX, float attackY){
+		takeDamage(entity, new Vector2(attackX, attackY));
+	}
+	public void takeDamage(Entity entity, Vector2 attackPos) {
+		if (!family.matches(entity)) return;
+
+		EnemyComponent enemy = bm.get(entity);
+		TransformComponent t = tm.get(entity);
+		
+		Vector2 enemyPos = t.getPosition();
+		
+		// Move towards the attack, if stopped
+		Vector2 att = attackPos.cpy().sub(enemyPos);
+		Gdx.app.debug("Hit", att.toString());
+		if (att.x > 0) {
+			enemy.accel.x = 5f;
+		}
+		if (att.x < 0) {
+			enemy.accel.x = -5f;
+		}
+		if (att.y > 0) {
+			enemy.accel.y = 5f;
+		}
+		if (att.y < 0) {
+			enemy.accel.y = -5f;
+		}
+		
+		enemy.knockbackTimeMillis = 250;
 	}
 
 		
