@@ -24,6 +24,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -58,7 +59,12 @@ public class GameWorld {
 		 world.setContactListener(new ContactListener() {
 	            @Override
 	            public void beginContact(Contact contact) {
-	            	Gdx.app.debug("Contact", contact.toString());
+    				//Gdx.app.debug("Contact", contact.toString());
+					Fixture fixA = contact.getFixtureA();
+					Fixture fixB = contact.getFixtureA();
+					
+					Entity bodyA = (Entity) fixA.getUserData();
+					Entity bodyB = (Entity) fixB.getUserData();
 	            }
 
 	            @Override
@@ -98,11 +104,25 @@ public class GameWorld {
 		StateComponent state = engine.createComponent(StateComponent.class);
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
 		
-		WeaponComponent weapon = new WeaponComponent(engine, new Vector3(startPosition.x, startPosition.y, -4f), Assets.warriorWeapon1, WeaponComponent.TYPE_PLAYER);
+		WeaponComponent weapon = new WeaponComponent(
+			engine, 
+			new Vector3(startPosition.x, startPosition.y, -4f), 
+			Assets.warriorWeapon1, 
+			WeaponComponent.TYPE_PLAYER
+		);
 		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(PlayerComponent.WIDTH / 2, PlayerComponent.HEIGHT / 2);
-		BodyComponent body = new BodyComponent(world, BodyType.DynamicBody, shape, startPosition, 9f, 0.5f, 0.5f, false);
+		BodyComponent body = new BodyComponent(
+			world, 
+			BodyType.DynamicBody, 
+			shape, 
+			startPosition, 
+			9f, 0.5f, 0.5f, 
+			false,
+			BodyComponent.CATEGORY_PLAYER,
+			BodyComponent.MASK_PLAYER
+		);
 		body.body.setLinearDamping(1f);
 		body.body.setFixedRotation(true);
 		body.body.setUserData(entity);
@@ -169,7 +189,16 @@ public class GameWorld {
 
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(WallComponent.WIDTH, WallComponent.HEIGHT);
-		BodyComponent body = new BodyComponent(world, BodyType.StaticBody, shape, startPosition, 9f, 0.5f, 0.5f, false);
+		BodyComponent body = new BodyComponent(
+			world, 
+			BodyType.StaticBody, 
+			shape, 
+			startPosition, 
+			9f, 0.5f, 0.5f, 
+			false,
+			BodyComponent.CATEGORY_SCENERY,
+			BodyComponent.MASK_SCENERY
+		);
 		body.body.setTransform(x, y, 0f);
 		body.body.setFixedRotation(true);
 		body.body.setUserData(entity);
@@ -199,7 +228,16 @@ public class GameWorld {
 		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(EnemyComponent.WIDTH, EnemyComponent.HEIGHT);
-		BodyComponent body = new BodyComponent(world, BodyType.DynamicBody, shape, new Vector3(x,y,0), 9f, 0.5f, 0.5f, false);
+		BodyComponent body = new BodyComponent(
+			world, 
+			BodyType.DynamicBody, 
+			shape, 
+			new Vector3(x,y,0), 
+			9f, 0.5f, 0.5f, 
+			false,
+			BodyComponent.CATEGORY_MONSTER,
+			BodyComponent.MASK_MONSTER
+		);
 		body.body.setLinearDamping(1f);
 		body.body.setFixedRotation(true);
 		body.body.setUserData(entity);
@@ -239,7 +277,12 @@ public class GameWorld {
 		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(PlayerComponent.WIDTH / 2, PlayerComponent.HEIGHT / 2);
-		BodyComponent body = new BodyComponent(world, BodyType.DynamicBody, shape, new Vector3(attackX, attackY, 0f), 0f, 0f, 0f, true);
+		BodyComponent body = new BodyComponent(
+			world, 
+			BodyType.DynamicBody, 
+			shape, 
+			new Vector3(attackX, attackY, 0f)
+		);
 		body.body.setLinearDamping(1f);
 		body.body.setFixedRotation(true);
 		body.body.setUserData(entity);

@@ -16,5 +16,5 @@ public class Constants {
     public static final float SCALE_LEFT = 1.0f;
     
     public static final float PIXELS_TO_METRES = 1f / 32f;
-
+    
 }
