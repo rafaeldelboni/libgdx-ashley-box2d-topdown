@@ -95,22 +95,10 @@ public class EnemySystem extends IteratingSystem {
 		
 		Vector2 enemyPos = t.getPosition();
 		
-		// Move towards the attack, if stopped
-		Vector2 att = attackPos.cpy().sub(enemyPos);
-		Gdx.app.debug("Hit", att.toString());
-		if (att.x > 0) {
-			enemy.accel.x = 5f;
-		}
-		if (att.x < 0) {
-			enemy.accel.x = -5f;
-		}
-		if (att.y > 0) {
-			enemy.accel.y = 5f;
-		}
-		if (att.y < 0) {
-			enemy.accel.y = -5f;
-		}
-		
+		// Knock back
+		Vector2 att = attackPos.cpy().sub(enemyPos).nor().scl(5f);
+		enemy.accel = att;
+
 		enemy.knockbackTimeMillis = 250;
 	}
 

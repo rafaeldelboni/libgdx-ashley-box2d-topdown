@@ -13,7 +13,9 @@ import com.alphadelete.sandbox.components.TextureComponent;
 import com.alphadelete.sandbox.components.TransformComponent;
 import com.alphadelete.sandbox.components.WallComponent;
 import com.alphadelete.sandbox.components.WeaponComponent;
+import com.alphadelete.sandbox.systems.EnemySystem;
 import com.alphadelete.sandbox.systems.RenderingSystem;
+import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
@@ -59,13 +61,26 @@ public class GameWorld {
 		 world.setContactListener(new ContactListener() {
 	            @Override
 	            public void beginContact(Contact contact) {
-    				//Gdx.app.debug("Contact", contact.toString());
 					Fixture fixA = contact.getFixtureA();
-					Fixture fixB = contact.getFixtureA();
+					Fixture fixB = contact.getFixtureB();
 					
-					Entity bodyA = (Entity) fixA.getUserData();
-					Entity bodyB = (Entity) fixB.getUserData();
-	            }
+					if (fixA.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER_ATTACK &&
+						fixB.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER ) {
+
+						Entity attack = (Entity) fixA.getBody().getUserData();		
+						Entity attacked = (Entity) fixB.getBody().getUserData();
+						
+						doAttack(attack, attacked);
+					}
+					if (fixA.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER &&
+						fixB.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER_ATTACK ) {
+
+						Entity attacked = (Entity) fixA.getBody().getUserData();		
+						Entity attack = (Entity) fixB.getBody().getUserData();
+						
+						doAttack(attack, attacked);
+					}
+				}
 
 	            @Override
 	            public void endContact(Contact contact) {
@@ -114,6 +129,7 @@ public class GameWorld {
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(PlayerComponent.WIDTH / 2, PlayerComponent.HEIGHT / 2);
 		BodyComponent body = new BodyComponent(
+			entity,
 			world, 
 			BodyType.DynamicBody, 
 			shape, 
@@ -123,9 +139,6 @@ public class GameWorld {
 			BodyComponent.CATEGORY_PLAYER,
 			BodyComponent.MASK_PLAYER
 		);
-		body.body.setLinearDamping(1f);
-		body.body.setFixedRotation(true);
-		body.body.setUserData(entity);
 		shape.dispose();
 
 		animation.animations.put(PlayerComponent.STATE_WALK, Assets.warriorWalkAnimation);
@@ -190,6 +203,7 @@ public class GameWorld {
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(WallComponent.WIDTH, WallComponent.HEIGHT);
 		BodyComponent body = new BodyComponent(
+			entity,
 			world, 
 			BodyType.StaticBody, 
 			shape, 
@@ -229,6 +243,7 @@ public class GameWorld {
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(EnemyComponent.WIDTH, EnemyComponent.HEIGHT);
 		BodyComponent body = new BodyComponent(
+			entity,
 			world, 
 			BodyType.DynamicBody, 
 			shape, 
@@ -265,7 +280,7 @@ public class GameWorld {
 		return entity;
 	}
 	
-	public void createEffectAttack(float attackX, float attackY, float angle) {
+	public void createPlayerAttack(float attackX, float attackY, float angle) {
 		
 		Entity entity = engine.createEntity();
 		
@@ -276,12 +291,15 @@ public class GameWorld {
 		EffectsComponent effect = new EffectsComponent(150);
 		
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(PlayerComponent.WIDTH / 2, PlayerComponent.HEIGHT / 2);
+		shape.setAsBox(2f * 0.35f, 2f * 0.35f);
 		BodyComponent body = new BodyComponent(
+			entity,
 			world, 
 			BodyType.DynamicBody, 
 			shape, 
-			new Vector3(attackX, attackY, 0f)
+			new Vector3(attackX, attackY, 0f),
+			BodyComponent.CATEGORY_PLAYER_ATTACK,
+			BodyComponent.MASK_PLAYER_ATTACK
 		);
 		body.body.setLinearDamping(1f);
 		body.body.setFixedRotation(true);
@@ -309,5 +327,12 @@ public class GameWorld {
 		     world.destroyBody(body);
 		}
 	}
-
+	
+	private void doAttack (Entity attack, Entity attacked) {
+		ComponentMapper<TransformComponent> ap = ComponentMapper.getFor(TransformComponent.class);
+		TransformComponent attackPos = ap.get(attack);
+		
+		EnemySystem enemySystem = engine.getSystem(EnemySystem.class);
+		enemySystem.takeDamage(attacked, attackPos.pos.x, attackPos.pos.y);
+	}
 }

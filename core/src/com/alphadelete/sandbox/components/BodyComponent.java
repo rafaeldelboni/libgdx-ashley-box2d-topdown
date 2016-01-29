@@ -1,6 +1,7 @@
 package com.alphadelete.sandbox.components;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -10,17 +11,23 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class BodyComponent implements Component {
     // Box2d CATEGORIES
-	public final static short CATEGORY_PLAYER = 0x0001;  // 0000000000000001 in binary
-    public final static short CATEGORY_MONSTER = 0x0002; // 0000000000000010 in binary
-    public final static short CATEGORY_SCENERY = 0x0004; // 0000000000000100 in binary
+	public final static short CATEGORY_PLAYER = 0x0001;
+    public final static short CATEGORY_MONSTER = 0x0002;
+    public final static short CATEGORY_SCENERY = 0x0004;
+    public final static short CATEGORY_ATTACK = 0x0008;
+    public final static short CATEGORY_PLAYER_ATTACK = 0x0016;
+    public final static short CATEGORY_MONSTER_ATTACK = 0x0032;
     // Box2d MASKS
     public final static short MASK_PLAYER = CATEGORY_MONSTER | CATEGORY_SCENERY; // or ~CATEGORY_PLAYER
     public final static short MASK_MONSTER = CATEGORY_PLAYER | CATEGORY_SCENERY; // or ~CATEGORY_MONSTER
+    public final static short MASK_ATTACK = CATEGORY_PLAYER | CATEGORY_MONSTER | CATEGORY_SCENERY;
+    public final static short MASK_PLAYER_ATTACK = CATEGORY_MONSTER | CATEGORY_SCENERY;
+    public final static short MASK_MONSTER_ATTACK = CATEGORY_PLAYER | CATEGORY_SCENERY;
     public final static short MASK_SCENERY = -1;
     
 	public Body body;
 	
-	public BodyComponent(World world, BodyDef.BodyType type, Shape shape, Vector3 pos, float density, float friction, float restitution, Boolean isSensor, short category, short mask) {
+	public BodyComponent(Entity entity, World world, BodyDef.BodyType type, Shape shape, Vector3 pos, float density, float friction, float restitution, Boolean isSensor, short category, short mask) {
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = type;
 		bodyDef.position.set(pos.x, pos.y);
@@ -36,10 +43,14 @@ public class BodyComponent implements Component {
 		fixtureDef.filter.categoryBits = category; 
 		fixtureDef.filter.maskBits = mask;
 		
+		body.setLinearDamping(1f);
+		body.setFixedRotation(true);
+		body.setUserData(entity);
+		
 		body.createFixture(fixtureDef);
 	}
 	
-	public BodyComponent(World world, BodyDef.BodyType type, Shape shape, Vector3 pos) {
+	public BodyComponent(Entity entity, World world, BodyDef.BodyType type, Shape shape, Vector3 pos, short category, short mask) {
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = type;
 		bodyDef.position.set(pos.x, pos.y);
@@ -52,6 +63,12 @@ public class BodyComponent implements Component {
 		fixtureDef.density = 0f;
 		fixtureDef.restitution = 0f;
 		fixtureDef.isSensor = true; 
+		fixtureDef.filter.categoryBits = category; 
+		fixtureDef.filter.maskBits = mask;
+		
+		body.setLinearDamping(1f);
+		body.setFixedRotation(true);
+		body.setUserData(entity);
 		
 		body.createFixture(fixtureDef);
 	}

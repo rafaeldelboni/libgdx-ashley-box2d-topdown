@@ -55,7 +55,7 @@ public class PlayerSystem extends IteratingSystem {
 		Vector2 playerPos = t.getPosition();
 		
 		// Target position and angle	
-		Vector2 relativeTarget = Vector2DUtils.getPointInBetweenByLen(playerPos, targetPos, 1.5f);
+		Vector2 relativeTarget = Vector2DUtils.getPointInBetweenByLen(playerPos, targetPos, 1f);
 		float angle = Vector2DUtils.getAngleInBetween(playerPos, targetPos);
 		
 		if (player.isAttacking) {
@@ -68,28 +68,12 @@ public class PlayerSystem extends IteratingSystem {
 
 			// Move towards the attack, if stopped
 			if(!player.getPlayerIsMoving()) {
-				Vector2 att = targetPos.cpy().sub(playerPos);
-				
-				if (att.x < -1 || att.x > 1) {
-					if (att.x < 0) {
-						player.accel.x = 5f;
-					}
-					if (att.x > 0) {
-						player.accel.x = -5f;
-					}
-				}
-				if (att.y < -1 || att.y > 1) {
-					if (att.y < 0) {
-						player.accel.y = 5f;
-					}
-					if (att.y > 0) {
-						player.accel.y = -5f;
-					}
-				}
+				Vector2 att = targetPos.cpy().sub(playerPos).nor().scl(-10f);
+				player.accel = att;
 			}
 			
 			// Attack effect
-			gameWorld.createEffectAttack(relativeTarget.x, relativeTarget.y, angle);
+			gameWorld.createPlayerAttack(relativeTarget.x, relativeTarget.y, angle);
 		}
 		
 		// Move
