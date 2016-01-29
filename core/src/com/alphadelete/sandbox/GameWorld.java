@@ -1,6 +1,7 @@
 package com.alphadelete.sandbox;
 
 import com.alphadelete.sandbox.components.AnimationComponent;
+import com.alphadelete.sandbox.components.AttackComponent;
 import com.alphadelete.sandbox.components.BackgroundComponent;
 import com.alphadelete.sandbox.components.BodyComponent;
 import com.alphadelete.sandbox.components.CameraComponent;
@@ -18,7 +19,6 @@ import com.alphadelete.sandbox.systems.RenderingSystem;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -234,7 +234,7 @@ public class GameWorld {
 		Entity entity = engine.createEntity();
 
 		AnimationComponent animation = engine.createComponent(AnimationComponent.class);
-		EnemyComponent player = engine.createComponent(EnemyComponent.class);
+		EnemyComponent enemy = engine.createComponent(EnemyComponent.class);
 		MovementComponent movement = engine.createComponent(MovementComponent.class);
 		TransformComponent position = engine.createComponent(TransformComponent.class);
 		StateComponent state = engine.createComponent(StateComponent.class);
@@ -257,11 +257,13 @@ public class GameWorld {
 		body.body.setFixedRotation(true);
 		body.body.setUserData(entity);
 		shape.dispose();
-
-		animation.animations.put(EnemyComponent.STATE_WALK, Assets.goblinWalkAnimation);
-		animation.animations.put(EnemyComponent.STATE_HIT, Assets.goblinIdleAnimation);
+		
 		animation.animations.put(EnemyComponent.STATE_IDLE, Assets.goblinIdleAnimation);
+		animation.animations.put(EnemyComponent.STATE_WALK, Assets.goblinWalkAnimation);
+		animation.animations.put(EnemyComponent.STATE_DIE, Assets.goblinDieAnimation);
 
+		enemy.health = 3;
+		
 		position.setPosition(body.body.getPosition().x, body.body.getPosition().y);
 
 		state.set(EnemyComponent.STATE_IDLE);
@@ -269,7 +271,7 @@ public class GameWorld {
 		
 		entity.add(body);
 		entity.add(animation);
-		entity.add(player);
+		entity.add(enemy);
 		entity.add(movement);
 		entity.add(position);
 		entity.add(state);
@@ -289,6 +291,7 @@ public class GameWorld {
 		TransformComponent position = engine.createComponent(TransformComponent.class);
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
 		EffectsComponent effect = new EffectsComponent(150);
+		AttackComponent attack = new AttackComponent(1);
 		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(2f * 0.35f, 2f * 0.35f);
@@ -318,6 +321,7 @@ public class GameWorld {
 		entity.add(position);
 		entity.add(texture);
 		entity.add(effect);
+		entity.add(attack);
 		
 		engine.addEntity(entity);	
 	}
@@ -330,9 +334,11 @@ public class GameWorld {
 	
 	private void doAttack (Entity attack, Entity attacked) {
 		ComponentMapper<TransformComponent> ap = ComponentMapper.getFor(TransformComponent.class);
+		ComponentMapper<AttackComponent> aa = ComponentMapper.getFor(AttackComponent.class);
 		TransformComponent attackPos = ap.get(attack);
+		AttackComponent attackCom = aa.get(attack);
 		
 		EnemySystem enemySystem = engine.getSystem(EnemySystem.class);
-		enemySystem.takeDamage(attacked, attackPos.pos.x, attackPos.pos.y);
+		enemySystem.takeDamage(attacked, attackPos.pos.x, attackPos.pos.y, attackCom.damage);
 	}
 }

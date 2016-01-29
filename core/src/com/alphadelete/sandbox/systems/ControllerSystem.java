@@ -44,17 +44,20 @@ public class ControllerSystem extends IteratingSystem {
 		this.target = new Vector2(targetPos.x, targetPos.y);
 		
 		float accelX = 0.0f, accelY = 0.0f;
-
-		if (inputCtrl.isKeyPressed(Keys.DPAD_LEFT)) {
+		// Left
+		if (inputCtrl.isKeyPressed(Keys.A)) {
 			accelX = 5f;
 		}
-		if (inputCtrl.isKeyPressed(Keys.DPAD_RIGHT)) {
+		// Right
+		if (inputCtrl.isKeyPressed(Keys.D)) {
 			accelX = -5f;
 		}
-		if (inputCtrl.isKeyPressed(Keys.DPAD_DOWN)) {
+		// Down
+		if (inputCtrl.isKeyPressed(Keys.S)) {
 			accelY = 5f;
 		}
-		if (inputCtrl.isKeyPressed(Keys.DPAD_UP)) {
+		// Up
+		if (inputCtrl.isKeyPressed(Keys.W)) {
 			accelY = -5f;
 		}
 

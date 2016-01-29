@@ -28,6 +28,7 @@ public class Assets {
 	public static Animation warriorWalkAnimation;
 	public static Animation goblinIdleAnimation;
 	public static Animation goblinWalkAnimation;
+	public static Animation goblinDieAnimation;
 	public static Animation attackEffect;
 	public static TextureRegion dungeonWall1;
 	public static TextureRegion warriorWeapon1;
@@ -81,6 +82,7 @@ public class Assets {
 	private static void loadGoblin () {
 		goblinIdleAnimation = Assets.loadAtlasAnimations("goblin-idle-1", Assets.goblinAtlas, PlayMode.LOOP, new Vector2(32,32));
 		goblinWalkAnimation = Assets.loadAtlasAnimations("goblin-walk", Assets.goblinAtlas, PlayMode.LOOP, new Vector2(32,32));
+		goblinDieAnimation = Assets.loadAtlasAnimations("goblin-dying", Assets.goblinAtlas, PlayMode.NORMAL, new Vector2(32,32));
 	}
 	
 	private static void loadDungeon () {
