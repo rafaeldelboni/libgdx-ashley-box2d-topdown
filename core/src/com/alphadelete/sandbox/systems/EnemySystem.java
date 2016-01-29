@@ -2,6 +2,7 @@ package com.alphadelete.sandbox.systems;
 
 import com.alphadelete.sandbox.Constants;
 import com.alphadelete.sandbox.GameWorld;
+import com.alphadelete.sandbox.components.BodyComponent;
 import com.alphadelete.sandbox.components.EnemyComponent;
 import com.alphadelete.sandbox.components.MovementComponent;
 import com.alphadelete.sandbox.components.PlayerComponent;
@@ -14,6 +15,8 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
 
 public class EnemySystem extends IteratingSystem {
 	@SuppressWarnings("unchecked")
@@ -60,11 +63,10 @@ public class EnemySystem extends IteratingSystem {
 		} else {
 			if (enemy.knockbackTimeMillis > 0){
 				enemy.knockbackTimeMillis -= deltaTime * 1000;
-			} else {
-				enemy.accel.x = 0.0f;
-				enemy.accel.y = 0.0f;
 			}
-
+			
+			searchPlayer(entity);
+			
 			// Copy Vectors
 			Vector2 targetPos = enemy.target.cpy();
 			Vector2 enemyPos = t.getPosition();
@@ -96,8 +98,9 @@ public class EnemySystem extends IteratingSystem {
 			}
 			t.scale.x = Math.abs(t.scale.x) * enemy.scaleSide;
 			
-			// Search for player
-			searchPlayer(entity);
+			// Stop acceleration
+			enemy.accel.x = 0.0f;
+			enemy.accel.y = 0.0f;
 		}
 
 	}
@@ -121,9 +124,13 @@ public class EnemySystem extends IteratingSystem {
 		enemy.knockbackTimeMillis = 250;
 	}
 	
+	private Fixture rayCastFixture;
 	private void searchPlayer(Entity enemy) {
 		@SuppressWarnings("unchecked")
 		ImmutableArray<Entity> players = gameWorld.getEngine().getEntitiesFor(Family.all(PlayerComponent.class, TransformComponent.class, StateComponent.class).get());
+		
+		this.rayCastFixture = null;
+		
 		for (int i = 0; i < players.size(); ++i) {
 			Entity player = players.get(i);
 			TransformComponent playerPos = tm.get(player);
@@ -131,8 +138,35 @@ public class EnemySystem extends IteratingSystem {
 			
 			Vector2 playerPos2d = new Vector2 (playerPos.pos.x, playerPos.pos.y);
 			Vector2 enemyPos2d = new Vector2 (enemyPos.pos.x, enemyPos.pos.y);
-			
-			Gdx.app.debug("Player Distance", String.valueOf(enemyPos2d.dst2(playerPos2d)));
+
+			if(enemyPos2d.dst2(playerPos2d) < 30f) {
+				
+				RayCastCallback callbackFirstBody = new RayCastCallback(){
+					
+					float _fraction = 1;
+					@Override
+					public float reportRayFixture (Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+						if(fraction <= _fraction) {
+							_fraction = fraction;
+							rayCastFixture = fixture;
+						}
+						return _fraction;
+					}
+				};
+				
+				gameWorld.getWorld().rayCast(callbackFirstBody, enemyPos2d, playerPos2d);
+				
+				if(rayCastFixture != null && rayCastFixture.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER) {
+					
+					Vector2 att = enemyPos2d.cpy().sub(playerPos2d).nor().scl(2f);
+					EnemyComponent enemyComp = bm.get(enemy);
+					enemyComp.accel = att;
+					//enemyComp.target = playerPos2d;
+					
+					Gdx.app.debug("Accel", att.toString());
+				}
+				
+			}
 		}
 	}
 

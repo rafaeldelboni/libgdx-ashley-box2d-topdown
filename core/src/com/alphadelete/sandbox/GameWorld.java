@@ -56,6 +56,10 @@ public class GameWorld {
 		return this.engine;
 	}
 	
+	public World getWorld() {
+		return this.world;
+	}
+	
 	public void create() {
 		
 		 world.setContactListener(new ContactListener() {

@@ -60,6 +60,8 @@ public class RenderingSystem extends IteratingSystem {
 		debugRenderer = new Box2DDebugRenderer();
         debugRenderer.setDrawVelocities(true);
         debugRenderer.setDrawBodies(true);
+        debugRenderer.setDrawJoints(true);
+        debugRenderer.setDrawContacts(true);
 	}
 
 	@Override
