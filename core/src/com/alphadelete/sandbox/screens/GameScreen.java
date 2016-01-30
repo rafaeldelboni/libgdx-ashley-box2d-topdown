@@ -93,8 +93,6 @@ public class GameScreen extends ScreenAdapter {
 			deltaTime = 0.1f;
 
 		engine.update(deltaTime);
-		world.step(deltaTime,6,2);
-		world.clearForces();
 		
 		switch (state) {
 		case Constants.GAME_RUNNING:
@@ -114,6 +112,9 @@ public class GameScreen extends ScreenAdapter {
 	}
 
 	private void updateRunning(float deltaTime) {
+		world.step(deltaTime,6,2);
+		world.clearForces();
+		
 		boolean isAttacking = false;
 		Vector3 targetPos = new Vector3();
 		
@@ -133,10 +134,12 @@ public class GameScreen extends ScreenAdapter {
 		}
 
 		engine.getSystem(ControllerSystem.class).setControls(Gdx.input, isAttacking, targetPos);
-		
 	}
 
 	private void updatePaused() {
+
+		world.clearForces();
+		
 		if (Gdx.input.justTouched()) {
 			guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
 

@@ -39,7 +39,7 @@ public class MovementSystem extends IteratingSystem {
 			tmp.set(mov.velocity).scl(deltaTime);
 			body.body.setLinearVelocity(tmp.x, tmp.y);		
 			
-			pos.setPosition(body.body.getPosition().x, body.body.getPosition().y + Box2DUtils.getHeight(body.body) / 2f);
+			pos.setPosition(body.body.getPosition().x, body.body.getPosition().y + Box2DUtils.getHeight(body.body) / 2f, pos.pos.z);
 
 		} else {
 			tmp.set(mov.accel).scl(deltaTime);

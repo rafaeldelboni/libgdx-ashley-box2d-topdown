@@ -13,7 +13,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
@@ -25,10 +24,11 @@ public class EnemySystem extends IteratingSystem {
 													   TransformComponent.class,
 													   MovementComponent.class).get();
 
-	private ComponentMapper<EnemyComponent> bm;
+	private ComponentMapper<EnemyComponent> em;
 	private ComponentMapper<StateComponent> sm;
 	private ComponentMapper<TransformComponent> tm;
 	private ComponentMapper<MovementComponent> mm;
+	private ComponentMapper<BodyComponent> bm;
 	
 	private GameWorld gameWorld;
 	
@@ -37,10 +37,11 @@ public class EnemySystem extends IteratingSystem {
 		
 		this.gameWorld = gameWorld;
 				
-		bm = ComponentMapper.getFor(EnemyComponent.class);
+		em = ComponentMapper.getFor(EnemyComponent.class);
 		sm = ComponentMapper.getFor(StateComponent.class);
 		tm = ComponentMapper.getFor(TransformComponent.class);
 		mm = ComponentMapper.getFor(MovementComponent.class);
+		bm = ComponentMapper.getFor(BodyComponent.class);
 	}
 	
 	@Override
@@ -50,31 +51,31 @@ public class EnemySystem extends IteratingSystem {
 	
 	@Override
 	public void processEntity(Entity entity, float deltaTime) {
-		EnemyComponent enemy = bm.get(entity);
+		EnemyComponent enemy = em.get(entity);
 		TransformComponent t = tm.get(entity);
 		StateComponent state = sm.get(entity);
 		MovementComponent mov = mm.get(entity);
-
+		
+		if (enemy.knockbackTimeMillis >= 0){
+			enemy.knockbackTimeMillis -= deltaTime * 1000;
+		} else if (enemy.knockbackTimeMillis < 0){
+			// Stop knock back
+			enemy.knockbackTimeMillis = 0;
+			// Stop acceleration
+			enemy.accel.setZero();
+		}
+		
 		if (enemy.health < 1)
 		{
 			if (state.get() != EnemyComponent.STATE_DIE) {
 				state.set(EnemyComponent.STATE_DIE);
 			}
-		} else {
-			if (enemy.knockbackTimeMillis > 0){
-				enemy.knockbackTimeMillis -= deltaTime * 1000;
-			}
 			
+		} else {
+			
+			// Search for player
 			searchPlayer(entity);
 			
-			// Copy Vectors
-			Vector2 targetPos = enemy.target.cpy();
-			Vector2 enemyPos = t.getPosition();
-			
-			// Move
-			mov.velocity.x = -enemy.accel.x * EnemyComponent.MOVE_VELOCITY;
-			mov.velocity.y = -enemy.accel.y * EnemyComponent.MOVE_VELOCITY;
-		
 			// State: Idle or Walk 
 			if (state.get() != EnemyComponent.STATE_WALK && (mov.velocity.y != 0 || mov.velocity.x != 0) ) {
 				state.set(EnemyComponent.STATE_WALK);
@@ -82,26 +83,28 @@ public class EnemySystem extends IteratingSystem {
 			if (state.get() != EnemyComponent.STATE_IDLE && mov.velocity.y == 0 && mov.velocity.x == 0 ) {
 				state.set(EnemyComponent.STATE_IDLE);
 			}
-		
-			
-			// Sprite side (scale)
-			Vector2 side = targetPos.cpy().sub(enemyPos);
-			if (enemy.accel.x < 0) {
-				enemy.scaleSide = Constants.SCALE_LEFT;
-			} else {
-				enemy.scaleSide = Constants.SCALE_RIGHT;
-			}
-			if (side.x > 0){
-				enemy.scaleSide = Constants.SCALE_LEFT;
-			} else {
-				enemy.scaleSide = Constants.SCALE_RIGHT;
-			}
-			t.scale.x = Math.abs(t.scale.x) * enemy.scaleSide;
-			
-			// Stop acceleration
-			enemy.accel.x = 0.0f;
-			enemy.accel.y = 0.0f;
 		}
+		// Copy Vectors
+		Vector2 targetPos = enemy.target.cpy();
+		Vector2 enemyPos = t.getPosition();
+		
+		// Move
+		mov.velocity.x = -enemy.accel.x * EnemyComponent.MOVE_VELOCITY;
+		mov.velocity.y = -enemy.accel.y * EnemyComponent.MOVE_VELOCITY;
+
+		// Sprite side (scale)
+		Vector2 side = targetPos.cpy().sub(enemyPos);
+		if (enemy.accel.x < 0) {
+			enemy.scaleSide = Constants.SCALE_LEFT;
+		} else {
+			enemy.scaleSide = Constants.SCALE_RIGHT;
+		}
+		if (side.x > 0){
+			enemy.scaleSide = Constants.SCALE_LEFT;
+		} else {
+			enemy.scaleSide = Constants.SCALE_RIGHT;
+		}
+		t.scale.x = Math.abs(t.scale.x) * enemy.scaleSide;
 
 	}
 	public void takeDamage(Entity entity, float attackX, float attackY, float damage){
@@ -110,15 +113,15 @@ public class EnemySystem extends IteratingSystem {
 	public void takeDamage(Entity entity, Vector2 attackPos, float damage) {
 		if (!family.matches(entity)) return;
 
-		EnemyComponent enemy = bm.get(entity);
+		EnemyComponent enemy = em.get(entity);
 		TransformComponent t = tm.get(entity);
-		
+
 		Vector2 enemyPos = t.getPosition();
 		
 		// Knock back
-		Vector2 att = attackPos.cpy().sub(enemyPos).nor().scl(5f);
+		Vector2 att = attackPos.cpy().sub(enemyPos).nor().scl(10f);
 		enemy.accel = att;
-
+				
 		enemy.health -= damage; 
 		
 		enemy.knockbackTimeMillis = 250;
@@ -129,16 +132,14 @@ public class EnemySystem extends IteratingSystem {
 		@SuppressWarnings("unchecked")
 		ImmutableArray<Entity> players = gameWorld.getEngine().getEntitiesFor(Family.all(PlayerComponent.class, TransformComponent.class, StateComponent.class).get());
 		
-		this.rayCastFixture = null;
-		
 		for (int i = 0; i < players.size(); ++i) {
 			Entity player = players.get(i);
-			TransformComponent playerPos = tm.get(player);
-			TransformComponent enemyPos = tm.get(enemy);
+			BodyComponent playerPos = bm.get(player);
+			BodyComponent enemyPos = bm.get(enemy);
 			
-			Vector2 playerPos2d = new Vector2 (playerPos.pos.x, playerPos.pos.y);
-			Vector2 enemyPos2d = new Vector2 (enemyPos.pos.x, enemyPos.pos.y);
-
+			Vector2 playerPos2d = playerPos.body.getPosition().cpy();
+			Vector2 enemyPos2d = enemyPos.body.getPosition().cpy();
+					
 			if(enemyPos2d.dst2(playerPos2d) < 30f) {
 				
 				RayCastCallback callbackFirstBody = new RayCastCallback(){
@@ -146,6 +147,9 @@ public class EnemySystem extends IteratingSystem {
 					float _fraction = 1;
 					@Override
 					public float reportRayFixture (Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+						if(fixture.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER_ATTACK)
+							  return 1;
+						
 						if(fraction <= _fraction) {
 							_fraction = fraction;
 							rayCastFixture = fixture;
@@ -155,15 +159,16 @@ public class EnemySystem extends IteratingSystem {
 				};
 				
 				gameWorld.getWorld().rayCast(callbackFirstBody, enemyPos2d, playerPos2d);
-				
 				if(rayCastFixture != null && rayCastFixture.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER) {
 					
 					Vector2 att = enemyPos2d.cpy().sub(playerPos2d).nor().scl(2f);
-					EnemyComponent enemyComp = bm.get(enemy);
-					enemyComp.accel = att;
-					//enemyComp.target = playerPos2d;
+					EnemyComponent enemyComp = em.get(enemy);
 					
-					Gdx.app.debug("Accel", att.toString());
+					if(enemyComp.knockbackTimeMillis == 0)
+						enemyComp.accel = att;
+					
+					enemyComp.target = playerPos2d;
+
 				}
 				
 			}

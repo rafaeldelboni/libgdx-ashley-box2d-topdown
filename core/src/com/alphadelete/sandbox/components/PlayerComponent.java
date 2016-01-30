@@ -17,7 +17,7 @@ public class PlayerComponent implements Component {
 	public Vector2 accel = new Vector2(0,0);
 	public Vector2 target = new Vector2();
 	public Boolean isAttacking = false;
-	public float attackStance = 0f;
+	public float attackStance = 0.5f;
 	
 	public Boolean getPlayerIsMoving() {
 		if (this.accel.x == 0f && this.accel.y == 0f) {

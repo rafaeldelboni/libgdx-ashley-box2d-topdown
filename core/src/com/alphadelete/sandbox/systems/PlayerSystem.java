@@ -60,10 +60,10 @@ public class PlayerSystem extends IteratingSystem {
 		
 		if (player.isAttacking) {
 			
-			if(player.attackStance == 0) {
+			if(player.attackStance == 0.5f) {
 				player.attackStance = 1f;
 			} else {
-				player.attackStance = 0;
+				player.attackStance = 0.5f;
 			}
 
 			// Move towards the attack, if stopped
@@ -100,7 +100,6 @@ public class PlayerSystem extends IteratingSystem {
 		} else {
 			player.scaleSide = Constants.SCALE_RIGHT;
 		}
-	
 		t.scale.x = Math.abs(t.scale.x) * player.scaleSide;
 
 	}

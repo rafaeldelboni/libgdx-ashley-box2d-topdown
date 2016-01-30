@@ -20,6 +20,14 @@ public class TransformComponent implements Component {
 		this.pos.y = pos.y;
 	}
 	
+	public void setPosition(float x, float y, float z){
+		setPosition(new Vector3(x, y, z));
+	}
+	
+	public void setPosition(Vector3 pos){
+		this.pos.set(pos);
+	}
+	
 	public void setOrigin(float x, float y){
 		setOrigin(new Vector2 (x,y));
 	}

@@ -108,6 +108,7 @@ public class GameWorld {
 		createWall(7.0f, 1.0f);
 		
 		createEnemy(10, 2);
+		createEnemy(15, 2);
 		
 		this.score = 0;
 		this.state = WORLD_STATE_RUNNING;
@@ -125,7 +126,7 @@ public class GameWorld {
 		
 		WeaponComponent weapon = new WeaponComponent(
 			engine, 
-			new Vector3(startPosition.x, startPosition.y, -4f), 
+			new Vector3(startPosition.x, startPosition.y, 0f), 
 			Assets.warriorWeapon1, 
 			WeaponComponent.TYPE_PLAYER
 		);
@@ -149,7 +150,7 @@ public class GameWorld {
 		animation.animations.put(PlayerComponent.STATE_HIT, Assets.warriorIdleAnimation);
 		animation.animations.put(PlayerComponent.STATE_IDLE, Assets.warriorIdleAnimation);
 
-		position.setPosition(body.body.getPosition().x, body.body.getPosition().y);
+		position.setPosition(body.body.getPosition().x, body.body.getPosition().y, 1f);
 
 		state.set(PlayerComponent.STATE_IDLE);
 		state.frameRate = 0.1f;
@@ -222,7 +223,7 @@ public class GameWorld {
 		body.body.setUserData(entity);
 		shape.dispose();
 		
-		position.pos.set(x, y, 2.0f);
+		position.pos.set(x, y, 3.0f);
 
 		texture.region = Assets.dungeonWall1;
 		
@@ -268,7 +269,7 @@ public class GameWorld {
 
 		enemy.health = 3;
 		
-		position.setPosition(body.body.getPosition().x, body.body.getPosition().y);
+		position.setPosition(body.body.getPosition().x, body.body.getPosition().y, 2);
 
 		state.set(EnemyComponent.STATE_IDLE);
 		state.frameRate = 0.1f;
