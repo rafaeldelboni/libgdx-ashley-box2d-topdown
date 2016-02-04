@@ -77,6 +77,10 @@ public class PlayerSystem extends IteratingSystem {
 		}
 		
 		// Move
+		if (player.accel.x != 0 && player.accel.y != 0) {
+			// Scale accel for diagonal movement
+			player.accel.scl(0.75f);
+		}
 		mov.velocity.x = -player.accel.x * PlayerComponent.MOVE_VELOCITY;
 		mov.velocity.y = -player.accel.y * PlayerComponent.MOVE_VELOCITY;
 	

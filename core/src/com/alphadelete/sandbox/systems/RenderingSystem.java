@@ -49,8 +49,8 @@ public class RenderingSystem extends IteratingSystem {
 		
 		this.batch = batch;
 		
-		float meterCamX = Constants.APP_WIDTH * Constants.PIXELS_TO_METRES;
-		float meterCamy = Constants.APP_HEIGHT * Constants.PIXELS_TO_METRES;
+		float meterCamX = Constants.APP_WIDTH * Constants.PIXELS_TO_METRES / 2;
+		float meterCamy = Constants.APP_HEIGHT * Constants.PIXELS_TO_METRES / 2;
 		
 		cam = new OrthographicCamera(meterCamX, meterCamy);
 		cam.position.set(meterCamX, meterCamy, 0);
@@ -94,7 +94,7 @@ public class RenderingSystem extends IteratingSystem {
 							t.pos.x - t.origin.x, t.pos.y - t.origin.y,
 							t.origin.x, t.origin.y,
 							width, height,
-							t.scale.x * 2 * Constants.PIXELS_TO_METRES, t.scale.y * 2 * Constants.PIXELS_TO_METRES,
+							t.scale.x * Constants.PIXELS_TO_METRES, t.scale.y * Constants.PIXELS_TO_METRES,
 							MathUtils.radiansToDegrees * t.rotation);
 			// else get the middle point in texture
 			} else {
@@ -102,7 +102,7 @@ public class RenderingSystem extends IteratingSystem {
 							t.pos.x - originX, t.pos.y - originY,
 							originX, originY,
 							width, height,
-							t.scale.x * 2 * Constants.PIXELS_TO_METRES, t.scale.y * 2 * Constants.PIXELS_TO_METRES,
+							t.scale.x * Constants.PIXELS_TO_METRES, t.scale.y * Constants.PIXELS_TO_METRES,
 							MathUtils.radiansToDegrees * t.rotation);
 			}	
 

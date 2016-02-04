@@ -11,7 +11,7 @@ public class PlayerComponent implements Component {
 	public static final float JUMP_VELOCITY = 11;
 	public static final float MOVE_VELOCITY = 50;
 	public static final float WIDTH = 1f;
-	public static final float HEIGHT = 1f;
+	public static final float HEIGHT = 2f;
 	
 	public float scaleSide = Constants.SCALE_RIGHT;
 	public Vector2 accel = new Vector2(0,0);

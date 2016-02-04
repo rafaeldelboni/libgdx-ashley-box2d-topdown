@@ -42,8 +42,6 @@ public class GameWorld {
 	public int score;
 	public int state;
 
-	private Vector3 startPosition = new Vector3(5.0f, 1.0f, 0.0f);
-
 	private PooledEngine engine;
 	private World world;
 
@@ -100,21 +98,22 @@ public class GameWorld {
 	        }
 		 );
 		 
-		Entity player = createPlayer();
+		Entity player = createPlayer(0, 0);
 		createCamera(player);
 		createBackground();
 
-		createWall(6.0f, 1.0f);
-		createWall(7.0f, 1.0f);
+		createWall(2f, 0.0f);
+		createWall(3f, 0.0f);
+		createWall(4f, 0.0f);
 		
-		createEnemy(10, 2);
-		createEnemy(15, 2);
+		createEnemy(12, 2);
+		createEnemy(14, 2);
 		
 		this.score = 0;
 		this.state = WORLD_STATE_RUNNING;
 	}
 
-	private Entity createPlayer() {
+	private Entity createPlayer(float x, float y) {
 		Entity entity = engine.createEntity();
 
 		AnimationComponent animation = engine.createComponent(AnimationComponent.class);
@@ -126,19 +125,19 @@ public class GameWorld {
 		
 		WeaponComponent weapon = new WeaponComponent(
 			engine, 
-			new Vector3(startPosition.x, startPosition.y, 0f), 
+			new Vector3(x, y, 0f), 
 			Assets.warriorWeapon1, 
 			WeaponComponent.TYPE_PLAYER
 		);
 		
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(PlayerComponent.WIDTH / 2, PlayerComponent.HEIGHT / 2);
+		shape.setAsBox(PlayerComponent.WIDTH / 2, PlayerComponent.HEIGHT / 4);
 		BodyComponent body = new BodyComponent(
 			entity,
 			world, 
 			BodyType.DynamicBody, 
 			shape, 
-			startPosition, 
+			new Vector3 (x, y , 1), 
 			9f, 0.5f, 0.5f, 
 			false,
 			BodyComponent.CATEGORY_PLAYER,
@@ -174,7 +173,7 @@ public class GameWorld {
 
 		CameraComponent camera = new CameraComponent();
 		camera.camera = engine.getSystem(RenderingSystem.class).getCamera();
-		camera.camera.position.set(startPosition);
+		camera.camera.position.set(new Vector3 (0, 0 , 0));
 		camera.target = target;
 
 		entity.add(camera);
@@ -206,13 +205,13 @@ public class GameWorld {
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
 
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(WallComponent.WIDTH, WallComponent.HEIGHT);
+		shape.setAsBox(WallComponent.WIDTH / 2, WallComponent.HEIGHT / 2);
 		BodyComponent body = new BodyComponent(
 			entity,
 			world, 
 			BodyType.StaticBody, 
 			shape, 
-			startPosition, 
+			new Vector3(x, y, 0f), 
 			9f, 0.5f, 0.5f, 
 			false,
 			BodyComponent.CATEGORY_SCENERY,
@@ -246,13 +245,13 @@ public class GameWorld {
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
 		
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(EnemyComponent.WIDTH, EnemyComponent.HEIGHT);
+		shape.setAsBox(EnemyComponent.WIDTH / 2, EnemyComponent.HEIGHT / 2);
 		BodyComponent body = new BodyComponent(
 			entity,
 			world, 
 			BodyType.DynamicBody, 
 			shape, 
-			new Vector3(x,y,0), 
+			new Vector3(x,y,2), 
 			9f, 0.5f, 0.5f, 
 			false,
 			BodyComponent.CATEGORY_MONSTER,

@@ -89,6 +89,10 @@ public class EnemySystem extends IteratingSystem {
 		Vector2 enemyPos = t.getPosition();
 		
 		// Move
+		if (enemy.accel.x != 0 && enemy.accel.y != 0) {
+			// Scale accel for diagonal movement
+			enemy.accel.scl(0.75f);
+		}
 		mov.velocity.x = -enemy.accel.x * EnemyComponent.MOVE_VELOCITY;
 		mov.velocity.y = -enemy.accel.y * EnemyComponent.MOVE_VELOCITY;
 
