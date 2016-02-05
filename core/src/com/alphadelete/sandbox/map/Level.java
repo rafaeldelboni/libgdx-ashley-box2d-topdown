@@ -40,7 +40,7 @@ public class Level {
 		placeRooms();
 		placeCorridors();
 		placeWallRooms();
-		
+		placeWallCorridors();
 		return this.tileMap;
 	}
 	
@@ -171,28 +171,16 @@ public class Level {
 	private void placeWallRooms() {
 		for(Entry<Point2D, TileType> map : this.tileMap.entries()) {
 
-			if (map.value == TileType.Floor) {
+			if (map.value == TileType.Floor ) {
 				
 				Point2D leftWall = map.key.add(-1,0);
 				if (getTileValue(leftWall) == TileType.None) {
-					if (getTileValue(map.key.add(0,-1)) == TileType.Floor || 
-							getTileValue(map.key.add(0,-1)) == TileType.Corridor) {
-						this.tileMap.setValue(this.tileMap.indexOfKey(map.key), TileType.WallCornerLeft);
-						this.tileMap.setValue(this.tileMap.indexOfKey(map.key.add(0,+1)), TileType.WallCornerLeftUp);
-					} else {
-						this.tileMap.setValue(this.tileMap.indexOfKey(map.key), TileType.WallLeft);
-					}
+					this.tileMap.setValue(this.tileMap.indexOfKey(leftWall), TileType.WallLeft);
 				}
 			
 				Point2D rightWall = map.key.add(+1,0);
 				if (getTileValue(rightWall) == TileType.None) {
-					if (getTileValue(map.key.add(0,-1)) == TileType.Floor || 
-							getTileValue(map.key.add(0,-1)) == TileType.Corridor) {
-						this.tileMap.setValue(this.tileMap.indexOfKey(map.key), TileType.WallCornerRight);
-						this.tileMap.setValue(this.tileMap.indexOfKey(map.key.add(0,+1)), TileType.WallCornerRightUp);
-					} else {
-						this.tileMap.setValue(this.tileMap.indexOfKey(map.key), TileType.WallRight);
-					}
+					this.tileMap.setValue(this.tileMap.indexOfKey(rightWall), TileType.WallRight);
 				}
 
 				Point2D downWall = map.key.add(0,-1);
@@ -201,12 +189,42 @@ public class Level {
 				}
 
 				Point2D upWallCheck = map.key.add(0,+1);
-				Point2D upWall = map.key.add(0,-1);
 				if (getTileValue(upWallCheck) == TileType.None && 
 						getTileValue(map.key) != TileType.WallLeft &&
 							getTileValue(map.key) != TileType.WallRight ) {
-					this.tileMap.setValue(this.tileMap.indexOfKey(upWall), TileType.WallUp);
-					this.tileMap.setValue(this.tileMap.indexOfKey(map.key), TileType.WallUp2);
+					this.tileMap.setValue(this.tileMap.indexOfKey(map.key), TileType.WallUp);
+					this.tileMap.setValue(this.tileMap.indexOfKey(upWallCheck), TileType.WallUp2);
+				}
+			}
+		}
+	}
+	
+	private void placeWallCorridors() {
+		for(Entry<Point2D, TileType> map : this.tileMap.entries()) {
+
+			if (map.value == TileType.Corridor) {
+				
+				Point2D leftWall = map.key.add(-1,0);
+				if (getTileValue(leftWall) == TileType.None) {
+					this.tileMap.setValue(this.tileMap.indexOfKey(leftWall), TileType.WallLeft);
+				}
+			
+				Point2D rightWall = map.key.add(+1,0);
+				if (getTileValue(rightWall) == TileType.None) {
+					this.tileMap.setValue(this.tileMap.indexOfKey(rightWall), TileType.WallRight);
+				}
+
+				Point2D downWall = map.key.add(0,-1);
+				if (getTileValue(downWall) == TileType.None) {
+					this.tileMap.setValue(this.tileMap.indexOfKey(downWall), TileType.WallDown);
+				}
+
+				Point2D upWallCheck = map.key.add(0,+1);
+				if (getTileValue(upWallCheck) == TileType.None && 
+						getTileValue(map.key) != TileType.WallLeft &&
+							getTileValue(map.key) != TileType.WallRight ) {
+					this.tileMap.setValue(this.tileMap.indexOfKey(map.key), TileType.WallUp);
+					this.tileMap.setValue(this.tileMap.indexOfKey(upWallCheck), TileType.WallUp2);
 				}
 				
 			}

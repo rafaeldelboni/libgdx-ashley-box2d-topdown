@@ -30,6 +30,7 @@ public class Constants {
     public static final boolean GAME_DEBUG = true;
     
     public static final float CAMERA_SMOOTH = 2f;
+    public static final float CAMERA_ZOOM = 1f;
     
     public static final float SCALE_RIGHT = -1.0f;
     public static final float SCALE_LEFT = 1.0f;

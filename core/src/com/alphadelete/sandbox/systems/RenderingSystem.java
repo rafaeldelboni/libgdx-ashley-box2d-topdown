@@ -49,8 +49,8 @@ public class RenderingSystem extends IteratingSystem {
 		
 		this.batch = batch;
 		
-		float meterCamX = Constants.APP_WIDTH * Constants.PIXELS_TO_METRES / 2;
-		float meterCamy = Constants.APP_HEIGHT * Constants.PIXELS_TO_METRES / 2;
+		float meterCamX = Constants.APP_WIDTH * Constants.PIXELS_TO_METRES / Constants.CAMERA_ZOOM;
+		float meterCamy = Constants.APP_HEIGHT * Constants.PIXELS_TO_METRES / Constants.CAMERA_ZOOM;
 		
 		cam = new OrthographicCamera(meterCamX, meterCamy);
 		cam.position.set(meterCamX, meterCamy, 0);

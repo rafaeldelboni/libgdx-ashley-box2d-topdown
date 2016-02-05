@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 
 import javafx.geometry.Point2D;
 
@@ -106,8 +107,7 @@ public class GameWorld {
 	        }
 		 );
 		 
-		Entity player = createPlayer(0, 0);
-		createCamera(player);
+
 		createBackground();
 		
 		Level dungeon = new Level();
@@ -133,6 +133,14 @@ public class GameWorld {
 			}
 		}
 		
+		for(Entry<Point2D, TileType> map : tileMap.entries()) {
+			if (map.value == TileType.Floor ) {
+				Entity player = createPlayer(map.key.getX(), map.key.getY());
+				createCamera(player, map.key.getX(), map.key.getY());
+				break;
+			}
+		}
+		
 		createEnemy(12, 2);
 		createEnemy(14, 2);
 		
@@ -140,7 +148,7 @@ public class GameWorld {
 		this.state = WORLD_STATE_RUNNING;
 	}
 
-	private Entity createPlayer(float x, float y) {
+	private Entity createPlayer(double x, double y) {
 		Entity entity = engine.createEntity();
 
 		AnimationComponent animation = engine.createComponent(AnimationComponent.class);
@@ -152,19 +160,20 @@ public class GameWorld {
 		
 		WeaponComponent weapon = new WeaponComponent(
 			engine, 
-			new Vector3(x, y, 0f), 
+			new Vector3((float)x, (float)y, 0f), 
 			Assets.warriorWeapon1, 
 			WeaponComponent.TYPE_PLAYER
 		);
 		
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(PlayerComponent.WIDTH / 2, PlayerComponent.HEIGHT / 4);
+		
+		CircleShape shape = new CircleShape();
+		shape.setRadius(PlayerComponent.WIDTH / 2);
 		BodyComponent body = new BodyComponent(
 			entity,
 			world, 
 			BodyType.DynamicBody, 
 			shape, 
-			new Vector3 (x, y , 1), 
+			new Vector3 ((float)x, (float)y , 1), 
 			9f, 0.5f, 0.5f, 
 			false,
 			BodyComponent.CATEGORY_PLAYER,
@@ -195,12 +204,12 @@ public class GameWorld {
 		return entity;
 	}
 
-	private void createCamera(Entity target) {
+	private void createCamera(Entity target, double x, double y) {
 		Entity entity = engine.createEntity();
 
 		CameraComponent camera = new CameraComponent();
 		camera.camera = engine.getSystem(RenderingSystem.class).getCamera();
-		camera.camera.position.set(new Vector3 (0, 0 , 0));
+		camera.camera.position.set(new Vector3 ((float)x, (float)y , 0));
 		camera.target = target;
 
 		entity.add(camera);
@@ -231,27 +240,9 @@ public class GameWorld {
 		TransformComponent position = engine.createComponent(TransformComponent.class);
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
 
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(WallComponent.WIDTH / 2, WallComponent.HEIGHT / 2);
-		BodyComponent body = new BodyComponent(
-			entity,
-			world, 
-			BodyType.StaticBody, 
-			shape, 
-			new Vector3((float)x, (float)y, (float)z),
-			BodyComponent.CATEGORY_SCENERY,
-			BodyComponent.MASK_SCENERY
-		);
-		body.body.setLinearDamping(1f);
-		body.body.setFixedRotation(true);
-		body.body.setUserData(entity);
-		shape.dispose();
-
 		position.pos.set((float)x, (float)y, (float)z);
-
 		texture.region = assetTexture;
 		
-		entity.add(body);
 		entity.add(wall);
 		entity.add(position);
 		entity.add(texture);
