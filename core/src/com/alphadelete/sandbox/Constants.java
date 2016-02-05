@@ -2,16 +2,22 @@ package com.alphadelete.sandbox;
 
 public class Constants {
 	
-	public static enum TileTyle {
+	public static enum TileType {
 		WallLeft,
 		WallRight,
 		WallDown,
 		WallUp,
 		WallUp2,
+		WallCornerLeft,
+		WallCornerLeftUp,
+		WallCornerRight,
+		WallCornerRightUp,
 		Door,
 		DoorUp,
 		Floor,
-		None
+		Corridor,
+		None,
+		Null
 	}
 	
 	public static final int APP_WIDTH = 800;
@@ -30,6 +36,13 @@ public class Constants {
     
     public static final double TILE_WIDTH = 16;
     public static final double TILE_HEIGHT = 16;
+    
+    public static final double MAP_WIDTH = 75;
+    public static final double MAP_HEIGHT = 55;
+    public static final double MAP_CORRIDOR_SIZE = 2;
+    public static final double MAP_ROOM_MINSIZE = 6;
+    public static final double MAP_ROOM_MAXSIZE = Math.min(MAP_WIDTH, MAP_HEIGHT) / 4;
+    public static final double MAP_ROOM_NUMBER = Math.sqrt(MAP_WIDTH * MAP_HEIGHT) / 2;
     
     public static final float PIXELS_TO_METRES = 1f / 16f;
     

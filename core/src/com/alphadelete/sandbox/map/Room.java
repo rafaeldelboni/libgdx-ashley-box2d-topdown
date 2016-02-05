@@ -1,7 +1,6 @@
 package com.alphadelete.sandbox.map;
 
 import com.alphadelete.sandbox.Constants;
-
 import javafx.geometry.Point2D;
 
 public class Room {
@@ -32,7 +31,11 @@ public class Room {
 		this.w = w;
 		this.h = h;
 		
-		this.center = new Point2D(Math.floor(x1 + x2) / 2, Math.floor(y1 + y2) / 2);
+		this.center = new Point2D(
+				// Convert to into to get the relative center related to a tile
+				(int)Math.floor(x1 + x2) / 2, 
+				(int)Math.floor(y1 + y2) / 2
+		);
 	}
 	// Return true if this room the intersects provided room
 	public boolean intersects(Room room) {

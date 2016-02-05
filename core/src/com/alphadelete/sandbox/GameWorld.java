@@ -1,5 +1,6 @@
 package com.alphadelete.sandbox;
 
+import com.alphadelete.sandbox.Constants.TileType;
 import com.alphadelete.sandbox.components.AnimationComponent;
 import com.alphadelete.sandbox.components.AttackComponent;
 import com.alphadelete.sandbox.components.BackgroundComponent;
@@ -16,12 +17,17 @@ import com.alphadelete.sandbox.components.WallComponent;
 import com.alphadelete.sandbox.components.WeaponComponent;
 import com.alphadelete.sandbox.systems.EnemySystem;
 import com.alphadelete.sandbox.systems.RenderingSystem;
+import com.alphadelete.sandbox.map.Level;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+
+import javafx.geometry.Point2D;
+
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -30,6 +36,8 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.ArrayMap;
+import com.badlogic.gdx.utils.ObjectMap.Entry;
 
 public class GameWorld {
 	public static final float WORLD_WIDTH = Constants.APP_WIDTH;
@@ -101,10 +109,29 @@ public class GameWorld {
 		Entity player = createPlayer(0, 0);
 		createCamera(player);
 		createBackground();
+		
+		Level dungeon = new Level();
+		ArrayMap<Point2D, TileType> tileMap = dungeon.generate();
+		for(Entry<Point2D, TileType> map : tileMap.entries()) {
+			
+			Point2D coord = map.key;
 
-		createWall(2f, 0.0f);
-		createWall(3f, 0.0f);
-		createWall(4f, 0.0f);
+			if (map.value == TileType.Floor || 
+					map.value == TileType.Corridor ||
+					map.value == TileType.WallUp ||
+					map.value == TileType.WallCornerLeft ||
+					map.value == TileType.WallCornerRight){
+				createFloor(coord.getX(), coord.getY(), 10, Assets.loadDungeon(map.value));
+			}
+			if (map.value == TileType.WallUp2 || 
+					map.value == TileType.WallLeft || 
+					map.value == TileType.WallRight || 
+					map.value == TileType.WallDown ||
+					map.value == TileType.WallCornerLeftUp ||
+					map.value == TileType.WallCornerRightUp){
+				createWall(coord.getX(), coord.getY(), Assets.loadDungeon(map.value));
+			}
+		}
 		
 		createEnemy(12, 2);
 		createEnemy(14, 2);
@@ -196,8 +223,8 @@ public class GameWorld {
 
 		engine.addEntity(entity);
 	}
-
-	private void createWall(float x, float y) {
+	
+	private void createFloor(double x, double y, double z, TextureRegion assetTexture) {
 		Entity entity = engine.createEntity();
 
 		WallComponent wall = engine.createComponent(WallComponent.class);
@@ -211,20 +238,55 @@ public class GameWorld {
 			world, 
 			BodyType.StaticBody, 
 			shape, 
-			new Vector3(x, y, 0f), 
+			new Vector3((float)x, (float)y, (float)z),
+			BodyComponent.CATEGORY_SCENERY,
+			BodyComponent.MASK_SCENERY
+		);
+		body.body.setLinearDamping(1f);
+		body.body.setFixedRotation(true);
+		body.body.setUserData(entity);
+		shape.dispose();
+
+		position.pos.set((float)x, (float)y, (float)z);
+
+		texture.region = assetTexture;
+		
+		entity.add(body);
+		entity.add(wall);
+		entity.add(position);
+		entity.add(texture);
+
+		engine.addEntity(entity);
+	}
+
+	private void createWall(double x, double y, TextureRegion assetTexture) {
+		Entity entity = engine.createEntity();
+
+		WallComponent wall = engine.createComponent(WallComponent.class);
+		TransformComponent position = engine.createComponent(TransformComponent.class);
+		TextureComponent texture = engine.createComponent(TextureComponent.class);
+
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(WallComponent.WIDTH / 2, WallComponent.HEIGHT / 2);
+		BodyComponent body = new BodyComponent(
+			entity,
+			world, 
+			BodyType.StaticBody, 
+			shape, 
+			new Vector3((float)x, (float)y, 0f), 
 			9f, 0.5f, 0.5f, 
 			false,
 			BodyComponent.CATEGORY_SCENERY,
 			BodyComponent.MASK_SCENERY
 		);
-		body.body.setTransform(x, y, 0f);
+		body.body.setTransform((float)x, (float)y, 0f);
 		body.body.setFixedRotation(true);
 		body.body.setUserData(entity);
 		shape.dispose();
 		
-		position.pos.set(x, y, 3.0f);
+		position.pos.set((float)x, (float)y, 3.0f);
 
-		texture.region = Assets.dungeonWall1;
+		texture.region = assetTexture;
 		
 		entity.add(body);
 		entity.add(wall);
@@ -304,7 +366,7 @@ public class GameWorld {
 			world, 
 			BodyType.DynamicBody, 
 			shape, 
-			new Vector3(attackX, attackY, 0f),
+			new Vector3(attackX, attackY, 0.9f),
 			BodyComponent.CATEGORY_PLAYER_ATTACK,
 			BodyComponent.MASK_PLAYER_ATTACK
 		);
@@ -315,7 +377,7 @@ public class GameWorld {
 
 		position.scale.set(0.35f, 0.35f);
 		position.rotation = angle;
-		position.pos.set(attackX, attackY, 0.0f);
+		position.pos.set(attackX, attackY, 0.9f);
 		animation.animations.put(0, Assets.attackEffect);
 		state.set(0);
 		

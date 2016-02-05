@@ -3,30 +3,93 @@ size: 480,560
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-wall-1
+wall-none-1
   rotate: false
-  xy: 0, 64
-  size: 16, 32
-  orig: 16, 32
+  xy: 0, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
-wall-2
+wall-up-1
   rotate: false
   xy: 16, 64
-  size: 16, 32
-  orig: 16, 32
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
-wall-3
+wall-1
   rotate: false
-  xy: 32, 64
-  size: 16, 32
-  orig: 16, 32
+  xy: 16, 80
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall-corner-right-up
+  rotate: false
+  xy: 0, 64
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall-corner-right
+  rotate: false
+  xy: 0, 80
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall-corner-left-up
+  rotate: false
+  xy: 80, 64
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall-corner-left
+  rotate: false
+  xy: 80, 80
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall-left-1
+  rotate: false
+  xy: 16, 32
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall-right-1
+  rotate: false
+  xy: 0, 32
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall-down-1
+  rotate: false
+  xy: 160, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 weapon-1
   rotate: false
   xy: 128, 384
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+floor-1
+  rotate: false
+  xy: 0, 112
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+floor-2
+  rotate: false
+  xy: 16, 112
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
