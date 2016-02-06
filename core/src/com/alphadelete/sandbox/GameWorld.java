@@ -53,10 +53,12 @@ public class GameWorld {
 
 	private PooledEngine engine;
 	private World world;
-
-	public GameWorld(PooledEngine engine, World world) {
+	private Long seed;
+	
+	public GameWorld(PooledEngine engine, World world, long seed) {
 		this.engine = engine;
 		this.world = world;
+		this.seed = seed;
 	}
 	
 	public PooledEngine getEngine() {
@@ -67,6 +69,10 @@ public class GameWorld {
 		return this.world;
 	}
 	
+	public long getSeed() {
+		return this.seed;
+	}
+
 	public void create() {
 		
 		 world.setContactListener(new ContactListener() {
@@ -110,7 +116,9 @@ public class GameWorld {
 
 		createBackground();
 		
-		Level dungeon = new Level();
+		Level dungeon = new Level(this.seed);
+		this.seed = dungeon.getSeed();
+		
 		ArrayMap<Point2D, TileType> tileMap = dungeon.generate();
 		for(Entry<Point2D, TileType> map : tileMap.entries()) {
 			

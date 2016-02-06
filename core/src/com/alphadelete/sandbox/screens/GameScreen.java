@@ -1,5 +1,7 @@
 package com.alphadelete.sandbox.screens;
 
+import java.util.Random;
+
 import com.alphadelete.sandbox.Assets;
 import com.alphadelete.sandbox.Constants;
 import com.alphadelete.sandbox.Sandbox;
@@ -18,6 +20,7 @@ import com.alphadelete.sandbox.systems.WeaponSystem;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -29,7 +32,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class GameScreen extends ScreenAdapter {
-	final Sandbox game;
+	Sandbox game;
 
 	OrthographicCamera guiCam;
 	Vector3 touchPoint;
@@ -45,13 +48,21 @@ public class GameScreen extends ScreenAdapter {
 	private GlyphLayout layout = new GlyphLayout();
 
 	private int state;
-
+	private long seed;
+	
 	Animation walkAnimation;
 	TextureRegion currentFrame;
 	SpriteBatch spriteBatch;
 	float stateTime;
 
 	public GameScreen(Sandbox game) {
+		startGame(game);
+	}
+	public void startGame (Sandbox game){
+		this.seed = new Random().nextLong();
+		startGame(game, this.seed);
+	}
+	public void startGame (Sandbox game, long seed){
 		this.game = game;
 
 		state = Constants.GAME_RUNNING;
@@ -62,7 +73,7 @@ public class GameScreen extends ScreenAdapter {
 		engine = new PooledEngine();
 		world = new World(Vector2.Zero,true);
 				
-		gameWorld = new GameWorld(engine, world);
+		gameWorld = new GameWorld(engine, world, seed);
 
 		engine.addSystem(new PlayerSystem(gameWorld));
 		engine.addSystem(new EnemySystem(gameWorld));
@@ -134,6 +145,14 @@ public class GameScreen extends ScreenAdapter {
 		}
 
 		engine.getSystem(ControllerSystem.class).setControls(Gdx.input, isAttacking, targetPos);
+		
+		// Refresh World for debug
+		if (Gdx.input.isKeyPressed(Keys.F5)) {
+			startGame(this.game, gameWorld.getSeed());
+		}
+		if (Gdx.input.isKeyPressed(Keys.F4)) {
+			startGame(this.game);
+		}
 	}
 
 	private void updatePaused() {
@@ -159,7 +178,8 @@ public class GameScreen extends ScreenAdapter {
 	private void updateLevelEnd() {
 		if (Gdx.input.justTouched()) {
 			engine.removeAllEntities();
-			gameWorld = new GameWorld(engine, world);
+			this.seed = new Random().nextLong();
+			gameWorld = new GameWorld(engine, world, this.seed);
 			state = Constants.GAME_RUNNING;
 		}
 	}

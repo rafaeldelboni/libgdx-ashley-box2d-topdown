@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 
 public class Level {
-	
+	private long seed;
 	private Random rdm;
 	private List<Room> Rooms;
 	private List<Room> Corridors;
@@ -26,6 +26,7 @@ public class Level {
 
 	public Level(long rdmSeed) {
 		// Random with seed
+		this.seed = rdmSeed;
 		this.rdm = new Random(rdmSeed);
 
 		// Generate Map
@@ -41,7 +42,14 @@ public class Level {
 		placeCorridors();
 		placeWallRooms();
 		placeWallCorridors();
+		
+		placeWallCorners();
+		
 		return this.tileMap;
+	}
+	
+	public long getSeed() {
+		return this.seed;
 	}
 	
 	// region placers
@@ -223,12 +231,58 @@ public class Level {
 				if (getTileValue(upWallCheck) == TileType.None && 
 						getTileValue(map.key) != TileType.WallLeft &&
 							getTileValue(map.key) != TileType.WallRight ) {
-					this.tileMap.setValue(this.tileMap.indexOfKey(map.key), TileType.WallUp);
-					this.tileMap.setValue(this.tileMap.indexOfKey(upWallCheck), TileType.WallUp2);
+					this.tileMap.setValue(this.tileMap.indexOfKey(upWallCheck), TileType.WallUp);
+					this.tileMap.setValue(this.tileMap.indexOfKey(upWallCheck.add(0,+1)), TileType.WallUp2);
 				}
 				
 			}
 
+		}
+	}
+
+	private void placeWallCorners() {
+		for(Entry<Point2D, TileType> map : this.tileMap.entries()) {
+
+			Point2D leftTile = map.key.add(-1,0);
+			Point2D rightTile = map.key.add(+1,0);
+			Point2D downTile = map.key.add(0,-1);
+			Point2D upTile = map.key.add(0,+1);
+			if(getTileValue(map.key) != TileType.Floor && getTileValue(map.key) != TileType.Corridor) {
+				// Wall Left Corner
+				if ( 
+					(getTileValue(leftTile) == TileType.WallUp || 
+						getTileValue(leftTile) == TileType.WallUp2 ||
+							getTileValue(leftTile) == TileType.WallLeft ||
+								getTileValue(leftTile) == TileType.WallCornerRight ||
+									getTileValue(leftTile) == TileType.WallCornerRightUp || 
+										getTileValue(leftTile) == TileType.WallCornerLeftUp ) && 
+					(getTileValue(rightTile) == TileType.Floor || 
+						getTileValue(rightTile) == TileType.Corridor) &&
+					(getTileValue(downTile) == TileType.Floor ||
+						getTileValue(downTile) == TileType.Corridor) && 
+					(getTileValue(upTile) != TileType.Floor &&
+						getTileValue(upTile) != TileType.Corridor)) {
+					this.tileMap.setValue(this.tileMap.indexOfKey(upTile), TileType.WallCornerLeftUp);
+					this.tileMap.setValue(this.tileMap.indexOfKey(map.key), TileType.WallCornerLeft);
+				}
+				// Wall Right Corner
+				if ( 
+					(getTileValue(rightTile) == TileType.WallUp || 
+						getTileValue(rightTile) == TileType.WallUp2 ||
+							getTileValue(rightTile) == TileType.WallRight ||
+								getTileValue(rightTile) == TileType.WallCornerLeft ||
+									getTileValue(rightTile) == TileType.WallCornerLeftUp ||
+										getTileValue(rightTile) == TileType.WallCornerRightUp) && 
+					(getTileValue(leftTile) == TileType.Floor || 
+						getTileValue(leftTile) == TileType.Corridor) &&
+					(getTileValue(downTile) == TileType.Floor ||
+						getTileValue(downTile) == TileType.Corridor) && 
+					(getTileValue(upTile) != TileType.Floor &&
+						getTileValue(upTile) != TileType.Corridor)) {
+					this.tileMap.setValue(this.tileMap.indexOfKey(upTile), TileType.WallCornerRightUp);
+					this.tileMap.setValue(this.tileMap.indexOfKey(map.key), TileType.WallCornerRight);
+				}
+			}
 		}
 	}
 	// endregion
