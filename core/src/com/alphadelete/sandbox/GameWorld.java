@@ -128,15 +128,18 @@ public class GameWorld {
 					map.value == TileType.Corridor ||
 					map.value == TileType.WallUp ||
 					map.value == TileType.WallCornerLeft ||
-					map.value == TileType.WallCornerRight){
+					map.value == TileType.WallCornerRight ||
+					map.value == TileType.WallCornerDouble){
 				createFloor(coord.getX(), coord.getY(), 10, Assets.loadDungeon(map.value));
 			}
 			if (map.value == TileType.WallUp2 || 
+					map.value == TileType.WallUp3 ||
 					map.value == TileType.WallLeft || 
 					map.value == TileType.WallRight || 
 					map.value == TileType.WallDown ||
 					map.value == TileType.WallCornerLeftUp ||
-					map.value == TileType.WallCornerRightUp){
+					map.value == TileType.WallCornerRightUp || 
+					map.value == TileType.WallCornerDoubleUp ){
 				createWall(coord.getX(), coord.getY(), Assets.loadDungeon(map.value));
 			}
 		}

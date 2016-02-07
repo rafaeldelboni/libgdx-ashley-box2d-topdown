@@ -87,10 +87,13 @@ public class Assets {
 		TextureRegion returnTexture;
 		 switch (type) {
          case WallUp :
-        	 returnTexture = Assets.loadAtlasTextureRegion("wall-1", Assets.dungeonAtlas);
+        	 returnTexture = Assets.loadAtlasTextureRegion("wall-up-1", Assets.dungeonAtlas);
         	 break;
          case WallUp2 :
-        	 returnTexture = Assets.loadAtlasTextureRegion("wall-up-1", Assets.dungeonAtlas);
+        	 returnTexture = Assets.loadAtlasTextureRegion("wall-up-2", Assets.dungeonAtlas);
+        	 break;
+         case WallUp3 :
+        	 returnTexture = Assets.loadAtlasTextureRegion("wall-up-3", Assets.dungeonAtlas);
         	 break;
          case WallLeft :
         	 returnTexture = Assets.loadAtlasTextureRegion("wall-left-1", Assets.dungeonAtlas);
@@ -113,6 +116,12 @@ public class Assets {
          case WallCornerRightUp :
         	 returnTexture = Assets.loadAtlasTextureRegion("wall-corner-right-up", Assets.dungeonAtlas);
         	 break;
+         case WallCornerDouble :
+        	 returnTexture = Assets.loadAtlasTextureRegion("wall-corner-double", Assets.dungeonAtlas);
+        	 break;
+         case WallCornerDoubleUp :
+        	 returnTexture = Assets.loadAtlasTextureRegion("wall-corner-double-up", Assets.dungeonAtlas);
+        	 break;
          case Floor :
         	 returnTexture = Assets.loadAtlasTextureRegion("floor-1", Assets.dungeonAtlas);
         	 break;
@@ -120,7 +129,7 @@ public class Assets {
         	 returnTexture = Assets.loadAtlasTextureRegion("floor-2", Assets.dungeonAtlas);
         	 break;
 		default:
-			returnTexture = Assets.loadAtlasTextureRegion("wall-none-1", Assets.dungeonAtlas);
+			returnTexture = Assets.loadAtlasTextureRegion("none-1", Assets.dungeonAtlas);
 			break;
 		 }
 

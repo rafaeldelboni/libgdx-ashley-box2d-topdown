@@ -147,10 +147,10 @@ public class GameScreen extends ScreenAdapter {
 		engine.getSystem(ControllerSystem.class).setControls(Gdx.input, isAttacking, targetPos);
 		
 		// Refresh World for debug
-		if (Gdx.input.isKeyPressed(Keys.F5)) {
+		if (Gdx.input.isKeyPressed(Keys.R)) {
 			startGame(this.game, gameWorld.getSeed());
 		}
-		if (Gdx.input.isKeyPressed(Keys.F4)) {
+		if (Gdx.input.isKeyPressed(Keys.T)) {
 			startGame(this.game);
 		}
 	}

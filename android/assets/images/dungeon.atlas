@@ -3,51 +3,72 @@ size: 480,560
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-wall-none-1
+none-1
   rotate: false
   xy: 0, 16
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-wall-up-1
+wall-up-3
+  rotate: false
+  xy: 80, 32
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall-up-2
   rotate: false
   xy: 16, 64
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-wall-1
+wall-up-1
   rotate: false
   xy: 16, 80
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-wall-corner-right-up
+wall-corner-left-up
   rotate: false
   xy: 0, 64
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-wall-corner-right
+wall-corner-left
   rotate: false
   xy: 0, 80
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-wall-corner-left-up
+wall-corner-right-up
   rotate: false
   xy: 80, 64
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-wall-corner-left
+wall-corner-right
   rotate: false
   xy: 80, 80
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall-corner-double-up
+  rotate: false
+  xy: 96, 64
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+wall-corner-double
+  rotate: false
+  xy: 96, 80
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
