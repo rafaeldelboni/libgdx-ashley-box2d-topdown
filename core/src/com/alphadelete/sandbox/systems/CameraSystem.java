@@ -35,6 +35,7 @@ public class CameraSystem extends IteratingSystem {
 			return;
 		}
 		cam.camera.position.lerp(target.pos, Constants.CAMERA_SMOOTH * deltaTime);
+		//cam.camera.position.set(target.pos);
 
 	}
 }

@@ -41,7 +41,6 @@ public class GameScreen extends ScreenAdapter {
 	Rectangle resumeBounds;
 	Rectangle quitBounds;
 	String scoreString;
-
 	PooledEngine engine;
 	World world;
 	
@@ -95,7 +94,7 @@ public class GameScreen extends ScreenAdapter {
 		resumeBounds = new Rectangle(Constants.APP_WIDTH / 2 - 192 / 2, Constants.APP_HEIGHT / 2, 192, 36);
 		quitBounds = new Rectangle(Constants.APP_WIDTH / 2 - 192 / 2, Constants.APP_HEIGHT / 2 - 36, 192, 36);
 		scoreString = "SCORE: 0";
-
+		
 		pauseSystems();
 	}
 

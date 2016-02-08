@@ -9,6 +9,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -56,12 +57,14 @@ public class RenderingSystem extends IteratingSystem {
 		cam.position.set(meterCamX, meterCamy, 0);
 		
 		this.world = world;
-		debugMatrix = new Matrix4(cam.combined);
-		debugRenderer = new Box2DDebugRenderer();
-        debugRenderer.setDrawVelocities(true);
-        debugRenderer.setDrawBodies(true);
-        debugRenderer.setDrawJoints(true);
-        debugRenderer.setDrawContacts(true);
+		if(Constants.GAME_DEBUG) {			
+			debugMatrix = new Matrix4(cam.combined);
+			debugRenderer = new Box2DDebugRenderer();
+	        debugRenderer.setDrawVelocities(true);
+	        debugRenderer.setDrawBodies(true);
+	        debugRenderer.setDrawJoints(true);
+	        debugRenderer.setDrawContacts(true);
+		}
 	}
 
 	@Override
@@ -115,6 +118,7 @@ public class RenderingSystem extends IteratingSystem {
 			debugMatrix.set(cam.combined);
         	debugRenderer.render(world, debugMatrix);
 		}
+		Gdx.graphics.setTitle(String.valueOf(Gdx.app.getGraphics().getFramesPerSecond()));
 		
 	}
 	

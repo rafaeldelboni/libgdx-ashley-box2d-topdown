@@ -152,6 +152,8 @@ public class GameWorld {
 			}
 		}
 		
+		//Entity player = createPlayer(0, 0);
+		//createCamera(player, 0, 0);
 		createEnemy(12, 2);
 		createEnemy(14, 2);
 		

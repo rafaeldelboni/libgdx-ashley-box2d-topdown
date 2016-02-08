@@ -11,6 +11,7 @@ public class DesktopLauncher {
 		config.title = "Sandbox";
 		config.width = Constants.APP_WIDTH;
 		config.height = Constants.APP_HEIGHT;
+		config.useHDPI = false;
 		new LwjglApplication(new Sandbox(), config);
 	}
 }
