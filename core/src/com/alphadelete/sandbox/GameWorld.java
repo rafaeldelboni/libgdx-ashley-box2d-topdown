@@ -124,22 +124,15 @@ public class GameWorld {
 			
 			Point2D coord = map.key;
 
-			if (map.value.type == Tile.TileType.Floor || 
+			if (map.value.type == Tile.TileType.None ||
+					map.value.type == Tile.TileType.Floor || 
 					map.value.type == Tile.TileType.Corridor ||
 					map.value.type == Tile.TileType.WallBase ||
 					map.value.type == Tile.TileType.WallCornerLeft ||
 					map.value.type == Tile.TileType.WallCornerRight ||
 					map.value.type == Tile.TileType.WallCornerDouble){
-				createFloor(coord.getX(), coord.getY(), 10, map.value.texture);
-			}
-			if (map.value.type == Tile.TileType.WallBaseUp || 
-					map.value.type == Tile.TileType.CeilingUp ||
-					map.value.type == Tile.TileType.CeilingLeft || 
-					map.value.type == Tile.TileType.CeilingRight || 
-					map.value.type == Tile.TileType.CeilingDown ||
-					map.value.type == Tile.TileType.WallCornerLeftUp ||
-					map.value.type == Tile.TileType.WallCornerRightUp || 
-					map.value.type == Tile.TileType.WallCornerDoubleUp ){
+				createFloor(coord.getX(), coord.getY(), 5, map.value.texture);
+			} else {
 				createWall(coord.getX(), coord.getY(), map.value.texture);
 			}
 		}

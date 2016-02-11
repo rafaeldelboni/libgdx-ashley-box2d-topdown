@@ -50,8 +50,8 @@ public class RenderingSystem extends IteratingSystem {
 		
 		this.batch = batch;
 		
-		float meterCamX = Constants.APP_WIDTH * Constants.PIXELS_TO_METRES / Constants.CAMERA_ZOOM;
-		float meterCamy = Constants.APP_HEIGHT * Constants.PIXELS_TO_METRES / Constants.CAMERA_ZOOM;
+		float meterCamX = (Constants.APP_WIDTH * Constants.PIXELS_TO_METRES) / Constants.CAMERA_ZOOM;
+		float meterCamy = (Constants.APP_HEIGHT * Constants.PIXELS_TO_METRES) / Constants.CAMERA_ZOOM;
 		
 		cam = new OrthographicCamera(meterCamX, meterCamy);
 		cam.position.set(meterCamX, meterCamy, 0);
@@ -107,8 +107,7 @@ public class RenderingSystem extends IteratingSystem {
 							width, height,
 							t.scale.x * Constants.PIXELS_TO_METRES, t.scale.y * Constants.PIXELS_TO_METRES,
 							MathUtils.radiansToDegrees * t.rotation);
-			}	
-
+			}
 		}
 		
 		batch.end();

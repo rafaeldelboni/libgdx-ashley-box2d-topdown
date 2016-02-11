@@ -346,42 +346,107 @@ public class Level {
 		for(Entry<Point2D, Tile> map : this.tileMap.entries()) {
 			if(getTileValue(map.key) != TileType.Floor && getTileValue(map.key) != TileType.Corridor) {
 				Point2D upTile = map.key.add(0,+1);
-
+				
 				// Top Ceiling Normal Walls
 				if(getTileValue(map.key) == TileType.WallBaseUp &&
-					getTileValue(upTile) == TileType.Floor) {
-						this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingUp));
+					(getTileValue(upTile) == TileType.Floor ||
+						getTileValue(upTile) == TileType.Corridor ||
+							getTileValue(upTile) == TileType.CeilingDown) &&
+								getTileValue(upTile) != TileType.Null) {
+					this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingUpDown));
 				}
 				if(getTileValue(map.key) == TileType.WallBaseUp &&
-					getTileValue(upTile) == TileType.None) {
-						this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingUp));
+					(getTileValue(upTile) != TileType.Floor && 
+						getTileValue(upTile) != TileType.Corridor &&
+							getTileValue(upTile) != TileType.CeilingUpDown &&
+								getTileValue(upTile) != TileType.Null)) {
+					this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingUp));
 				}
 				// Top Ceiling Double Corner Walls
 				if(getTileValue(map.key) == TileType.WallCornerDoubleUp &&
-					getTileValue(upTile) == TileType.None) {
-						this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingUp));
+					(getTileValue(upTile) == TileType.Floor || 
+						getTileValue(upTile) == TileType.Corridor ||
+							getTileValue(upTile) == TileType.CeilingDown) &&
+								getTileValue(upTile) != TileType.Null) {
+					this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingSquare));
 				}
 				if(getTileValue(map.key) == TileType.WallCornerDoubleUp &&
-					getTileValue(upTile) == TileType.Floor) {
-						this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingUp));
+					(getTileValue(upTile) != TileType.Floor &&
+						getTileValue(upTile) != TileType.Corridor &&
+							getTileValue(upTile) != TileType.CeilingSquare &&
+								getTileValue(upTile) != TileType.Null)) {
+					this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingUUp));
 				}
 				// Top Ceiling Right Corner Walls
 				if(getTileValue(map.key) == TileType.WallCornerRightUp &&
-					getTileValue(upTile) == TileType.None) {
-						this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingUp));
+					(getTileValue(upTile) == TileType.Floor || 
+						getTileValue(upTile) == TileType.Corridor ||
+							getTileValue(upTile) == TileType.CeilingDown ||
+								getTileValue(upTile) == TileType.CeilingUpDown) &&
+									getTileValue(upTile) != TileType.Null) {
+				this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingURight));
 				}
 				if(getTileValue(map.key) == TileType.WallCornerRightUp &&
-					getTileValue(upTile) == TileType.Floor) {
-						this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingUp));
+					(getTileValue(upTile) != TileType.Floor &&
+						getTileValue(upTile) != TileType.Corridor &&
+							getTileValue(upTile) != TileType.CeilingURight &&
+								getTileValue(upTile) != TileType.Null)) {
+						this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingRightUp));
 				}
 				// Top Ceiling Left Corner Walls
 				if(getTileValue(map.key) == TileType.WallCornerLeftUp &&
-					getTileValue(upTile) == TileType.None) {
-						this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingUp));
+					(getTileValue(upTile) == TileType.Floor || 
+						getTileValue(upTile) == TileType.Corridor ||
+							getTileValue(upTile) == TileType.CeilingDown ||
+								getTileValue(upTile) == TileType.CeilingUpDown) &&
+									getTileValue(upTile) != TileType.Null) {
+						this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingULeft));
 				}
 				if(getTileValue(map.key) == TileType.WallCornerLeftUp &&
-					getTileValue(upTile) == TileType.Floor) {
-						this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingUp));
+					(getTileValue(upTile) != TileType.Floor &&
+						getTileValue(upTile) != TileType.Corridor &&
+							getTileValue(upTile) != TileType.CeilingULeft &&
+								getTileValue(upTile) != TileType.Null)) {
+						this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingLeftUp));
+				}
+				
+				Point2D leftTile = map.key.add(-1,0);
+				Point2D rightTile = map.key.add(+1,0);
+				
+				if((getTileValue(map.key) == TileType.None || 
+						getTileValue(map.key) == TileType.CeilingLeft) &&
+					(getTileValue(leftTile) == TileType.Floor || 
+						getTileValue(leftTile) == TileType.Corridor ||
+							getTileValue(leftTile) == TileType.WallBase ||
+								getTileValue(leftTile) == TileType.WallBaseUp)) {
+					this.tileMap.setValue(this.tileMap.indexOfKey(map.key), createTile(TileType.CeilingRight));
+				}
+				if((getTileValue(map.key) == TileType.None || 
+						getTileValue(map.key) == TileType.CeilingRight) &&
+					(getTileValue(rightTile) == TileType.Floor || 
+						getTileValue(rightTile) == TileType.Corridor ||
+							getTileValue(rightTile) == TileType.WallBase ||
+								getTileValue(rightTile) == TileType.WallBaseUp)) {
+					this.tileMap.setValue(this.tileMap.indexOfKey(map.key), createTile(TileType.CeilingLeft));
+				}
+				if((getTileValue(map.key) == TileType.CeilingLeft || 
+						getTileValue(map.key) == TileType.CeilingRight) &&
+					(getTileValue(leftTile) == TileType.Floor || 
+						getTileValue(leftTile) == TileType.Corridor) &&
+					(getTileValue(rightTile) == TileType.Floor ||
+						getTileValue(rightTile) == TileType.Corridor)) {
+					this.tileMap.setValue(this.tileMap.indexOfKey(map.key), createTile(TileType.CeilingLeftRight));
+				}
+				if((getTileValue(map.key) == TileType.CeilingLeft || 
+						getTileValue(map.key) == TileType.CeilingRight ||
+							getTileValue(map.key) == TileType.CeilingLeftRight ) &&
+					(getTileValue(leftTile) == TileType.Floor || 
+						getTileValue(leftTile) == TileType.Corridor) &&
+					(getTileValue(rightTile) == TileType.Floor ||
+						getTileValue(rightTile) == TileType.Corridor)  &&
+					(getTileValue(upTile) == TileType.Floor || 
+						getTileValue(upTile) == TileType.Corridor)) {
+					this.tileMap.setValue(this.tileMap.indexOfKey(map.key), createTile(TileType.CeilingUDown));
 				}
 			}
 		}
@@ -398,7 +463,7 @@ public class Level {
 		if (this.tileMap.containsKey(tile))
 			return this.tileMap.get(tile).type;
 		
-		return null;
+		return TileType.Null;
 	}
 	
 	private int getTileVariation(Tile.TileType type) {
