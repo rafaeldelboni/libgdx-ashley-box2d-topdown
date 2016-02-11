@@ -19,7 +19,7 @@ public class Level {
 	private ArrayMap<Point2D, Tile> tileMap;
 	
     public Level() {
-    	// Random without seed
+    	// Random without seeds
     	this(new Random().nextLong());
     }
 
