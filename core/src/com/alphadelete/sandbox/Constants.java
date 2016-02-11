@@ -1,28 +1,7 @@
 package com.alphadelete.sandbox;
 
 public class Constants {
-	
-	public static enum TileType {
-		WallLeft,
-		WallRight,
-		WallDown,
-		WallUp,
-		WallUp2,
-		WallUp3,
-		WallCornerLeft,
-		WallCornerLeftUp,
-		WallCornerRight,
-		WallCornerRightUp,
-		WallCornerDouble,
-		WallCornerDoubleUp,
-		Door,
-		DoorUp,
-		Floor,
-		Corridor,
-		None,
-		Null
-	}
-	
+
 	public static final int APP_WIDTH = 800;
     public static final int APP_HEIGHT = 480;
     

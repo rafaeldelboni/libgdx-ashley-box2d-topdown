@@ -1,6 +1,5 @@
 package com.alphadelete.sandbox;
 
-import com.alphadelete.sandbox.Constants.TileType;
 import com.alphadelete.sandbox.components.AnimationComponent;
 import com.alphadelete.sandbox.components.AttackComponent;
 import com.alphadelete.sandbox.components.BackgroundComponent;
@@ -18,6 +17,7 @@ import com.alphadelete.sandbox.components.WeaponComponent;
 import com.alphadelete.sandbox.systems.EnemySystem;
 import com.alphadelete.sandbox.systems.RenderingSystem;
 import com.alphadelete.sandbox.map.Level;
+import com.alphadelete.sandbox.map.Tile;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
@@ -119,33 +119,33 @@ public class GameWorld {
 		Level dungeon = new Level(this.seed);
 		this.seed = dungeon.getSeed();
 		
-		ArrayMap<Point2D, TileType> tileMap = dungeon.generate();
-		for(Entry<Point2D, TileType> map : tileMap.entries()) {
+		ArrayMap<Point2D, Tile> tileMap = dungeon.generate();
+		for(Entry<Point2D, Tile> map : tileMap.entries()) {
 			
 			Point2D coord = map.key;
 
-			if (map.value == TileType.Floor || 
-					map.value == TileType.Corridor ||
-					map.value == TileType.WallUp ||
-					map.value == TileType.WallCornerLeft ||
-					map.value == TileType.WallCornerRight ||
-					map.value == TileType.WallCornerDouble){
-				createFloor(coord.getX(), coord.getY(), 10, Assets.loadDungeon(map.value));
+			if (map.value.type == Tile.TileType.Floor || 
+					map.value.type == Tile.TileType.Corridor ||
+					map.value.type == Tile.TileType.WallBase ||
+					map.value.type == Tile.TileType.WallCornerLeft ||
+					map.value.type == Tile.TileType.WallCornerRight ||
+					map.value.type == Tile.TileType.WallCornerDouble){
+				createFloor(coord.getX(), coord.getY(), 10, map.value.texture);
 			}
-			if (map.value == TileType.WallUp2 || 
-					map.value == TileType.WallUp3 ||
-					map.value == TileType.WallLeft || 
-					map.value == TileType.WallRight || 
-					map.value == TileType.WallDown ||
-					map.value == TileType.WallCornerLeftUp ||
-					map.value == TileType.WallCornerRightUp || 
-					map.value == TileType.WallCornerDoubleUp ){
-				createWall(coord.getX(), coord.getY(), Assets.loadDungeon(map.value));
+			if (map.value.type == Tile.TileType.WallBaseUp || 
+					map.value.type == Tile.TileType.CeilingUp ||
+					map.value.type == Tile.TileType.CeilingLeft || 
+					map.value.type == Tile.TileType.CeilingRight || 
+					map.value.type == Tile.TileType.CeilingDown ||
+					map.value.type == Tile.TileType.WallCornerLeftUp ||
+					map.value.type == Tile.TileType.WallCornerRightUp || 
+					map.value.type == Tile.TileType.WallCornerDoubleUp ){
+				createWall(coord.getX(), coord.getY(), map.value.texture);
 			}
 		}
 		
-		for(Entry<Point2D, TileType> map : tileMap.entries()) {
-			if (map.value == TileType.Floor ) {
+		for(Entry<Point2D, Tile> map : tileMap.entries()) {
+			if (map.value.type == Tile.TileType.Floor ) {
 				Entity player = createPlayer(map.key.getX(), map.key.getY());
 				createCamera(player, map.key.getX(), map.key.getY());
 				break;

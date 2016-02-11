@@ -83,59 +83,6 @@ public class Assets {
 		goblinDieAnimation = Assets.loadAtlasAnimations("goblin-dying", Assets.goblinAtlas, PlayMode.NORMAL, new Vector2(32,32));
 	}
 	
-	public static TextureRegion loadDungeon (Constants.TileType type) {
-		TextureRegion returnTexture;
-		 switch (type) {
-         case WallUp :
-        	 returnTexture = Assets.loadAtlasTextureRegion("wall-up-1", Assets.dungeonAtlas);
-        	 break;
-         case WallUp2 :
-        	 returnTexture = Assets.loadAtlasTextureRegion("wall-up-2", Assets.dungeonAtlas);
-        	 break;
-         case WallUp3 :
-        	 returnTexture = Assets.loadAtlasTextureRegion("wall-up-3", Assets.dungeonAtlas);
-        	 break;
-         case WallLeft :
-        	 returnTexture = Assets.loadAtlasTextureRegion("wall-left-1", Assets.dungeonAtlas);
-        	 break;
-         case WallRight :
-        	 returnTexture = Assets.loadAtlasTextureRegion("wall-right-1", Assets.dungeonAtlas);
-        	 break;
-         case WallDown :
-        	 returnTexture = Assets.loadAtlasTextureRegion("wall-down-1", Assets.dungeonAtlas);
-        	 break;
-         case WallCornerLeft :
-        	 returnTexture = Assets.loadAtlasTextureRegion("wall-corner-left", Assets.dungeonAtlas);
-        	 break;
-         case WallCornerLeftUp :
-        	 returnTexture = Assets.loadAtlasTextureRegion("wall-corner-left-up", Assets.dungeonAtlas);
-        	 break;
-         case WallCornerRight :
-        	 returnTexture = Assets.loadAtlasTextureRegion("wall-corner-right", Assets.dungeonAtlas);
-        	 break;
-         case WallCornerRightUp :
-        	 returnTexture = Assets.loadAtlasTextureRegion("wall-corner-right-up", Assets.dungeonAtlas);
-        	 break;
-         case WallCornerDouble :
-        	 returnTexture = Assets.loadAtlasTextureRegion("wall-corner-double", Assets.dungeonAtlas);
-        	 break;
-         case WallCornerDoubleUp :
-        	 returnTexture = Assets.loadAtlasTextureRegion("wall-corner-double-up", Assets.dungeonAtlas);
-        	 break;
-         case Floor :
-        	 returnTexture = Assets.loadAtlasTextureRegion("floor-1", Assets.dungeonAtlas);
-        	 break;
-         case Corridor :
-        	 returnTexture = Assets.loadAtlasTextureRegion("floor-2", Assets.dungeonAtlas);
-        	 break;
-		default:
-			returnTexture = Assets.loadAtlasTextureRegion("none-1", Assets.dungeonAtlas);
-			break;
-		 }
-
-		return returnTexture;
-	}
-	
 	private static void loadEffects ()	{
 		attackEffect = Assets.loadAtlasAnimations("attack_slash", Assets.attackAtlas, PlayMode.REVERSED, new Vector2(70,90));
 	}

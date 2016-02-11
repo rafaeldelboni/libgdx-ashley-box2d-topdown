@@ -6,29 +6,29 @@ repeat: none
 ceiling-down-1
   rotate: false
   xy: 160, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-down-2
   rotate: false
   xy: 144, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-down-3
   rotate: false
   xy: 128, 16
-  size: 15, 15
-  orig: 15, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-down-4
   rotate: false
   xy: 96, 32
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-down-5
@@ -41,22 +41,22 @@ ceiling-down-5
 ceiling-down-6
   rotate: false
   xy: 128, 32
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-left-1
   rotate: false
   xy: 16, 32
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-left-2
   rotate: false
   xy: 48, 32
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-left-3
@@ -69,50 +69,50 @@ ceiling-left-3
 ceiling-left-4
   rotate: false
   xy: 224, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-left-5
   rotate: false
   xy: 240, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-left-6
   rotate: false
   xy: 256, 16
-  size: 15, 15
-  orig: 15, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-left-down-1
   rotate: false
   xy: 32, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-left-right-1
   rotate: false
   xy: 368, 16
-  size: 15, 15
-  orig: 15, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-left-right-2
   rotate: false
   xy: 384, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-left-up-1
   rotate: false
   xy: 64, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-right-1
@@ -132,22 +132,22 @@ ceiling-right-2
 ceiling-right-3
   rotate: false
   xy: 80, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-right-4
   rotate: false
   xy: 96, 16
-  size: 15, 15
-  orig: 15, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-right-5
   rotate: false
   xy: 112, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-right-6
@@ -160,50 +160,50 @@ ceiling-right-6
 ceiling-right-down-1
   rotate: false
   xy: 16, 16
-  size: 15, 15
-  orig: 15, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-right-up-1
   rotate: false
   xy: 48, 16
-  size: 15, 15
-  orig: 15, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-square-1
   rotate: false
   xy: 400, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-u-down-1
   rotate: false
   xy: 288, 16
-  size: 15, 15
-  orig: 15, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-u-left-1
   rotate: false
   xy: 304, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-u-right-1
   rotate: false
   xy: 272, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-u-up-1
   rotate: false
   xy: 320, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-up-1
@@ -223,43 +223,43 @@ ceiling-up-2
 ceiling-up-3
   rotate: false
   xy: 176, 16
-  size: 15, 15
-  orig: 15, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-up-4
   rotate: false
   xy: 192, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-up-5
   rotate: false
   xy: 208, 16
-  size: 15, 15
-  orig: 15, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-up-6
   rotate: false
   xy: 176, 32
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-up-down-1
   rotate: false
   xy: 336, 16
-  size: 15, 15
-  orig: 15, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ceiling-up-down-2
   rotate: false
   xy: 352, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 floor-1
@@ -272,8 +272,8 @@ floor-1
 floor-2
   rotate: false
   xy: 16, 144
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 floor-3
@@ -286,8 +286,8 @@ floor-3
 floor-4
   rotate: false
   xy: 48, 144
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 floor-5
@@ -307,8 +307,8 @@ floor-6
 floor-7
   rotate: false
   xy: 96, 144
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 floor-8
@@ -321,8 +321,8 @@ floor-8
 floor-9
   rotate: false
   xy: 128, 144
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 floor-stone-1
@@ -342,29 +342,29 @@ floor-stone-2
 floor-stone-3
   rotate: false
   xy: 176, 144
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 none-1
   rotate: false
   xy: 0, 16
-  size: 16, 15
-  orig: 16, 15
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 ui-id-112
   rotate: false
   xy: 128, 384
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 wall-base-1
   rotate: false
   xy: 16, 80
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 wall-base-2
@@ -377,8 +377,8 @@ wall-base-2
 wall-base-3
   rotate: false
   xy: 48, 80
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 wall-base-4
@@ -391,8 +391,8 @@ wall-base-4
 wall-base-up-1
   rotate: false
   xy: 16, 64
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 wall-base-up-2
@@ -405,8 +405,8 @@ wall-base-up-2
 wall-base-up-3
   rotate: false
   xy: 48, 64
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 wall-base-up-4
@@ -416,42 +416,42 @@ wall-base-up-4
   orig: 16, 16
   offset: 0, 0
   index: -1
-wall-corner-double
+wall-corner-double-1
   rotate: false
   xy: 96, 80
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
-wall-corner-double-up
+wall-corner-double-up-1
   rotate: false
   xy: 96, 64
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
-wall-corner-left
+wall-corner-left-1
   rotate: false
   xy: 0, 80
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-wall-corner-left-up
+wall-corner-left-up-1
   rotate: false
   xy: 0, 64
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-wall-corner-right
+wall-corner-right-1
   rotate: false
   xy: 80, 80
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
-wall-corner-right-up
+wall-corner-right-up-1
   rotate: false
   xy: 80, 64
   size: 16, 16
@@ -475,21 +475,21 @@ wall-enter-up-1
 wall-exit-1
   rotate: false
   xy: 128, 80
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 wall-exit-up-1
   rotate: false
   xy: 128, 64
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
 weapon-1
   rotate: false
   xy: 128, 384
-  size: 15, 16
-  orig: 15, 16
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
