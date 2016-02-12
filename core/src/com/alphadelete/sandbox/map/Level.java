@@ -403,8 +403,12 @@ public class Level {
 					(getTileValue(upTile) == TileType.Floor || 
 						getTileValue(upTile) == TileType.Corridor ||
 							getTileValue(upTile) == TileType.CeilingDown ||
-								getTileValue(upTile) == TileType.CeilingUpDown) &&
-									getTileValue(upTile) != TileType.Null) {
+								getTileValue(upTile) == TileType.CeilingUpDown || 
+									getTileValue(upTile) == TileType.CeilingRight || 
+										getTileValue(upTile) == TileType.CeilingLeft ) &&
+					(getTileValue(upTile.add(0,1)) == TileType.Floor || 
+						getTileValue(upTile.add(0,1)) == TileType.Corridor) &&
+					getTileValue(upTile) != TileType.Null) {
 				this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingURight));
 				}
 				// Put Ceiling Right Corner Walls
@@ -420,10 +424,16 @@ public class Level {
 					(getTileValue(upTile) == TileType.Floor || 
 						getTileValue(upTile) == TileType.Corridor ||
 							getTileValue(upTile) == TileType.CeilingDown ||
-								getTileValue(upTile) == TileType.CeilingUpDown) &&
-									getTileValue(upTile) != TileType.Null) {
+								getTileValue(upTile) == TileType.CeilingUp ||
+									getTileValue(upTile) == TileType.CeilingUpDown ||
+										getTileValue(upTile) == TileType.CeilingRight || 
+											getTileValue(upTile) == TileType.CeilingLeft) &&
+					(getTileValue(upTile.add(0,1)) == TileType.Floor || 
+						getTileValue(upTile.add(0,1)) == TileType.Corridor) &&
+					getTileValue(upTile) != TileType.Null) {
 						this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingULeft));
 				}
+				
 				// Put Ceiling Left Corner Walls
 				if(getTileValue(map.key) == TileType.WallCornerLeftUp &&
 					(getTileValue(upTile) != TileType.Floor &&
@@ -432,6 +442,16 @@ public class Level {
 								getTileValue(upTile) != TileType.Null)) {
 						this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingLeftUp));
 				}
+			}
+		}
+		for(Entry<Point2D, Tile> map : this.tileMap.entries()) {
+			if(getTileValue(map.key) != TileType.Floor && getTileValue(map.key) != TileType.Corridor) {
+				Point2D upTile = map.key.add(0,+1);
+				Point2D downTile = map.key.add(0,-1);
+				Point2D leftTile = map.key.add(-1,0);
+				Point2D rightTile = map.key.add(+1,0);
+				
+		
 				// Put right down corner ceilings
 				if((getTileValue(map.key) == TileType.CeilingLeft || 
 						getTileValue(map.key) == TileType.CeilingRight || 
