@@ -277,4 +277,9 @@ public class GameScreen extends ScreenAdapter {
 			pauseSystems();
 		}
 	}
+	
+	@Override
+	public void resize(int width, int height) {
+		engine.getSystem(RenderingSystem.class).resizeCamera(width, height);
+	}
 }

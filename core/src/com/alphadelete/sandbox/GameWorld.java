@@ -124,23 +124,41 @@ public class GameWorld {
 			
 			Point2D coord = map.key;
 
-			if (map.value.type == Tile.TileType.None ||
-					map.value.type == Tile.TileType.Floor || 
-					map.value.type == Tile.TileType.Corridor ||
-					map.value.type == Tile.TileType.WallBase ||
-					map.value.type == Tile.TileType.WallCornerLeft ||
-					map.value.type == Tile.TileType.WallCornerRight ||
-					map.value.type == Tile.TileType.WallCornerDouble){
+			if (map.value.type == Tile.TileType.Floor || 
+				map.value.type == Tile.TileType.Corridor ||
+				map.value.type == Tile.TileType.WallBase ||
+				map.value.type == Tile.TileType.WallCornerLeft ||
+				map.value.type == Tile.TileType.WallCornerRight ||
+				map.value.type == Tile.TileType.WallCornerDouble ||
+				map.value.type == Tile.TileType.WallEnter ||
+				map.value.type == Tile.TileType.WallExit ) {
 				createFloor(coord.getX(), coord.getY(), 5, map.value.texture);
-			} else {
-				createWall(coord.getX(), coord.getY(), map.value.texture);
+			} else if (map.value.type == Tile.TileType.CeilingDown || 
+				map.value.type == Tile.TileType.CeilingLeftDown ||
+				map.value.type == Tile.TileType.CeilingRightDown ||
+				map.value.type == Tile.TileType.CeilingUpDown ||
+				map.value.type == Tile.TileType.CeilingUDown ||
+				map.value.type == Tile.TileType.CeilingULeft ||
+				map.value.type == Tile.TileType.CeilingURight ) {
+				createFloor(coord.getX(), coord.getY(), -5, map.value.texture);
+			} 
+			else if (map.value.type == Tile.TileType.WallBaseUp || 
+				map.value.type == Tile.TileType.WallCornerDoubleUp ||
+				map.value.type == Tile.TileType.WallCornerLeftUp ||
+				map.value.type == Tile.TileType.WallCornerRightUp ||
+				map.value.type == Tile.TileType.WallEnterUp ||
+				map.value.type == Tile.TileType.WallExitUp ) {
+				createWall(coord.getX(), coord.getY(), 5, map.value.texture);
+				} 
+			else {
+				createWall(coord.getX(), coord.getY(), -5, map.value.texture);
 			}
 		}
 		
 		for(Entry<Point2D, Tile> map : tileMap.entries()) {
-			if (map.value.type == Tile.TileType.Floor ) {
-				Entity player = createPlayer(map.key.getX(), map.key.getY());
-				createCamera(player, map.key.getX(), map.key.getY());
+			if (map.value.type == Tile.TileType.WallEnter ) {
+				Entity player = createPlayer(map.key.getX(), map.key.getY()-1);
+				createCamera(player, map.key.getX(), map.key.getY()-1);
 				break;
 			}
 		}
@@ -256,7 +274,7 @@ public class GameWorld {
 		engine.addEntity(entity);
 	}
 
-	private void createWall(double x, double y, TextureRegion assetTexture) {
+	private void createWall(double x, double y, double z, TextureRegion assetTexture) {
 		Entity entity = engine.createEntity();
 
 		WallComponent wall = engine.createComponent(WallComponent.class);
@@ -270,7 +288,7 @@ public class GameWorld {
 			world, 
 			BodyType.StaticBody, 
 			shape, 
-			new Vector3((float)x, (float)y, 0f), 
+			new Vector3((float)x, (float)y, (float)z), 
 			9f, 0.5f, 0.5f, 
 			false,
 			BodyComponent.CATEGORY_SCENERY,
@@ -281,7 +299,7 @@ public class GameWorld {
 		body.body.setUserData(entity);
 		shape.dispose();
 		
-		position.pos.set((float)x, (float)y, 3.0f);
+		position.pos.set((float)x, (float)y, (float)z);
 
 		texture.region = assetTexture;
 		

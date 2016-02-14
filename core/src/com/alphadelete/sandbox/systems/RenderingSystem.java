@@ -10,6 +10,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -17,13 +18,16 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class RenderingSystem extends IteratingSystem {
 	private SpriteBatch batch;
 	private Array<Entity> renderQueue;
 	private Comparator<Entity> comparator;
 	private OrthographicCamera cam;
-	
+	private Viewport viewport;
+		
 	private ComponentMapper<TextureComponent> textureM;
 	private ComponentMapper<TransformComponent> transformM;
 	
@@ -50,11 +54,12 @@ public class RenderingSystem extends IteratingSystem {
 		
 		this.batch = batch;
 		
-		float meterCamX = (Constants.APP_WIDTH * Constants.PIXELS_TO_METRES) / Constants.CAMERA_ZOOM;
-		float meterCamy = (Constants.APP_HEIGHT * Constants.PIXELS_TO_METRES) / Constants.CAMERA_ZOOM;
+		float meterCamX = (Constants.APP_WIDTH * Constants.PIXELS_TO_METRES);
+		float meterCamy = (Constants.APP_HEIGHT * Constants.PIXELS_TO_METRES);
 		
-		cam = new OrthographicCamera(meterCamX, meterCamy);
-		cam.position.set(meterCamX, meterCamy, 0);
+		cam = new OrthographicCamera();
+		viewport = new FitViewport(meterCamX, meterCamy, cam);
+		cam.zoom = Constants.CAMERA_ZOOM;		
 		
 		this.world = world;
 		if(Constants.GAME_DEBUG) {			
@@ -70,6 +75,9 @@ public class RenderingSystem extends IteratingSystem {
 	@Override
 	public void update(float deltaTime) {
 		super.update(deltaTime);
+		
+		Gdx.gl.glClearColor(0f, 0f, 0f, 1.0f);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		renderQueue.sort(comparator);
 		
@@ -124,6 +132,10 @@ public class RenderingSystem extends IteratingSystem {
 	@Override
 	public void processEntity(Entity entity, float deltaTime) {
 		renderQueue.add(entity);
+	}
+	
+	public void resizeCamera(int width, int height) {
+		viewport.update(width, height, false);
 	}
 	
 	public OrthographicCamera getCamera() {

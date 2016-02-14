@@ -45,6 +45,9 @@ public class Level {
 		placeWallFix();
 		placeCeilingFix();
 		
+		placeFirstDoor();
+		placeLastDoor();
+		
 		return this.tileMap;
 	}
 	
@@ -101,8 +104,8 @@ public class Level {
 		
 		// Randomize values for each room
 		for (int r = 0; r < Constants.MAP_ROOM_NUMBER; r++) {
-			double w = Constants.MAP_ROOM_MAXSIZE + this.rdm.nextInt((int) (Constants.MAP_ROOM_MAXSIZE - Constants.MAP_ROOM_MINSIZE + 1));
-			double h = Constants.MAP_ROOM_MINSIZE + this.rdm.nextInt((int) (Constants.MAP_ROOM_MAXSIZE - Constants.MAP_ROOM_MINSIZE + 1));
+			double w = (int)Constants.MAP_ROOM_MAXSIZE + this.rdm.nextInt((int) (Constants.MAP_ROOM_MAXSIZE - Constants.MAP_ROOM_MINSIZE + 1));
+			double h = (int)Constants.MAP_ROOM_MINSIZE + this.rdm.nextInt((int) (Constants.MAP_ROOM_MAXSIZE - Constants.MAP_ROOM_MINSIZE + 1));
 			double x = this.rdm.nextInt((int) (Constants.MAP_WIDTH - w - 1)) + 1;
 			double y = this.rdm.nextInt((int) (Constants.MAP_HEIGHT - h - 1)) + 1;
 			
@@ -356,9 +359,6 @@ public class Level {
 		for(Entry<Point2D, Tile> map : this.tileMap.entries()) {
 			if(getTileValue(map.key) != TileType.Floor && getTileValue(map.key) != TileType.Corridor) {
 				Point2D upTile = map.key.add(0,+1);
-				Point2D downTile = map.key.add(0,-1);
-				Point2D leftTile = map.key.add(-1,0);
-				Point2D rightTile = map.key.add(+1,0);
 				
 				// Fix horizontal double side ceilings
 				if(getTileValue(map.key) == TileType.WallBaseUp &&
@@ -564,6 +564,101 @@ public class Level {
 			}
 		}
 	}
+	private void placeFirstDoor() {
+		int firstDoor = 0,
+			firstDoorAttempts = 0,
+			firstRoomAttempts = 0;
+		
+		while (firstDoor == 0) {
+			if(firstRoomAttempts < this.Rooms.size()) {
+				// Try to put a door in every upper wall block
+				Room firstRoom = this.Rooms.get(firstRoomAttempts);
+				double xFirst = randDoubleRange(firstRoom.x1,firstRoom.x2);
+				double yFirst = firstRoom.y2;
+				Point2D coord = new Point2D (xFirst, yFirst); 
+				// If the number of attempts is different from the room size
+				if (firstRoom.w >= firstDoorAttempts) {
+					// Check if block is a upper wall
+					if( this.tileMap.get(coord).type == TileType.WallBase ) {
+						int variation = getTileVariation(TileType.WallEnter);
+						this.tileMap.setValue(this.tileMap.indexOfKey(coord.add(0,1)), new Tile(TileType.WallEnterUp, variation));
+						this.tileMap.setValue(this.tileMap.indexOfKey(coord), new Tile(TileType.WallEnter, variation));
+						firstDoor++;
+					} else if (this.tileMap.get(coord).type == TileType.WallBaseUp){
+						int variation = getTileVariation(TileType.WallEnter);
+						this.tileMap.setValue(this.tileMap.indexOfKey(coord), new Tile(TileType.WallEnterUp, variation));
+						this.tileMap.setValue(this.tileMap.indexOfKey(coord.add(0,-1)), new Tile(TileType.WallEnter, variation));
+						firstDoor++;					
+					}
+					firstDoorAttempts++;
+				}
+				// else there is no block available to put a door try another room
+				else {
+					firstRoomAttempts++;
+				}
+			// This should never happen
+			} else {
+				// Find for the very first wall and set it as door  
+				for(Entry<Point2D, Tile> map : tileMap.entries()) {
+					if (map.value.type == Tile.TileType.WallBase ) {
+						int variation = getTileVariation(TileType.WallEnter);
+						this.tileMap.setValue(this.tileMap.indexOfKey(map.key.add(0,1)), new Tile(TileType.WallEnterUp, variation));
+						this.tileMap.setValue(this.tileMap.indexOfKey(map.key), new Tile(TileType.WallEnter, variation));
+						firstDoor++;
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	private void placeLastDoor() {
+		int lastDoor = 0,
+			lastDoorAttempts = 0,
+			lastRoomAttempts = 0;
+		
+		while (lastDoor == 0) {
+			if (lastRoomAttempts < this.Rooms.size()) {
+				// Try to put a door in every upper wall block
+				Room lastRoom = this.Rooms.get(this.Rooms.size() - (1 + lastRoomAttempts));
+				double xFirst = randDoubleRange(lastRoom.x1,lastRoom.x2);
+				double yFirst = lastRoom.y2;
+				Point2D coord = new Point2D (xFirst, yFirst); 
+				// If the number of attempts is different from the room size
+				if (lastRoom.w >= lastDoorAttempts) {
+					// Check if block is a upper wall
+					if( this.tileMap.get(coord).type == TileType.WallBase ) {
+						int variation = getTileVariation(TileType.WallEnter);
+						this.tileMap.setValue(this.tileMap.indexOfKey(coord.add(0,1)), new Tile(TileType.WallExitUp, variation));
+						this.tileMap.setValue(this.tileMap.indexOfKey(coord), new Tile(TileType.WallExit, variation));
+						lastDoor++;
+					} else if (this.tileMap.get(coord).type == TileType.WallBaseUp){
+						int variation = getTileVariation(TileType.WallEnter);
+						this.tileMap.setValue(this.tileMap.indexOfKey(coord), new Tile(TileType.WallExitUp, variation));
+						this.tileMap.setValue(this.tileMap.indexOfKey(coord.add(0,-1)), new Tile(TileType.WallExit, variation));
+						lastDoor++;					
+					}
+					lastDoorAttempts++;
+				}
+				// else there is no block available to put a door try another room
+				else {
+					lastRoomAttempts++;
+				}
+			// This should never happen
+			} else {
+				// Find for the very first wall and set it as door  
+				for(Entry<Point2D, Tile> map : tileMap.entries()) {
+					if (map.value.type == Tile.TileType.WallBase ) {
+						int variation = getTileVariation(TileType.WallEnter);
+						this.tileMap.setValue(this.tileMap.indexOfKey(map.key.add(0,1)), new Tile(TileType.WallEnterUp, variation));
+						this.tileMap.setValue(this.tileMap.indexOfKey(map.key), new Tile(TileType.WallEnter, variation));
+						lastDoor++;
+						break;
+					}
+				}
+			}
+		}
+	}
 	// endregion
 	
 	// region Utils
@@ -583,7 +678,10 @@ public class Level {
 		return this.rdm.nextInt(type.variants()) + 1;
 	}
 	
+	private double randDoubleRange(double min, double max) {
 
+		return (double)this.rdm.nextInt((int)(max - min) + 1) + (int)min;
+	}
 	// endregion
 
 }
