@@ -4,6 +4,7 @@ import java.util.Comparator;
 
 import com.alphadelete.sandbox.components.TransformComponent;
 import com.alphadelete.sandbox.Constants;
+import com.alphadelete.sandbox.GameWorld;
 import com.alphadelete.sandbox.components.TextureComponent;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
@@ -16,9 +17,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class RenderingSystem extends IteratingSystem {
@@ -31,12 +31,12 @@ public class RenderingSystem extends IteratingSystem {
 	private ComponentMapper<TextureComponent> textureM;
 	private ComponentMapper<TransformComponent> transformM;
 	
-	private World world;
+	private GameWorld gameWorld;
 	private Matrix4 debugMatrix;
 	private Box2DDebugRenderer debugRenderer;
 	
 	@SuppressWarnings("unchecked")
-	public RenderingSystem(SpriteBatch batch, World world) {
+	public RenderingSystem(SpriteBatch batch, GameWorld gameWorld) {
 		super(Family.all(TransformComponent.class, TextureComponent.class).get());
 		
 		textureM = ComponentMapper.getFor(TextureComponent.class);
@@ -58,10 +58,10 @@ public class RenderingSystem extends IteratingSystem {
 		float meterCamy = (Constants.APP_HEIGHT * Constants.PIXELS_TO_METRES);
 		
 		cam = new OrthographicCamera();
-		viewport = new FitViewport(meterCamX, meterCamy, cam);
+		viewport = new ExtendViewport(meterCamX, meterCamy, cam);
 		cam.zoom = Constants.CAMERA_ZOOM;		
 		
-		this.world = world;
+		this.gameWorld = gameWorld;
 		if(Constants.GAME_DEBUG) {			
 			debugMatrix = new Matrix4(cam.combined);
 			debugRenderer = new Box2DDebugRenderer();
@@ -123,9 +123,9 @@ public class RenderingSystem extends IteratingSystem {
 		
 		if (Constants.GAME_DEBUG) {
 			debugMatrix.set(cam.combined);
-        	debugRenderer.render(world, debugMatrix);
+        	debugRenderer.render(gameWorld.getWorld(), debugMatrix);
 		}
-		Gdx.graphics.setTitle(String.valueOf(Gdx.app.getGraphics().getFramesPerSecond()));
+		Gdx.graphics.setTitle("FPS: " + String.valueOf(Gdx.app.getGraphics().getFramesPerSecond()) + " Seed: " + gameWorld.getSeed());
 		
 	}
 	

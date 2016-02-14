@@ -84,10 +84,10 @@ public class GameScreen extends ScreenAdapter {
 		engine.addSystem(new EffectsSystem(gameWorld));
 		engine.addSystem(new WeaponSystem());
 		engine.addSystem(new ControllerSystem());
-		engine.addSystem(new RenderingSystem(game.batcher, world));
+		engine.addSystem(new RenderingSystem(game.batcher, gameWorld));
 
 		engine.getSystem(BackgroundSystem.class).setCamera(engine.getSystem(RenderingSystem.class).getCamera());
-		engine.getSystem(RenderingSystem.class).resizeCamera(Constants.APP_WIDTH, Constants.APP_HEIGHT);
+		engine.getSystem(RenderingSystem.class).resizeCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
 		gameWorld.create();
 
