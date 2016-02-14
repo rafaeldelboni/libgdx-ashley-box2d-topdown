@@ -87,7 +87,8 @@ public class GameScreen extends ScreenAdapter {
 		engine.addSystem(new RenderingSystem(game.batcher, world));
 
 		engine.getSystem(BackgroundSystem.class).setCamera(engine.getSystem(RenderingSystem.class).getCamera());
-
+		engine.getSystem(RenderingSystem.class).resizeCamera(Constants.APP_WIDTH, Constants.APP_HEIGHT);
+		
 		gameWorld.create();
 
 		pauseBounds = new Rectangle(Constants.APP_WIDTH - 64, Constants.APP_HEIGHT - 64, 64, 64);
