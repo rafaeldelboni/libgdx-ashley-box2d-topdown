@@ -21,6 +21,7 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -58,8 +59,12 @@ public class GameScreen extends ScreenAdapter {
 		startGame(game);
 	}
 	public void startGame (Sandbox game){
-		this.seed = new Random().nextLong();
-		startGame(game, this.seed);
+		try {
+ 			this.seed = new Random().nextLong();
+			startGame(game, this.seed);
+		} catch (Exception ex){
+			Constants.LOG_FILE.writeString("Error: " + ex.toString(), true);
+		}
 	}
 	public void startGame (Sandbox game, long seed){
 		this.game = game;

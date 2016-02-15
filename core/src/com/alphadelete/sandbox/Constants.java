@@ -1,5 +1,8 @@
 package com.alphadelete.sandbox;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+
 public class Constants {
 
 	public static final int APP_WIDTH = 800;
@@ -28,5 +31,7 @@ public class Constants {
     public static final double MAP_ROOM_NUMBER = Math.sqrt(MAP_WIDTH * MAP_HEIGHT) / 2;
     
     public static final float PIXELS_TO_METRES = 1f / 16f;
+    
+    public static final FileHandle LOG_FILE = Gdx.files.local("log.txt");
     
 }

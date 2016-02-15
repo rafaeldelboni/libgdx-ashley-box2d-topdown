@@ -15,7 +15,7 @@ public class Sandbox extends Game {
 	public void create() {
 		batcher = new SpriteBatch();
 
-		Assets.load();
+		Assets.load();	
 		setScreen(new MainMenuScreen(this));
 
 		if (Constants.GAME_DEBUG) {
