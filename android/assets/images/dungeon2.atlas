@@ -213,14 +213,14 @@ ceiling-u-down-1
   orig: 32, 32
   offset: 0, 0
   index: -1
-ceiling-u-left-1
+ceiling-u-right-1
   rotate: false
   xy: 608, 63
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-ceiling-u-right-1
+ceiling-u-left-1
   rotate: false
   xy: 576, 64
   size: 32, 32

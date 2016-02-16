@@ -33,7 +33,7 @@ goblin-idle-2
   index: -1
 goblin-walk
   rotate: false
-  xy: 0, 127
+  xy: 0, 128
   size: 640, 64
   orig: 640, 64
   offset: 0, 0
@@ -61,7 +61,7 @@ goblin-warrior-idle-1
   index: -1
 goblin-warrior-idle-2
   rotate: false
-  xy: 0, 385
+  xy: 0, 384
   size: 640, 64
   orig: 640, 64
   offset: 0, 0
