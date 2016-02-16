@@ -14,9 +14,9 @@ public class Assets {
 	public static TextureRegion backgroundRegion;
 	
 	public static TextureAtlas menuAtlas = new TextureAtlas(Gdx.files.internal("images/menu.atlas"));
-	public static TextureAtlas dungeonAtlas = new TextureAtlas(Gdx.files.internal("images/dungeon.atlas"));
+	public static TextureAtlas dungeonAtlas = new TextureAtlas(Gdx.files.internal("images/dungeon2.atlas"));
 	public static TextureAtlas warriorAtlas = new TextureAtlas(Gdx.files.internal("images/warrior2.atlas"));
-	public static TextureAtlas goblinAtlas = new TextureAtlas(Gdx.files.internal("images/goblin.atlas"));
+	public static TextureAtlas goblinAtlas = new TextureAtlas(Gdx.files.internal("images/goblin2.atlas"));
 	public static TextureAtlas attackAtlas = new TextureAtlas(Gdx.files.internal("images/atk_slash.atlas"));
 	public static TextureRegion menuMain;
 	public static TextureRegion menuPause;
@@ -72,15 +72,15 @@ public class Assets {
 	}
 	
 	private static void loadWarrior () {
-		warriorIdleAnimation = Assets.loadAtlasAnimations("warrior-idle-1", Assets.warriorAtlas, PlayMode.LOOP, new Vector2(32,32));
-		warriorWalkAnimation = Assets.loadAtlasAnimations("warrior-walk", Assets.warriorAtlas, PlayMode.LOOP, new Vector2(32,32));
+		warriorIdleAnimation = Assets.loadAtlasAnimations("warrior-idle-1", Assets.warriorAtlas, PlayMode.LOOP, new Vector2(64,64));
+		warriorWalkAnimation = Assets.loadAtlasAnimations("warrior-walk", Assets.warriorAtlas, PlayMode.LOOP, new Vector2(64,64));
 		warriorWeapon1 = Assets.loadAtlasTextureRegion("warrior-arm-1", Assets.warriorAtlas);
 	}
 	
 	private static void loadGoblin () {
-		goblinIdleAnimation = Assets.loadAtlasAnimations("goblin-idle-1", Assets.goblinAtlas, PlayMode.LOOP, new Vector2(32,32));
-		goblinWalkAnimation = Assets.loadAtlasAnimations("goblin-walk", Assets.goblinAtlas, PlayMode.LOOP, new Vector2(32,32));
-		goblinDieAnimation = Assets.loadAtlasAnimations("goblin-dying", Assets.goblinAtlas, PlayMode.NORMAL, new Vector2(32,32));
+		goblinIdleAnimation = Assets.loadAtlasAnimations("goblin-idle-1", Assets.goblinAtlas, PlayMode.LOOP, new Vector2(64,64));
+		goblinWalkAnimation = Assets.loadAtlasAnimations("goblin-walk", Assets.goblinAtlas, PlayMode.LOOP, new Vector2(64,64));
+		goblinDieAnimation = Assets.loadAtlasAnimations("goblin-dying", Assets.goblinAtlas, PlayMode.NORMAL, new Vector2(64,64));
 	}
 	
 	private static void loadEffects ()	{

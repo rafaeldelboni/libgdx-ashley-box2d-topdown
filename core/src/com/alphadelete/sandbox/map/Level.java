@@ -3,11 +3,9 @@ package com.alphadelete.sandbox.map;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import javafx.geometry.Point2D;
-
 import com.alphadelete.sandbox.Constants;
 import com.alphadelete.sandbox.map.Tile.TileType;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 
@@ -16,7 +14,7 @@ public class Level {
 	private Random rdm;
 	private List<Room> Rooms;
 	private List<Room> Corridors;
-	private ArrayMap<Point2D, Tile> tileMap;
+	private ArrayMap<Vector2, Tile> tileMap;
 	
     public Level() {
     	// Random without seeds
@@ -36,7 +34,7 @@ public class Level {
 		this.Corridors = generateCorridors();
 	}
 	
-	public ArrayMap<Point2D, Tile> generate() {
+	public ArrayMap<Vector2, Tile> generate() {
 		placeRooms();
 		placeCorridors();
 		placeWallRooms();
@@ -59,9 +57,9 @@ public class Level {
 	private void placeRooms() {
 		// Carve the rooms in base map
 		for(Room room : this.Rooms) {
-			for (double x = room.x1; x < room.x2; x++) {
-				for (double y = room.y1; y < room.y2; y++) {
-					Point2D coord = new Point2D(x, y);
+			for (float x = room.x1; x < room.x2; x++) {
+				for (float y = room.y1; y < room.y2; y++) {
+					Vector2 coord = new Vector2(x, y);
 					this.tileMap.put(coord, createTile(TileType.Floor));
 				}
 			}
@@ -71,9 +69,9 @@ public class Level {
 	private void placeCorridors() {
 		// Carve the corridor in base map
 		for(Room corridor : this.Corridors) {
-			for (double x = corridor.x1; x < corridor.x2; x++) {
-				for (double y = corridor.y1; y < corridor.y2; y++) {
-					Point2D coord = new Point2D(x, y);
+			for (float x = corridor.x1; x < corridor.x2; x++) {
+				for (float y = corridor.y1; y < corridor.y2; y++) {
+					Vector2 coord = new Vector2(x, y);
 					this.tileMap.put(coord, createTile(TileType.Corridor));
 				}
 			}
@@ -82,12 +80,12 @@ public class Level {
 	// endregion
 	
 	// region map
-	private ArrayMap<Point2D, Tile> generateMap() {
-		ArrayMap<Point2D, Tile> newMap = new ArrayMap<Point2D, Tile> ();
+	private ArrayMap<Vector2, Tile> generateMap() {
+		ArrayMap<Vector2, Tile> newMap = new ArrayMap<Vector2, Tile> ();
 		// Create base map without Tiles
 		for(int x = 0; x < Constants.MAP_WIDTH; x++) {
 			for(int y = 0; y < Constants.MAP_HEIGHT; y++) {
-				Point2D coord = new Point2D(x, y);
+				Vector2 coord = new Vector2(x, y);
 				newMap.put(coord, createTile(TileType.None));
 			}			
 		}
@@ -104,10 +102,10 @@ public class Level {
 		
 		// Randomize values for each room
 		for (int r = 0; r < Constants.MAP_ROOM_NUMBER; r++) {
-			double w = (int)Constants.MAP_ROOM_MAXSIZE + this.rdm.nextInt((int) (Constants.MAP_ROOM_MAXSIZE - Constants.MAP_ROOM_MINSIZE + 1));
-			double h = (int)Constants.MAP_ROOM_MINSIZE + this.rdm.nextInt((int) (Constants.MAP_ROOM_MAXSIZE - Constants.MAP_ROOM_MINSIZE + 1));
-			double x = this.rdm.nextInt((int) (Constants.MAP_WIDTH - w - 1)) + 1;
-			double y = this.rdm.nextInt((int) (Constants.MAP_HEIGHT - h - 1)) + 1;
+			float w = (int)Constants.MAP_ROOM_MAXSIZE + this.rdm.nextInt((int) (Constants.MAP_ROOM_MAXSIZE - Constants.MAP_ROOM_MINSIZE + 1));
+			float h = (int)Constants.MAP_ROOM_MINSIZE + this.rdm.nextInt((int) (Constants.MAP_ROOM_MAXSIZE - Constants.MAP_ROOM_MINSIZE + 1));
+			float x = this.rdm.nextInt((int) (Constants.MAP_WIDTH - w - 1)) + 1;
+			float y = this.rdm.nextInt((int) (Constants.MAP_HEIGHT - h - 1)) + 1;
 			
 			// Create room with randomized values
 			Room newRoom = new Room(x, y, w, h);
@@ -138,20 +136,20 @@ public class Level {
 		
 		// Loop each room
 		for (int i = 0; i < this.Rooms.size(); i++) {
-			Point2D thisCenter = this.Rooms.get(i).center;
+			Vector2 thisCenter = this.Rooms.get(i).center;
 			
 			// Check if it is the last room
 			if (i + 1 != Rooms.size()) {
-				Point2D nextCenter = this.Rooms.get(i + 1).center;
+				Vector2 nextCenter = this.Rooms.get(i + 1).center;
 				
 				// Carve out corridors between rooms based on centers
 				// Randomly start with horizontal or vertical corridors
 				if (rdm.nextInt(2) == 1) {
-					newCorridors.add(hCorridor(thisCenter.getX(), nextCenter.getX(), thisCenter.getY()));
-					newCorridors.add(vCorridor(thisCenter.getY(), nextCenter.getY(), nextCenter.getX()));
+					newCorridors.add(hCorridor(thisCenter.x, nextCenter.x, thisCenter.y));
+					newCorridors.add(vCorridor(thisCenter.y, nextCenter.y, nextCenter.x));
 				} else {
-					newCorridors.add(vCorridor(thisCenter.getY(), nextCenter.getY(), thisCenter.getX()));
-					newCorridors.add(hCorridor(thisCenter.getX(), nextCenter.getX(), nextCenter.getY()));			
+					newCorridors.add(vCorridor(thisCenter.y, nextCenter.y, thisCenter.x));
+					newCorridors.add(hCorridor(thisCenter.x, nextCenter.x, nextCenter.y));			
 				}
 			}
 		}
@@ -159,20 +157,20 @@ public class Level {
 		return newCorridors;
 	}
 	
-	private Room hCorridor(double x1, double x2, double y1) {
-		double h = Constants.MAP_CORRIDOR_SIZE;
-		double w = Math.max(x1, x2) - Math.min(x1, x2) + Constants.MAP_CORRIDOR_SIZE;
-		double x = Math.min(x1, x2);
-		double y = y1;
+	private Room hCorridor(float x1, float x2, float y1) {
+		float h = Constants.MAP_CORRIDOR_SIZE;
+		float w = Math.max(x1, x2) - Math.min(x1, x2) + Constants.MAP_CORRIDOR_SIZE;
+		float x = Math.min(x1, x2);
+		float y = y1;
 		Room corridor = new Room(x, y, w, h);
 		return corridor;
 	}
 	
-	private Room vCorridor(double y1, double y2, double x1) {
-		double h = Math.max(y1, y2) - Math.min(y1, y2);
-		double w = Constants.MAP_CORRIDOR_SIZE;
-		double x = x1;
-		double y = Math.min(y1, y2);
+	private Room vCorridor(float y1, float y2, float x1) {
+		float h = Math.max(y1, y2) - Math.min(y1, y2);
+		float w = Constants.MAP_CORRIDOR_SIZE;
+		float x = x1;
+		float y = Math.min(y1, y2);
 		Room corridor = new Room(x, y, w, h);
 		return corridor;
 	}
@@ -180,26 +178,26 @@ public class Level {
 	
 	// region wall
 	private void placeWallRooms() {
-		for(Entry<Point2D, Tile> map : this.tileMap.entries()) {
+		for(Entry<Vector2, Tile> map : this.tileMap.entries()) {
 
 			if (map.value.type == TileType.Floor ) {
 				
-				Point2D leftWall = map.key.add(-1,0);
+				Vector2 leftWall = map.key.cpy().add(-1,0);
 				if (getTileValue(leftWall) == TileType.None) {
 					this.tileMap.setValue(this.tileMap.indexOfKey(leftWall), createTile(TileType.CeilingLeft));
 				}
 			
-				Point2D rightWall = map.key.add(+1,0);
+				Vector2 rightWall = map.key.cpy().add(+1,0);
 				if (getTileValue(rightWall) == TileType.None) {
 					this.tileMap.setValue(this.tileMap.indexOfKey(rightWall), createTile(TileType.CeilingRight));
 				}
 
-				Point2D downWall = map.key.add(0,-1);
+				Vector2 downWall = map.key.cpy().add(0,-1);
 				if (getTileValue(downWall) == TileType.None) {
 					this.tileMap.setValue(this.tileMap.indexOfKey(map.key), createTile(TileType.CeilingDown));
 				}
 
-				Point2D upWallCheck = map.key.add(0,+1);
+				Vector2 upWallCheck = map.key.cpy().add(0,+1);
 				if (getTileValue(upWallCheck) == TileType.None && 
 						getTileValue(map.key) != TileType.CeilingLeft &&
 							getTileValue(map.key) != TileType.CeilingRight ) {
@@ -212,32 +210,32 @@ public class Level {
 	}
 	
 	private void placeWallCorridors() {
-		for(Entry<Point2D, Tile> map : this.tileMap.entries()) {
+		for(Entry<Vector2, Tile> map : this.tileMap.entries()) {
 
 			if (map.value.type == TileType.Corridor) {
 				
-				Point2D leftWall = map.key.add(-1,0);
+				Vector2 leftWall = map.key.cpy().add(-1,0);
 				if (getTileValue(leftWall) == TileType.None) {
 					this.tileMap.setValue(this.tileMap.indexOfKey(leftWall), createTile(TileType.CeilingLeft));
 				}
 			
-				Point2D rightWall = map.key.add(+1,0);
+				Vector2 rightWall = map.key.cpy().add(+1,0);
 				if (getTileValue(rightWall) == TileType.None) {
 					this.tileMap.setValue(this.tileMap.indexOfKey(rightWall), createTile(TileType.CeilingRight));
 				}
 
-				Point2D downWall = map.key.add(0,-1);
+				Vector2 downWall = map.key.cpy().add(0,-1);
 				if (getTileValue(downWall) == TileType.None) {
 					this.tileMap.setValue(this.tileMap.indexOfKey(downWall), createTile(TileType.CeilingDown));
 				}
 
-				Point2D upWallCheck = map.key.add(0,+1);
+				Vector2 upWallCheck = map.key.cpy().add(0,+1);
 				if (getTileValue(upWallCheck) == TileType.None && 
 						getTileValue(map.key) != TileType.CeilingLeft &&
 							getTileValue(map.key) != TileType.CeilingRight ) {
 					int variation = getTileVariation(TileType.WallBase);
 					this.tileMap.setValue(this.tileMap.indexOfKey(upWallCheck), new Tile(TileType.WallBase, variation));
-					this.tileMap.setValue(this.tileMap.indexOfKey(upWallCheck.add(0,+1)), new Tile(TileType.WallBaseUp, variation));
+					this.tileMap.setValue(this.tileMap.indexOfKey(upWallCheck.cpy().add(0,+1)), new Tile(TileType.WallBaseUp, variation));
 				}
 				
 			}
@@ -247,11 +245,11 @@ public class Level {
 
 	private void placeWallFix() {
 		
-		for(Entry<Point2D, Tile> map : this.tileMap.entries()) {
+		for(Entry<Vector2, Tile> map : this.tileMap.entries()) {
 			if(getTileValue(map.key) != TileType.Floor && getTileValue(map.key) != TileType.Corridor) {
-				Point2D downTile = map.key.add(0,-1);
-				Point2D upTile = map.key.add(0,+1);
-				Point2D up2Tile = map.key.add(0,+2);
+				Vector2 downTile = map.key.cpy().add(0,-1);
+				Vector2 upTile = map.key.cpy().add(0,+1);
+				Vector2 up2Tile = map.key.cpy().add(0,+2);
 				
 				// Remove upper walls in the middle of the corridor
 				if ( 
@@ -268,13 +266,13 @@ public class Level {
 			}
 		}
 		
-		for(Entry<Point2D, Tile> map : this.tileMap.entries()) {
+		for(Entry<Vector2, Tile> map : this.tileMap.entries()) {
 			if(getTileValue(map.key) != TileType.Floor && getTileValue(map.key) != TileType.Corridor) {
-				Point2D leftTile = map.key.add(-1,0);
-				Point2D rightTile = map.key.add(+1,0);
-				Point2D downTile = map.key.add(0,-1);
-				Point2D upTile = map.key.add(0,+1);
-				Point2D up2Tile = map.key.add(0,+2);
+				Vector2 leftTile = map.key.cpy().add(-1,0);
+				Vector2 rightTile = map.key.cpy().add(+1,0);
+				Vector2 downTile = map.key.cpy().add(0,-1);
+				Vector2 upTile = map.key.cpy().add(0,+1);
+				Vector2 up2Tile = map.key.cpy().add(0,+2);
 
 				// Put Right Wall Corner
 				if ( 
@@ -356,9 +354,9 @@ public class Level {
 	}
 	
 	private void placeCeilingFix() {
-		for(Entry<Point2D, Tile> map : this.tileMap.entries()) {
+		for(Entry<Vector2, Tile> map : this.tileMap.entries()) {
 			if(getTileValue(map.key) != TileType.Floor && getTileValue(map.key) != TileType.Corridor) {
-				Point2D upTile = map.key.add(0,+1);
+				Vector2 upTile = map.key.cpy().add(0,1);
 				
 				// Fix horizontal double side ceilings
 				if(getTileValue(map.key) == TileType.WallBaseUp &&
@@ -406,8 +404,8 @@ public class Level {
 								getTileValue(upTile) == TileType.CeilingUpDown || 
 									getTileValue(upTile) == TileType.CeilingRight || 
 										getTileValue(upTile) == TileType.CeilingLeft ) &&
-					(getTileValue(upTile.add(0,1)) == TileType.Floor || 
-						getTileValue(upTile.add(0,1)) == TileType.Corridor) &&
+					(getTileValue(upTile.cpy().add(0,1)) == TileType.Floor || 
+						getTileValue(upTile.cpy().add(0,1)) == TileType.Corridor) &&
 					getTileValue(upTile) != TileType.Null) {
 				this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingURight));
 				}
@@ -428,8 +426,8 @@ public class Level {
 									getTileValue(upTile) == TileType.CeilingUpDown ||
 										getTileValue(upTile) == TileType.CeilingRight || 
 											getTileValue(upTile) == TileType.CeilingLeft) &&
-					(getTileValue(upTile.add(0,1)) == TileType.Floor || 
-						getTileValue(upTile.add(0,1)) == TileType.Corridor) &&
+					(getTileValue(upTile.cpy().add(0,1)) == TileType.Floor || 
+						getTileValue(upTile.cpy().add(0,1)) == TileType.Corridor) &&
 					getTileValue(upTile) != TileType.Null) {
 						this.tileMap.setValue(this.tileMap.indexOfKey(upTile), createTile(TileType.CeilingULeft));
 				}
@@ -444,12 +442,12 @@ public class Level {
 				}
 			}
 		}
-		for(Entry<Point2D, Tile> map : this.tileMap.entries()) {
+		for(Entry<Vector2, Tile> map : this.tileMap.entries()) {
 			if(getTileValue(map.key) != TileType.Floor && getTileValue(map.key) != TileType.Corridor) {
-				Point2D upTile = map.key.add(0,+1);
-				Point2D downTile = map.key.add(0,-1);
-				Point2D leftTile = map.key.add(-1,0);
-				Point2D rightTile = map.key.add(+1,0);
+				Vector2 upTile = map.key.cpy().add(0,+1);
+				Vector2 downTile = map.key.cpy().add(0,-1);
+				Vector2 leftTile = map.key.cpy().add(-1,0);
+				Vector2 rightTile = map.key.cpy().add(+1,0);
 				
 		
 				// Put right down corner ceilings
@@ -573,21 +571,21 @@ public class Level {
 			if(firstRoomAttempts < this.Rooms.size()) {
 				// Try to put a door in every upper wall block
 				Room firstRoom = this.Rooms.get(firstRoomAttempts);
-				double xFirst = randDoubleRange(firstRoom.x1,firstRoom.x2);
-				double yFirst = firstRoom.y2;
-				Point2D coord = new Point2D (xFirst, yFirst); 
+				float xFirst = randFloatRange(firstRoom.x1,firstRoom.x2);
+				float yFirst = firstRoom.y2;
+				Vector2 coord = new Vector2 (xFirst, yFirst); 
 				// If the number of attempts is different from the room size
 				if (firstRoom.w >= firstDoorAttempts) {
 					// Check if block is a upper wall
 					if( this.tileMap.get(coord).type == TileType.WallBase ) {
 						int variation = getTileVariation(TileType.WallEnter);
-						this.tileMap.setValue(this.tileMap.indexOfKey(coord.add(0,1)), new Tile(TileType.WallEnterUp, variation));
+						this.tileMap.setValue(this.tileMap.indexOfKey(coord.cpy().add(0,1)), new Tile(TileType.WallEnterUp, variation));
 						this.tileMap.setValue(this.tileMap.indexOfKey(coord), new Tile(TileType.WallEnter, variation));
 						firstDoor++;
 					} else if (this.tileMap.get(coord).type == TileType.WallBaseUp){
 						int variation = getTileVariation(TileType.WallEnter);
 						this.tileMap.setValue(this.tileMap.indexOfKey(coord), new Tile(TileType.WallEnterUp, variation));
-						this.tileMap.setValue(this.tileMap.indexOfKey(coord.add(0,-1)), new Tile(TileType.WallEnter, variation));
+						this.tileMap.setValue(this.tileMap.indexOfKey(coord.cpy().add(0,-1)), new Tile(TileType.WallEnter, variation));
 						firstDoor++;					
 					}
 					firstDoorAttempts++;
@@ -599,10 +597,10 @@ public class Level {
 			// This should never happen
 			} else {
 				// Find for the very first wall and set it as door  
-				for(Entry<Point2D, Tile> map : tileMap.entries()) {
+				for(Entry<Vector2, Tile> map : tileMap.entries()) {
 					if (map.value.type == Tile.TileType.WallBase ) {
 						int variation = getTileVariation(TileType.WallEnter);
-						this.tileMap.setValue(this.tileMap.indexOfKey(map.key.add(0,1)), new Tile(TileType.WallEnterUp, variation));
+						this.tileMap.setValue(this.tileMap.indexOfKey(map.key.cpy().add(0,1)), new Tile(TileType.WallEnterUp, variation));
 						this.tileMap.setValue(this.tileMap.indexOfKey(map.key), new Tile(TileType.WallEnter, variation));
 						firstDoor++;
 						break;
@@ -621,21 +619,21 @@ public class Level {
 			if (lastRoomAttempts < this.Rooms.size()) {
 				// Try to put a door in every upper wall block
 				Room lastRoom = this.Rooms.get(this.Rooms.size() - (1 + lastRoomAttempts));
-				double xFirst = randDoubleRange(lastRoom.x1,lastRoom.x2);
-				double yFirst = lastRoom.y2;
-				Point2D coord = new Point2D (xFirst, yFirst); 
+				float xFirst = randFloatRange(lastRoom.x1,lastRoom.x2);
+				float yFirst = lastRoom.y2;
+				Vector2 coord = new Vector2 (xFirst, yFirst); 
 				// If the number of attempts is different from the room size
 				if (lastRoom.w >= lastDoorAttempts) {
 					// Check if block is a upper wall
 					if( this.tileMap.get(coord).type == TileType.WallBase ) {
 						int variation = getTileVariation(TileType.WallEnter);
-						this.tileMap.setValue(this.tileMap.indexOfKey(coord.add(0,1)), new Tile(TileType.WallExitUp, variation));
+						this.tileMap.setValue(this.tileMap.indexOfKey(coord.cpy().add(0,1)), new Tile(TileType.WallExitUp, variation));
 						this.tileMap.setValue(this.tileMap.indexOfKey(coord), new Tile(TileType.WallExit, variation));
 						lastDoor++;
 					} else if (this.tileMap.get(coord).type == TileType.WallBaseUp){
 						int variation = getTileVariation(TileType.WallEnter);
 						this.tileMap.setValue(this.tileMap.indexOfKey(coord), new Tile(TileType.WallExitUp, variation));
-						this.tileMap.setValue(this.tileMap.indexOfKey(coord.add(0,-1)), new Tile(TileType.WallExit, variation));
+						this.tileMap.setValue(this.tileMap.indexOfKey(coord.cpy().add(0,-1)), new Tile(TileType.WallExit, variation));
 						lastDoor++;					
 					}
 					lastDoorAttempts++;
@@ -647,10 +645,10 @@ public class Level {
 			// This should never happen
 			} else {
 				// Find for the very first wall and set it as door  
-				for(Entry<Point2D, Tile> map : tileMap.entries()) {
+				for(Entry<Vector2, Tile> map : tileMap.entries()) {
 					if (map.value.type == Tile.TileType.WallBase ) {
 						int variation = getTileVariation(TileType.WallEnter);
-						this.tileMap.setValue(this.tileMap.indexOfKey(map.key.add(0,1)), new Tile(TileType.WallEnterUp, variation));
+						this.tileMap.setValue(this.tileMap.indexOfKey(map.key.cpy().add(0,1)), new Tile(TileType.WallEnterUp, variation));
 						this.tileMap.setValue(this.tileMap.indexOfKey(map.key), new Tile(TileType.WallEnter, variation));
 						lastDoor++;
 						break;
@@ -667,7 +665,7 @@ public class Level {
 		return new Tile (type, variation);
 	}
 	
-	private TileType getTileValue (Point2D tile) {
+	private TileType getTileValue (Vector2 tile) {
 		if (this.tileMap.containsKey(tile))
 			return this.tileMap.get(tile).type;
 		
@@ -678,9 +676,9 @@ public class Level {
 		return this.rdm.nextInt(type.variants()) + 1;
 	}
 	
-	private double randDoubleRange(double min, double max) {
+	private float randFloatRange(float min, float max) {
 
-		return (double)this.rdm.nextInt((int)(max - min) + 1) + (int)min;
+		return (float)this.rdm.nextInt((int)(max - min) + 1) + (int)min;
 	}
 	// endregion
 

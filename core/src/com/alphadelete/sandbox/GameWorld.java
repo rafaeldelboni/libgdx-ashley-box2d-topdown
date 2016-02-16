@@ -26,9 +26,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
-
-import javafx.geometry.Point2D;
-
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -119,10 +116,10 @@ public class GameWorld {
 		Level dungeon = new Level(this.seed);
 		this.seed = dungeon.getSeed();
 		
-		ArrayMap<Point2D, Tile> tileMap = dungeon.generate();
-		for(Entry<Point2D, Tile> map : tileMap.entries()) {
+		ArrayMap<Vector2, Tile> tileMap = dungeon.generate();
+		for(Entry<Vector2, Tile> map : tileMap.entries()) {
 			
-			Point2D coord = map.key;
+			Vector2 coord = map.key;
 
 			if (map.value.type == Tile.TileType.Floor || 
 				map.value.type == Tile.TileType.Corridor ||
@@ -132,7 +129,7 @@ public class GameWorld {
 				map.value.type == Tile.TileType.WallCornerDouble ||
 				map.value.type == Tile.TileType.WallEnter ||
 				map.value.type == Tile.TileType.WallExit ) {
-				createFloor(coord.getX(), coord.getY(), 5, map.value.texture);
+				createFloor(coord.x, coord.y, 5, map.value.texture);
 			} else if (map.value.type == Tile.TileType.CeilingDown || 
 				map.value.type == Tile.TileType.CeilingLeftDown ||
 				map.value.type == Tile.TileType.CeilingRightDown ||
@@ -140,7 +137,7 @@ public class GameWorld {
 				map.value.type == Tile.TileType.CeilingUDown ||
 				map.value.type == Tile.TileType.CeilingULeft ||
 				map.value.type == Tile.TileType.CeilingURight ) {
-				createFloor(coord.getX(), coord.getY(), -5, map.value.texture);
+				createFloor(coord.x, coord.y, -5, map.value.texture);
 			} 
 			else if (map.value.type == Tile.TileType.WallBaseUp || 
 				map.value.type == Tile.TileType.WallCornerDoubleUp ||
@@ -148,17 +145,17 @@ public class GameWorld {
 				map.value.type == Tile.TileType.WallCornerRightUp ||
 				map.value.type == Tile.TileType.WallEnterUp ||
 				map.value.type == Tile.TileType.WallExitUp ) {
-				createWall(coord.getX(), coord.getY(), 5, map.value.texture);
+				createWall(coord.x, coord.y, 5, map.value.texture);
 				} 
 			else {
-				createWall(coord.getX(), coord.getY(), -5, map.value.texture);
+				createWall(coord.x, coord.y, -5, map.value.texture);
 			}
 		}
 		
-		for(Entry<Point2D, Tile> map : tileMap.entries()) {
+		for(Entry<Vector2, Tile> map : tileMap.entries()) {
 			if (map.value.type == Tile.TileType.WallEnter ) {
-				Entity player = createPlayer(map.key.getX(), map.key.getY()-1);
-				createCamera(player, map.key.getX(), map.key.getY()-1);
+				Entity player = createPlayer(map.key.x, map.key.y-1);
+				createCamera(player, map.key.x, map.key.y-1);
 				break;
 			}
 		}
@@ -172,7 +169,7 @@ public class GameWorld {
 		this.state = WORLD_STATE_RUNNING;
 	}
 
-	private Entity createPlayer(double x, double y) {
+	private Entity createPlayer(float x, float y) {
 		Entity entity = engine.createEntity();
 
 		AnimationComponent animation = engine.createComponent(AnimationComponent.class);
@@ -184,7 +181,7 @@ public class GameWorld {
 		
 		WeaponComponent weapon = new WeaponComponent(
 			engine, 
-			new Vector3((float)x, (float)y, 0f), 
+			new Vector3(x, y, 0f), 
 			Assets.warriorWeapon1, 
 			WeaponComponent.TYPE_PLAYER
 		);
@@ -197,7 +194,7 @@ public class GameWorld {
 			world, 
 			BodyType.DynamicBody, 
 			shape, 
-			new Vector3 ((float)x, (float)y , 1), 
+			new Vector3 (x, y , 1), 
 			9f, 0.5f, 0.5f, 
 			false,
 			BodyComponent.CATEGORY_PLAYER,
@@ -228,12 +225,12 @@ public class GameWorld {
 		return entity;
 	}
 
-	private void createCamera(Entity target, double x, double y) {
+	private void createCamera(Entity target, float x, float y) {
 		Entity entity = engine.createEntity();
 
 		CameraComponent camera = new CameraComponent();
 		camera.camera = engine.getSystem(RenderingSystem.class).getCamera();
-		camera.camera.position.set(new Vector3 ((float)x, (float)y , 0));
+		camera.camera.position.set(new Vector3 (x, y , 0));
 		camera.target = target;
 
 		entity.add(camera);
@@ -257,14 +254,14 @@ public class GameWorld {
 		engine.addEntity(entity);
 	}
 	
-	private void createFloor(double x, double y, double z, TextureRegion assetTexture) {
+	private void createFloor(float x, float y, float z, TextureRegion assetTexture) {
 		Entity entity = engine.createEntity();
 
 		WallComponent wall = engine.createComponent(WallComponent.class);
 		TransformComponent position = engine.createComponent(TransformComponent.class);
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
 
-		position.pos.set((float)x, (float)y, (float)z);
+		position.pos.set(x, y, z);
 		texture.region = assetTexture;
 		
 		entity.add(wall);
@@ -274,7 +271,7 @@ public class GameWorld {
 		engine.addEntity(entity);
 	}
 
-	private void createWall(double x, double y, double z, TextureRegion assetTexture) {
+	private void createWall(float x, float y, float z, TextureRegion assetTexture) {
 		Entity entity = engine.createEntity();
 
 		WallComponent wall = engine.createComponent(WallComponent.class);
@@ -288,18 +285,18 @@ public class GameWorld {
 			world, 
 			BodyType.StaticBody, 
 			shape, 
-			new Vector3((float)x, (float)y, (float)z), 
+			new Vector3(x, y, z), 
 			9f, 0.5f, 0.5f, 
 			false,
 			BodyComponent.CATEGORY_SCENERY,
 			BodyComponent.MASK_SCENERY
 		);
-		body.body.setTransform((float)x, (float)y, 0f);
+		body.body.setTransform(x, y, 0f);
 		body.body.setFixedRotation(true);
 		body.body.setUserData(entity);
 		shape.dispose();
 		
-		position.pos.set((float)x, (float)y, (float)z);
+		position.pos.set(x, y, z);
 
 		texture.region = assetTexture;
 		
@@ -375,7 +372,7 @@ public class GameWorld {
 		AttackComponent attack = new AttackComponent(1);
 		
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(2f * 0.35f, 2f * 0.35f);
+		shape.setAsBox(2f * 0.65f, 2f * 0.65f);
 		BodyComponent body = new BodyComponent(
 			entity,
 			world, 
@@ -390,7 +387,7 @@ public class GameWorld {
 		body.body.setUserData(entity);
 		shape.dispose();
 
-		position.scale.set(0.35f, 0.35f);
+		position.scale.set(0.65f, 0.65f);
 		position.rotation = angle;
 		position.pos.set(attackX, attackY, 0.9f);
 		animation.animations.put(0, Assets.attackEffect);

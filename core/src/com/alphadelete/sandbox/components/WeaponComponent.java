@@ -20,7 +20,7 @@ public class WeaponComponent implements Component {
 		
 		this.texture = engine.createComponent(TextureComponent.class);
 		this.position = engine.createComponent(TransformComponent.class);
-		this.position.setOrigin(13f, 23f); 
+		this.position.setOrigin(26f, 46f); 
 		this.position.pos.set(positon);
 		this.texture.region = texture;
 		

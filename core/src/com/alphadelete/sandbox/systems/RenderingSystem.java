@@ -18,7 +18,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class RenderingSystem extends IteratingSystem {
@@ -58,7 +58,7 @@ public class RenderingSystem extends IteratingSystem {
 		float meterCamy = (Constants.APP_HEIGHT * Constants.PIXELS_TO_METRES);
 		
 		cam = new OrthographicCamera();
-		viewport = new ExtendViewport(meterCamX, meterCamy, cam);
+		viewport = new FitViewport(meterCamX, meterCamy, cam);
 		cam.zoom = Constants.CAMERA_ZOOM;		
 		
 		this.gameWorld = gameWorld;

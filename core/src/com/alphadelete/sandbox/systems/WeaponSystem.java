@@ -40,7 +40,7 @@ public class WeaponSystem extends IteratingSystem {
 			weapon.position.scale.y = Math.abs(weapon.position.scale.y) * player.scaleSide;
 			weapon.position.rotation = angle + (player.attackStance * player.scaleSide);
 
-			weapon.position.pos.set(t.pos.x - 0.30f * player.scaleSide, t.pos.y + 0.4f, 0f);
+			weapon.position.pos.set(t.pos.x - 0.30f * player.scaleSide, t.pos.y + 0.38f, 0f);
 		}
 	}
 }
