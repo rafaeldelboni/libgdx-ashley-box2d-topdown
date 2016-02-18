@@ -14,7 +14,7 @@ public class Assets {
 	public static TextureRegion backgroundRegion;
 	
 	public static TextureAtlas menuAtlas = new TextureAtlas(Gdx.files.internal("images/menu.atlas"));
-	public static TextureAtlas dungeonAtlas = new TextureAtlas(Gdx.files.internal("images/dungeon2.atlas"));
+	public static TextureAtlas dungeonAtlas = new TextureAtlas(Gdx.files.internal("images/dg2.atlas"));
 	public static TextureAtlas warriorAtlas = new TextureAtlas(Gdx.files.internal("images/warrior2.atlas"));
 	public static TextureAtlas goblinAtlas = new TextureAtlas(Gdx.files.internal("images/goblin2.atlas"));
 	public static TextureAtlas attackAtlas = new TextureAtlas(Gdx.files.internal("images/atk_slash.atlas"));
