@@ -16,6 +16,7 @@ import com.alphadelete.sandbox.components.WallComponent;
 import com.alphadelete.sandbox.components.WeaponComponent;
 import com.alphadelete.sandbox.systems.EnemySystem;
 import com.alphadelete.sandbox.systems.RenderingSystem;
+import com.alphadelete.utils.astar.AStarMap;
 import com.alphadelete.sandbox.map.Level;
 import com.alphadelete.sandbox.map.Tile;
 import com.badlogic.ashley.core.ComponentMapper;
@@ -52,10 +53,14 @@ public class GameWorld {
 	private World world;
 	private Long seed;
 	
+	private AStarMap aStarMap;
+	
 	public GameWorld(PooledEngine engine, World world, long seed) {
 		this.engine = engine;
 		this.world = world;
 		this.seed = seed;
+		// create map for A* path finding
+		this.aStarMap = new AStarMap((int)Constants.MAP_WIDTH, (int)Constants.MAP_HEIGHT);
 	}
 	
 	public PooledEngine getEngine() {
@@ -68,6 +73,10 @@ public class GameWorld {
 	
 	public long getSeed() {
 		return this.seed;
+	}
+	
+	public AStarMap getAStarMap() {
+		return this.aStarMap;
 	}
 
 	public void create() {
@@ -109,14 +118,14 @@ public class GameWorld {
 	            }
 	        }
 		 );
-		 
 
 		createBackground();
 		
 		Level dungeon = new Level(this.seed);
 		this.seed = dungeon.getSeed();
-		
-		ArrayMap<Vector2, Tile> tileMap = dungeon.generate();
+				
+		//ArrayMap<Vector2, Tile> tileMap = dungeon.generateDungeon();
+		ArrayMap<Vector2, Tile> tileMap = dungeon.generateTestRoom();
 		for(Entry<Vector2, Tile> map : tileMap.entries()) {
 			
 			Vector2 coord = map.key;
@@ -146,9 +155,11 @@ public class GameWorld {
 				map.value.type == Tile.TileType.WallEnterUp ||
 				map.value.type == Tile.TileType.WallExitUp ) {
 				createWall(coord.x, coord.y, 5, map.value.texture);
+				this.aStarMap.getNodeAt((int)coord.x, (int)coord.y).isWall = true;
 				} 
 			else {
 				createWall(coord.x, coord.y, -5, map.value.texture);
+				this.aStarMap.getNodeAt((int)coord.x, (int)coord.y).isWall = true;
 			}
 		}
 		

@@ -34,12 +34,29 @@ public class Level {
 		this.Corridors = generateCorridors();
 	}
 	
-	public ArrayMap<Vector2, Tile> generate() {
+	public ArrayMap<Vector2, Tile> generateDungeon() {
 		placeRooms();
 		placeCorridors();
 		placeWallRooms();
 		placeWallCorridors();
 		
+		placeWallFix();
+		placeCeilingFix();
+		
+		placeFirstDoor();
+		placeLastDoor();
+		
+		return this.tileMap;
+	}
+	
+	public ArrayMap<Vector2, Tile> generateTestRoom() {
+		this.Rooms.clear();
+		this.Rooms.add(new Room(1, 1, 20, 20));
+		
+		placeRooms();
+
+		placeWallRooms();
+	
 		placeWallFix();
 		placeCeilingFix();
 		

@@ -1,5 +1,6 @@
 package com.alphadelete.sandbox.systems;
 
+import com.alphadelete.sandbox.Constants;
 import com.alphadelete.sandbox.components.PlayerComponent;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
@@ -46,19 +47,19 @@ public class ControllerSystem extends IteratingSystem {
 		float accelX = 0.0f, accelY = 0.0f;
 		// Left
 		if (inputCtrl.isKeyPressed(Keys.A)) {
-			accelX = 5f;
+			accelX = Constants.GAME_ACCEL;
 		}
 		// Right
 		if (inputCtrl.isKeyPressed(Keys.D)) {
-			accelX = -5f;
+			accelX = -Constants.GAME_ACCEL;
 		}
 		// Down
 		if (inputCtrl.isKeyPressed(Keys.S)) {
-			accelY = 5f;
+			accelY = Constants.GAME_ACCEL;
 		}
 		// Up
 		if (inputCtrl.isKeyPressed(Keys.W)) {
-			accelY = -5f;
+			accelY = -Constants.GAME_ACCEL;
 		}
 
 		this.accel = new Vector2(accelX, accelY);

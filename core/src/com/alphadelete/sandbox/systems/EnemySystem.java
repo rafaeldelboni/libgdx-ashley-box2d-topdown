@@ -151,7 +151,8 @@ public class EnemySystem extends IteratingSystem {
 					float _fraction = 1;
 					@Override
 					public float reportRayFixture (Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-						if(fixture.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER_ATTACK)
+						if(fixture.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER_ATTACK || 
+							fixture.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER)
 							  return 1;
 						
 						if(fraction <= _fraction) {
@@ -165,12 +166,13 @@ public class EnemySystem extends IteratingSystem {
 				gameWorld.getWorld().rayCast(callbackFirstBody, enemyPos2d, playerPos2d);
 				if(rayCastFixture != null && rayCastFixture.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER) {
 					
-					Vector2 att = enemyPos2d.cpy().sub(playerPos2d).nor().scl(2f);
+					Vector2 att = enemyPos2d.cpy().sub(playerPos2d).nor().scl(Constants.GAME_ACCEL);
 					EnemyComponent enemyComp = em.get(enemy);
 					
-					if(enemyComp.knockbackTimeMillis == 0)
+					if(enemyComp.knockbackTimeMillis == 0) {
 						enemyComp.accel = att;
-					
+					}
+
 					enemyComp.target = playerPos2d;
 
 				}
