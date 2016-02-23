@@ -177,6 +177,9 @@ public class GameWorld {
 		
 		//Entity player = createPlayer(0, 0);
 		//createCamera(player, 0, 0);
+		createEnemy(6, 2);
+		createEnemy(8, 2);
+		createEnemy(10, 2);
 		createEnemy(12, 2);
 		createEnemy(14, 2);
 		
@@ -200,8 +203,7 @@ public class GameWorld {
 			Assets.warriorWeapon1, 
 			WeaponComponent.TYPE_PLAYER
 		);
-		
-		
+
 		CircleShape shape = new CircleShape();
 		shape.setRadius(PlayerComponent.WIDTH / 2);
 		BodyComponent body = new BodyComponent(
@@ -332,9 +334,9 @@ public class GameWorld {
 		TransformComponent position = engine.createComponent(TransformComponent.class);
 		StateComponent state = engine.createComponent(StateComponent.class);
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
-		
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(EnemyComponent.WIDTH / 2, EnemyComponent.HEIGHT / 2);
+
+		CircleShape shape = new CircleShape();
+		shape.setRadius(EnemyComponent.WIDTH / 2);
 		BodyComponent body = new BodyComponent(
 			entity,
 			world, 
@@ -354,7 +356,8 @@ public class GameWorld {
 		animation.animations.put(EnemyComponent.STATE_IDLE, Assets.goblinIdleAnimation);
 		animation.animations.put(EnemyComponent.STATE_WALK, Assets.goblinWalkAnimation);
 		animation.animations.put(EnemyComponent.STATE_DIE, Assets.goblinDieAnimation);
-
+		animation.animations.put(EnemyComponent.STATE_ATTACK, Assets.goblinAttackAnimation);
+		
 		enemy.health = 3;
 		
 		position.setPosition(body.body.getPosition().x, body.body.getPosition().y, 2);

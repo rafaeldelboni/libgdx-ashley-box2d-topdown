@@ -13,6 +13,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -81,7 +82,7 @@ public class EnemySystem extends IteratingSystem {
 			if (state.get() != EnemyComponent.STATE_WALK && (mov.velocity.y != 0 || mov.velocity.x != 0) ) {
 				state.set(EnemyComponent.STATE_WALK);
 			}
-			if (state.get() != EnemyComponent.STATE_IDLE && mov.velocity.y == 0 && mov.velocity.x == 0 ) {
+			if (state.get() != EnemyComponent.STATE_IDLE && state.get() != EnemyComponent.STATE_ATTACK && mov.velocity.y == 0 && mov.velocity.x == 0 ) {
 				state.set(EnemyComponent.STATE_IDLE);
 			}
 		}
@@ -166,7 +167,9 @@ public class EnemySystem extends IteratingSystem {
 						enemyComp.target = nodePos;
 					}
 				} else {
-					state.set(EnemyComponent.STATE_WALK);
+					if (state.get() != EnemyComponent.STATE_ATTACK) {
+						state.set(EnemyComponent.STATE_ATTACK);
+					}
 				}
 				/*	
 				RayCastCallback callbackFirstBody = new RayCastCallback(){

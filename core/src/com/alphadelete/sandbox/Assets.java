@@ -26,14 +26,13 @@ public class Assets {
 	public static BitmapFont font;
 	public static Animation warriorIdleAnimation;
 	public static Animation warriorWalkAnimation;
+	public static Animation goblinAttackAnimation;
 	public static Animation goblinIdleAnimation;
 	public static Animation goblinWalkAnimation;
 	public static Animation goblinDieAnimation;
 	public static Animation attackEffect;
 	public static TextureRegion warriorWeapon1;
-	
 	public static Texture items;
-	public static Animation bobJump;
 	
 	public static void load () {
 		loadMenu();
@@ -78,6 +77,7 @@ public class Assets {
 	}
 	
 	private static void loadGoblin () {
+		goblinAttackAnimation = Assets.loadAtlasAnimations("goblin-dying", Assets.goblinAtlas, PlayMode.LOOP, new Vector2(64,64));
 		goblinIdleAnimation = Assets.loadAtlasAnimations("goblin-idle-1", Assets.goblinAtlas, PlayMode.LOOP, new Vector2(64,64));
 		goblinWalkAnimation = Assets.loadAtlasAnimations("goblin-walk", Assets.goblinAtlas, PlayMode.LOOP, new Vector2(64,64));
 		goblinDieAnimation = Assets.loadAtlasAnimations("goblin-dying", Assets.goblinAtlas, PlayMode.NORMAL, new Vector2(64,64));
