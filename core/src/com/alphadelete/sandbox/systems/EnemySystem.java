@@ -8,12 +8,14 @@ import com.alphadelete.sandbox.components.MovementComponent;
 import com.alphadelete.sandbox.components.PlayerComponent;
 import com.alphadelete.sandbox.components.TransformComponent;
 import com.alphadelete.sandbox.components.StateComponent;
+import com.alphadelete.sandbox.components.TextureComponent;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -30,6 +32,7 @@ public class EnemySystem extends IteratingSystem {
 	private ComponentMapper<StateComponent> sm;
 	private ComponentMapper<TransformComponent> tm;
 	private ComponentMapper<MovementComponent> mm;
+	private ComponentMapper<TextureComponent> txm;
 	private ComponentMapper<BodyComponent> bm;
 	
 	private GameWorld gameWorld;
@@ -43,6 +46,7 @@ public class EnemySystem extends IteratingSystem {
 		sm = ComponentMapper.getFor(StateComponent.class);
 		tm = ComponentMapper.getFor(TransformComponent.class);
 		mm = ComponentMapper.getFor(MovementComponent.class);
+		txm = ComponentMapper.getFor(TextureComponent.class);
 		bm = ComponentMapper.getFor(BodyComponent.class);
 	}
 	
@@ -57,21 +61,27 @@ public class EnemySystem extends IteratingSystem {
 		TransformComponent t = tm.get(entity);
 		StateComponent state = sm.get(entity);
 		MovementComponent mov = mm.get(entity);
+		TextureComponent tex = txm.get(entity);
+		BodyComponent body = bm.get(entity);
 		
 		if (enemy.knockbackTimeMillis >= 0){
 			enemy.knockbackTimeMillis -= deltaTime * 1000;
 		} else if (enemy.knockbackTimeMillis < 0){
+			// Stop red paint
+			tex.color = null;
 			// Stop knock back
 			enemy.knockbackTimeMillis = 0;
 			// Stop acceleration
 			enemy.accel.setZero();
 		}
 		
+		// Is enemy alive?
 		if (enemy.health < 1)
 		{
 			if (state.get() != EnemyComponent.STATE_DIE) {
 				state.set(EnemyComponent.STATE_DIE);
 			}
+			body.setAsSensor(true);
 			
 		} else {
 			
@@ -121,7 +131,8 @@ public class EnemySystem extends IteratingSystem {
 
 		EnemyComponent enemy = em.get(entity);
 		TransformComponent t = tm.get(entity);
-
+		TextureComponent tex = txm.get(entity);
+		
 		Vector2 enemyPos = t.getPosition();
 		
 		// Knock back
@@ -129,6 +140,8 @@ public class EnemySystem extends IteratingSystem {
 		enemy.accel = att;
 				
 		enemy.health -= damage; 
+		
+		tex.color = Color.RED;
 		
 		enemy.knockbackTimeMillis = 250;
 	}
@@ -151,27 +164,7 @@ public class EnemySystem extends IteratingSystem {
 			EnemyComponent enemyComp = em.get(enemy);
 
 			if(enemyPos2d.dst2(playerPos2d) < 30f) {
-				if(enemyPos2d.dst2(playerPos2d) > 5f) {
-		            // do path finding every 0.1 second
-					enemyComp.nextNode = gameWorld.getAStartPathFinding().findNextNode(enemyPos2d, playerPos2d);
-					
-					if (enemyComp.nextNode != null) {
-						
-						Vector2 nodePos = new Vector2 (enemyComp.nextNode.x, enemyComp.nextNode.y);
-						Vector2 enemyIntPos = new Vector2 (MathUtils.floor(enemyPos2d.x),MathUtils.floor(enemyPos2d.y)); 
-						Vector2 att = enemyIntPos.cpy().sub(nodePos).nor().scl(Constants.GAME_ACCEL);
-						
-						if(enemyComp.knockbackTimeMillis == 0) {
-							enemyComp.accel = att;
-						}
-						enemyComp.target = nodePos;
-					}
-				} else {
-					if (state.get() != EnemyComponent.STATE_ATTACK) {
-						state.set(EnemyComponent.STATE_ATTACK);
-					}
-				}
-				/*	
+
 				RayCastCallback callbackFirstBody = new RayCastCallback(){
 					
 					float _fraction = 1;
@@ -192,17 +185,31 @@ public class EnemySystem extends IteratingSystem {
 				gameWorld.getWorld().rayCast(callbackFirstBody, enemyPos2d, playerPos2d);
 				if(rayCastFixture != null && rayCastFixture.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER) {
 					
-					Vector2 att = enemyPos2d.cpy().sub(playerPos2d).nor().scl(Constants.GAME_ACCEL);
-					EnemyComponent enemyComp = em.get(enemy);
-					
-					if(enemyComp.knockbackTimeMillis == 0) {
-						enemyComp.accel = att;
+					// Stop to attack player
+					if(enemyPos2d.dst2(playerPos2d) > 5f) {
+			            // do path finding every 0.1 second
+						enemyComp.nextNode = gameWorld.getAStartPathFinding().findNextNode(enemyPos2d, playerPos2d);
+						
+						if (enemyComp.nextNode != null) {
+							
+							Vector2 nodePos = new Vector2 (enemyComp.nextNode.x, enemyComp.nextNode.y);
+							Vector2 enemyIntPos = new Vector2 (MathUtils.floor(enemyPos2d.x),MathUtils.floor(enemyPos2d.y)); 
+							Vector2 att = enemyIntPos.cpy().sub(nodePos).nor().scl(Constants.GAME_ACCEL);
+							
+							if(enemyComp.knockbackTimeMillis == 0) {
+								enemyComp.accel = att;
+							}
+							enemyComp.target = nodePos;
+						}
+					} else {
+						enemyComp.target = playerPos2d;
+						if (state.get() != EnemyComponent.STATE_ATTACK) {
+							state.set(EnemyComponent.STATE_ATTACK);
+						}
 					}
 
-					enemyComp.target = playerPos2d;
-
 				}
-				*/
+				
 			}
 		}
 	}

@@ -13,7 +13,7 @@ public class Constants {
     public static final int GAME_LEVEL_END = 3;
     public static final int GAME_OVER = 4;
     public static final float GAME_ACCEL = 5F;
-    public static final boolean GAME_DEBUG = true;
+    public static final boolean GAME_DEBUG = false;
     
     public static final float CAMERA_SMOOTH = 2f;
     public static final float CAMERA_ZOOM = 1f;

@@ -11,6 +11,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -99,6 +100,11 @@ public class RenderingSystem extends IteratingSystem {
 			
 			float originX = width * 0.5f;
 			float originY = height * 0.5f;
+
+			Color oldColor = batch.getColor();
+			if (tex.color != null) {
+				batch.setColor(tex.color);
+			}
 			// if origin is set on transform use it
 			if (t.isOriginSet()) {
 				batch.draw(tex.region,
@@ -116,6 +122,7 @@ public class RenderingSystem extends IteratingSystem {
 							t.scale.x * Constants.PIXELS_TO_METRES, t.scale.y * Constants.PIXELS_TO_METRES,
 							MathUtils.radiansToDegrees * t.rotation);
 			}
+			batch.setColor(oldColor);
 		}
 		
 		batch.end();

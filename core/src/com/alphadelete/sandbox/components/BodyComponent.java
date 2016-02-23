@@ -72,4 +72,9 @@ public class BodyComponent implements Component {
 		
 		body.createFixture(fixtureDef);
 	}
+	
+	public void setAsSensor(Boolean flag) {
+		body.getFixtureList().get(0).setSensor(flag);
+	}
+
 }

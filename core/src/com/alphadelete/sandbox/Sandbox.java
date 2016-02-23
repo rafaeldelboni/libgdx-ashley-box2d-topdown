@@ -31,4 +31,10 @@ public class Sandbox extends Game {
 
 		super.render();
 	}
+	
+	@Override
+	public void dispose() {
+		batcher.dispose();
+		Assets.dispose();
+	}
 }

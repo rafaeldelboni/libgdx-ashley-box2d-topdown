@@ -22,10 +22,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -41,18 +38,11 @@ public class GameScreen extends ScreenAdapter {
 	Rectangle resumeBounds;
 	Rectangle quitBounds;
 	String scoreString;
-	PooledEngine engine;
-	World world;
 	
 	private GlyphLayout layout = new GlyphLayout();
 
 	private int state;
 	private long seed;
-	
-	Animation walkAnimation;
-	TextureRegion currentFrame;
-	SpriteBatch spriteBatch;
-	float stateTime;
 
 	public GameScreen(Sandbox game) {
 		startGame(game);
@@ -73,25 +63,22 @@ public class GameScreen extends ScreenAdapter {
 		guiCam.position.set(Constants.APP_WIDTH / 2, Constants.APP_HEIGHT / 2, 0);
 		touchPoint = new Vector3();
 
-		engine = new PooledEngine();
-		world = new World(Vector2.Zero,true);
-				
-		gameWorld = new GameWorld(engine, world, seed);
+		gameWorld = new GameWorld(new PooledEngine(), new World(Vector2.Zero,true), seed);
 
-		engine.addSystem(new PlayerSystem(gameWorld));
-		engine.addSystem(new EnemySystem(gameWorld));
-		engine.addSystem(new CameraSystem());
-		engine.addSystem(new BackgroundSystem());
-		engine.addSystem(new MovementSystem());
-		engine.addSystem(new StateSystem());
-		engine.addSystem(new AnimationSystem());
-		engine.addSystem(new EffectsSystem(gameWorld));
-		engine.addSystem(new WeaponSystem());
-		engine.addSystem(new ControllerSystem());
-		engine.addSystem(new RenderingSystem(game.batcher, gameWorld));
+		gameWorld.getEngine().addSystem(new PlayerSystem(gameWorld));
+		gameWorld.getEngine().addSystem(new EnemySystem(gameWorld));
+		gameWorld.getEngine().addSystem(new CameraSystem());
+		gameWorld.getEngine().addSystem(new BackgroundSystem());
+		gameWorld.getEngine().addSystem(new MovementSystem());
+		gameWorld.getEngine().addSystem(new StateSystem());
+		gameWorld.getEngine().addSystem(new AnimationSystem());
+		gameWorld.getEngine().addSystem(new EffectsSystem(gameWorld));
+		gameWorld.getEngine().addSystem(new WeaponSystem());
+		gameWorld.getEngine().addSystem(new ControllerSystem());
+		gameWorld.getEngine().addSystem(new RenderingSystem(game.batcher, gameWorld));
 
-		engine.getSystem(BackgroundSystem.class).setCamera(engine.getSystem(RenderingSystem.class).getCamera());
-		engine.getSystem(RenderingSystem.class).resizeCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		gameWorld.getEngine().getSystem(BackgroundSystem.class).setCamera(gameWorld.getEngine().getSystem(RenderingSystem.class).getCamera());
+		gameWorld.getEngine().getSystem(RenderingSystem.class).resizeCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
 		gameWorld.create();
 
@@ -107,7 +94,7 @@ public class GameScreen extends ScreenAdapter {
 		if (deltaTime > 0.1f)
 			deltaTime = 0.1f;
 
-		engine.update(deltaTime);
+		gameWorld.getEngine().update(deltaTime);
 		
 		switch (state) {
 		case Constants.GAME_RUNNING:
@@ -127,13 +114,13 @@ public class GameScreen extends ScreenAdapter {
 	}
 
 	private void updateRunning(float deltaTime) {
-		world.step(deltaTime,6,2);
-		world.clearForces();
+		gameWorld.getWorld().step(deltaTime,6,2);
+		gameWorld.getWorld().clearForces();
 		
 		boolean isAttacking = false;
 		Vector3 targetPos = new Vector3();
 		
-		OrthographicCamera camera = engine.getSystem(RenderingSystem.class).getCamera();
+		OrthographicCamera camera = gameWorld.getEngine().getSystem(RenderingSystem.class).getCamera();
 		camera.unproject(targetPos.set(Gdx.input.getX(), Gdx.input.getY(), 0));
 		
 		if (Gdx.input.justTouched()) {
@@ -148,7 +135,7 @@ public class GameScreen extends ScreenAdapter {
 			}
 		}
 
-		engine.getSystem(ControllerSystem.class).setControls(Gdx.input, isAttacking, targetPos);
+		gameWorld.getEngine().getSystem(ControllerSystem.class).setControls(Gdx.input, isAttacking, targetPos);
 		
 		// Refresh World for debug
 		if (Gdx.input.isKeyPressed(Keys.R)) {
@@ -161,7 +148,7 @@ public class GameScreen extends ScreenAdapter {
 
 	private void updatePaused() {
 
-		world.clearForces();
+		gameWorld.getWorld().clearForces();
 		
 		if (Gdx.input.justTouched()) {
 			guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
@@ -181,9 +168,9 @@ public class GameScreen extends ScreenAdapter {
 
 	private void updateLevelEnd() {
 		if (Gdx.input.justTouched()) {
-			engine.removeAllEntities();
+			gameWorld.getEngine().removeAllEntities();
 			this.seed = new Random().nextLong();
-			gameWorld = new GameWorld(engine, world, this.seed);
+			gameWorld = new GameWorld(gameWorld.getEngine(), gameWorld.getWorld(), this.seed);
 			state = Constants.GAME_RUNNING;
 		}
 	}
@@ -248,25 +235,25 @@ public class GameScreen extends ScreenAdapter {
 	}
 
 	private void pauseSystems() {
-		engine.getSystem(PlayerSystem.class).setProcessing(false);
-		engine.getSystem(EnemySystem.class).setProcessing(false);
-		engine.getSystem(MovementSystem.class).setProcessing(false);
-		engine.getSystem(StateSystem.class).setProcessing(false);
-		engine.getSystem(EffectsSystem.class).setProcessing(false);
-		engine.getSystem(WeaponSystem.class).setProcessing(false);
-		engine.getSystem(AnimationSystem.class).setProcessing(false);
-		engine.getSystem(ControllerSystem.class).setProcessing(false);
+		gameWorld.getEngine().getSystem(PlayerSystem.class).setProcessing(false);
+		gameWorld.getEngine().getSystem(EnemySystem.class).setProcessing(false);
+		gameWorld.getEngine().getSystem(MovementSystem.class).setProcessing(false);
+		gameWorld.getEngine().getSystem(StateSystem.class).setProcessing(false);
+		gameWorld.getEngine().getSystem(EffectsSystem.class).setProcessing(false);
+		gameWorld.getEngine().getSystem(WeaponSystem.class).setProcessing(false);
+		gameWorld.getEngine().getSystem(AnimationSystem.class).setProcessing(false);
+		gameWorld.getEngine().getSystem(ControllerSystem.class).setProcessing(false);
 	}
 
 	private void resumeSystems() {
-		engine.getSystem(PlayerSystem.class).setProcessing(true);
-		engine.getSystem(EnemySystem.class).setProcessing(true);
-		engine.getSystem(MovementSystem.class).setProcessing(true);
-		engine.getSystem(StateSystem.class).setProcessing(true);
-		engine.getSystem(EffectsSystem.class).setProcessing(true);
-		engine.getSystem(WeaponSystem.class).setProcessing(true);
-		engine.getSystem(AnimationSystem.class).setProcessing(true);
-		engine.getSystem(ControllerSystem.class).setProcessing(true);
+		gameWorld.getEngine().getSystem(PlayerSystem.class).setProcessing(true);
+		gameWorld.getEngine().getSystem(EnemySystem.class).setProcessing(true);
+		gameWorld.getEngine().getSystem(MovementSystem.class).setProcessing(true);
+		gameWorld.getEngine().getSystem(StateSystem.class).setProcessing(true);
+		gameWorld.getEngine().getSystem(EffectsSystem.class).setProcessing(true);
+		gameWorld.getEngine().getSystem(WeaponSystem.class).setProcessing(true);
+		gameWorld.getEngine().getSystem(AnimationSystem.class).setProcessing(true);
+		gameWorld.getEngine().getSystem(ControllerSystem.class).setProcessing(true);
 	}
 
 	@Override
@@ -285,6 +272,12 @@ public class GameScreen extends ScreenAdapter {
 	
 	@Override
 	public void resize(int width, int height) {
-		engine.getSystem(RenderingSystem.class).resizeCamera(width, height);
+		gameWorld.getEngine().getSystem(RenderingSystem.class).resizeCamera(width, height);
+	}
+	
+	@Override
+	public void dispose() {
+		gameWorld.dispose();
+		game.dispose();
 	}
 }

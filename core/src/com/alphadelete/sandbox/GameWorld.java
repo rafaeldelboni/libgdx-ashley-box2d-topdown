@@ -437,4 +437,9 @@ public class GameWorld {
 		EnemySystem enemySystem = engine.getSystem(EnemySystem.class);
 		enemySystem.takeDamage(attacked, attackPos.pos.x, attackPos.pos.y, attackCom.damage);
 	}
+	
+	public void dispose() {
+		engine.removeAllEntities();
+		world.dispose();
+	}
 }

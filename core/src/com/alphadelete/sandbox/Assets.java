@@ -32,7 +32,6 @@ public class Assets {
 	public static Animation goblinDieAnimation;
 	public static Animation attackEffect;
 	public static TextureRegion warriorWeapon1;
-	public static Texture items;
 	
 	public static void load () {
 		loadMenu();
@@ -77,7 +76,7 @@ public class Assets {
 	}
 	
 	private static void loadGoblin () {
-		goblinAttackAnimation = Assets.loadAtlasAnimations("goblin-dying", Assets.goblinAtlas, PlayMode.LOOP, new Vector2(64,64));
+		goblinAttackAnimation = Assets.loadAtlasAnimations("goblin-attack", Assets.goblinAtlas, PlayMode.LOOP, new Vector2(64,64));
 		goblinIdleAnimation = Assets.loadAtlasAnimations("goblin-idle-1", Assets.goblinAtlas, PlayMode.LOOP, new Vector2(64,64));
 		goblinWalkAnimation = Assets.loadAtlasAnimations("goblin-walk", Assets.goblinAtlas, PlayMode.LOOP, new Vector2(64,64));
 		goblinDieAnimation = Assets.loadAtlasAnimations("goblin-dying", Assets.goblinAtlas, PlayMode.NORMAL, new Vector2(64,64));
@@ -85,6 +84,16 @@ public class Assets {
 	
 	private static void loadEffects ()	{
 		attackEffect = Assets.loadAtlasAnimations("attack_slash", Assets.attackAtlas, PlayMode.REVERSED, new Vector2(70,90));
+	}
+	
+	public static void dispose() {
+		background.dispose();
+		menuAtlas.dispose();
+		dungeonAtlas.dispose();
+		warriorAtlas.dispose(); 
+		goblinAtlas.dispose();
+		attackAtlas.dispose();
+		font.dispose();
 	}
 
 }
