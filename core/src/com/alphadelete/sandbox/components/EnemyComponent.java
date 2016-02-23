@@ -20,9 +20,8 @@ public class EnemyComponent implements Component {
 	public Vector2 accel = new Vector2(0,0);
 	public Vector2 target = new Vector2();
 	public long health = 0;
-	public Boolean isAttacking = false;
-	public float attackStance = 0f;
 	public long knockbackTimeMillis = 0;
+	public long attackTimeMillis = 0;
 	public Node nextNode; // for pursue or escape
 	
 	public Boolean getEnemyIsMoving() {

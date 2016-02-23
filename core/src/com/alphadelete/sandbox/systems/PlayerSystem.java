@@ -7,10 +7,12 @@ import com.alphadelete.sandbox.components.MovementComponent;
 import com.alphadelete.sandbox.components.TransformComponent;
 import com.alphadelete.utils.Vector2DUtils;
 import com.alphadelete.sandbox.components.StateComponent;
+import com.alphadelete.sandbox.components.TextureComponent;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 
 public class PlayerSystem extends IteratingSystem {
@@ -24,6 +26,7 @@ public class PlayerSystem extends IteratingSystem {
 	private ComponentMapper<StateComponent> sm;
 	private ComponentMapper<TransformComponent> tm;
 	private ComponentMapper<MovementComponent> mm;
+	private ComponentMapper<TextureComponent> txm;
 	
 	private GameWorld gameWorld;
 		
@@ -35,7 +38,8 @@ public class PlayerSystem extends IteratingSystem {
 		bm = ComponentMapper.getFor(PlayerComponent.class);
 		sm = ComponentMapper.getFor(StateComponent.class);
 		tm = ComponentMapper.getFor(TransformComponent.class);
-		mm = ComponentMapper.getFor(MovementComponent.class);		
+		mm = ComponentMapper.getFor(MovementComponent.class);
+		txm = ComponentMapper.getFor(TextureComponent.class);
 	}
 	
 	@Override
@@ -106,6 +110,29 @@ public class PlayerSystem extends IteratingSystem {
 		}
 		t.scale.x = Math.abs(t.scale.x) * player.scaleSide;
 
+	}
+	
+	public void takeDamage(Entity entity, float attackX, float attackY, float damage){
+		takeDamage(entity, new Vector2(attackX, attackY), damage);
+	}
+	public void takeDamage(Entity entity, Vector2 attackPos, float damage) {
+		if (!family.matches(entity)) return;
+
+		PlayerComponent player = bm.get(entity);
+		TransformComponent t = tm.get(entity);
+		TextureComponent tex = txm.get(entity);
+		
+		Vector2 enemyPos = t.getPosition();
+		
+		// Knock back
+		Vector2 att = attackPos.cpy().sub(enemyPos).nor().scl(10f);
+		player.accel = att;
+				
+		player.health -= damage; 
+		
+		tex.color = Color.RED;
+		
+		player.knockbackTimeMillis = 250;
 	}
 			
 }

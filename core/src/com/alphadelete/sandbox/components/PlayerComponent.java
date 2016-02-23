@@ -16,8 +16,10 @@ public class PlayerComponent implements Component {
 	public float scaleSide = Constants.SCALE_RIGHT;
 	public Vector2 accel = new Vector2(0,0);
 	public Vector2 target = new Vector2();
+	public long health = 0;
 	public Boolean isAttacking = false;
 	public float attackStance = 0.5f;
+	public long knockbackTimeMillis = 0;
 	
 	public Boolean getPlayerIsMoving() {
 		if (this.accel.x == 0f && this.accel.y == 0f) {

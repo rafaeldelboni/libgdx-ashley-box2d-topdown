@@ -23,6 +23,7 @@ import com.alphadelete.sandbox.map.Tile;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -85,14 +86,14 @@ public class GameWorld {
 	            public void beginContact(Contact contact) {
 					Fixture fixA = contact.getFixtureA();
 					Fixture fixB = contact.getFixtureB();
-					
+					// Player attack
 					if (fixA.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER_ATTACK &&
 						fixB.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER ) {
 
 						Entity attack = (Entity) fixA.getBody().getUserData();		
 						Entity attacked = (Entity) fixB.getBody().getUserData();
 						
-						doAttack(attack, attacked);
+						doAttack(attack, attacked, Constants.TYPE_PLAYER);
 					}
 					if (fixA.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER &&
 						fixB.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER_ATTACK ) {
@@ -100,7 +101,24 @@ public class GameWorld {
 						Entity attacked = (Entity) fixA.getBody().getUserData();		
 						Entity attack = (Entity) fixB.getBody().getUserData();
 						
-						doAttack(attack, attacked);
+						doAttack(attack, attacked, Constants.TYPE_PLAYER);
+					}
+					// Enemy Attack
+					if (fixA.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER_ATTACK &&
+						fixB.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER ) {
+
+						Entity attack = (Entity) fixA.getBody().getUserData();		
+						Entity attacked = (Entity) fixB.getBody().getUserData();
+						
+						doAttack(attack, attacked, Constants.TYPE_ENEMY);
+					}
+					if (fixA.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER &&
+						fixB.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER_ATTACK ) {
+
+						Entity attacked = (Entity) fixA.getBody().getUserData();		
+						Entity attack = (Entity) fixB.getBody().getUserData();
+						
+						doAttack(attack, attacked, Constants.TYPE_ENEMY);
 					}
 				}
 
@@ -422,20 +440,68 @@ public class GameWorld {
 		engine.addEntity(entity);	
 	}
 	
+	public void createEnemyAttack(float attackX, float attackY, float angle) {
+		
+		Entity entity = engine.createEntity();
+		
+		StateComponent state = engine.createComponent(StateComponent.class);
+		AnimationComponent animation = engine.createComponent(AnimationComponent.class);
+		TransformComponent position = engine.createComponent(TransformComponent.class);
+		TextureComponent texture = engine.createComponent(TextureComponent.class);
+		EffectsComponent effect = new EffectsComponent(150);
+		AttackComponent attack = new AttackComponent(1);
+		
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(2f * 0.35f, 2f * 0.35f);
+		BodyComponent body = new BodyComponent(
+			entity,
+			world, 
+			BodyType.DynamicBody, 
+			shape, 
+			new Vector3(attackX, attackY, 0.9f),
+			BodyComponent.CATEGORY_MONSTER_ATTACK,
+			BodyComponent.MASK_MONSTER_ATTACK
+		);
+		body.body.setLinearDamping(1f);
+		body.body.setFixedRotation(true);
+		body.body.setUserData(entity);
+		shape.dispose();
+
+		position.scale.set(0.35f, 0.35f);
+		position.rotation = angle;
+		position.pos.set(attackX, attackY, 0.9f);
+		animation.animations.put(0, Assets.attackEffect);
+		state.set(0);
+		
+		entity.add(body);
+		entity.add(state);
+		entity.add(animation);
+		entity.add(position);
+		entity.add(texture);
+		entity.add(effect);
+		entity.add(attack);
+		
+		engine.addEntity(entity);	
+	}
+	
 	public void destroyBody(Body body) {
 		if(!world.isLocked()) {
 		     world.destroyBody(body);
 		}
 	}
 	
-	private void doAttack (Entity attack, Entity attacked) {
+	private void doAttack (Entity attack, Entity attacked, int type) {
+		
 		ComponentMapper<TransformComponent> ap = ComponentMapper.getFor(TransformComponent.class);
 		ComponentMapper<AttackComponent> aa = ComponentMapper.getFor(AttackComponent.class);
 		TransformComponent attackPos = ap.get(attack);
 		AttackComponent attackCom = aa.get(attack);
-		
-		EnemySystem enemySystem = engine.getSystem(EnemySystem.class);
-		enemySystem.takeDamage(attacked, attackPos.pos.x, attackPos.pos.y, attackCom.damage);
+		if (type == Constants.TYPE_PLAYER) {
+			EnemySystem enemySystem = engine.getSystem(EnemySystem.class);
+			enemySystem.takeDamage(attacked, attackPos.pos.x, attackPos.pos.y, attackCom.damage);
+		} else if (type == Constants.TYPE_ENEMY) {
+			Gdx.app.debug("Enemy", "Hit Player");
+		}
 	}
 	
 	public void dispose() {

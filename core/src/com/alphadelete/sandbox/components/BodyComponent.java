@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -75,6 +76,10 @@ public class BodyComponent implements Component {
 	
 	public void setAsSensor(Boolean flag) {
 		body.getFixtureList().get(0).setSensor(flag);
+		
+		Filter filter = new Filter();
+		filter.groupIndex = flag ? (short)-1 : (short)1;
+		body.getFixtureList().get(0).setFilterData(filter);
 	}
 
 }

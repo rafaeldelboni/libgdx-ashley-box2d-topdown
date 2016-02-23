@@ -1,5 +1,7 @@
 package com.alphadelete.sandbox.systems;
 
+import java.util.Random;
+
 import com.alphadelete.sandbox.Constants;
 import com.alphadelete.sandbox.GameWorld;
 import com.alphadelete.sandbox.components.BodyComponent;
@@ -7,6 +9,7 @@ import com.alphadelete.sandbox.components.EnemyComponent;
 import com.alphadelete.sandbox.components.MovementComponent;
 import com.alphadelete.sandbox.components.PlayerComponent;
 import com.alphadelete.sandbox.components.TransformComponent;
+import com.alphadelete.utils.Vector2DUtils;
 import com.alphadelete.sandbox.components.StateComponent;
 import com.alphadelete.sandbox.components.TextureComponent;
 import com.badlogic.ashley.core.ComponentMapper;
@@ -14,7 +17,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -73,6 +75,12 @@ public class EnemySystem extends IteratingSystem {
 			enemy.knockbackTimeMillis = 0;
 			// Stop acceleration
 			enemy.accel.setZero();
+		}
+		
+		if (enemy.attackTimeMillis >= 0){
+			enemy.attackTimeMillis -= deltaTime * 1000;
+		} else if (enemy.attackTimeMillis < 0){
+			enemy.attackTimeMillis = 0;
 		}
 		
 		// Is enemy alive?
@@ -170,7 +178,8 @@ public class EnemySystem extends IteratingSystem {
 					float _fraction = 1;
 					@Override
 					public float reportRayFixture (Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-						if(fixture.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER_ATTACK || 
+						if(fixture.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER_ATTACK ||
+							fixture.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER_ATTACK || 
 							fixture.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER)
 							  return 1;
 						
@@ -186,7 +195,7 @@ public class EnemySystem extends IteratingSystem {
 				if(rayCastFixture != null && rayCastFixture.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER) {
 					
 					// Stop to attack player
-					if(enemyPos2d.dst2(playerPos2d) > 5f) {
+					if(enemyPos2d.dst2(playerPos2d) > 4f) {
 			            // do path finding every 0.1 second
 						enemyComp.nextNode = gameWorld.getAStartPathFinding().findNextNode(enemyPos2d, playerPos2d);
 						
@@ -203,13 +212,20 @@ public class EnemySystem extends IteratingSystem {
 						}
 					} else {
 						enemyComp.target = playerPos2d;
-						if (state.get() != EnemyComponent.STATE_ATTACK) {
+						if (state.get() != EnemyComponent.STATE_ATTACK && enemyComp.knockbackTimeMillis >= 0) {							
 							state.set(EnemyComponent.STATE_ATTACK);
 						}
+						if (state.get() == EnemyComponent.STATE_ATTACK && enemyComp.attackTimeMillis == 0) {
+							// 45% of chance to hit player
+							if (new Random().nextFloat() <= 0.45f) {
+								Vector2 relativeTarget = Vector2DUtils.getPointInBetweenByLen(enemyPos2d, playerPos2d, 1f);
+								float angle = Vector2DUtils.getAngleInBetween(enemyPos2d, playerPos2d);
+								enemyComp.attackTimeMillis = 1000;
+								gameWorld.createEnemyAttack(relativeTarget.x, relativeTarget.y, angle);
+							}
+						}
 					}
-
 				}
-				
 			}
 		}
 	}

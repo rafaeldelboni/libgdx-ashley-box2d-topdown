@@ -13,7 +13,7 @@ public class Constants {
     public static final int GAME_LEVEL_END = 3;
     public static final int GAME_OVER = 4;
     public static final float GAME_ACCEL = 5F;
-    public static final boolean GAME_DEBUG = false;
+    public static final boolean GAME_DEBUG = true;
     
     public static final float CAMERA_SMOOTH = 2f;
     public static final float CAMERA_ZOOM = 1f;
@@ -32,6 +32,9 @@ public class Constants {
     public static final float MAP_ROOM_NUMBER = (float) (Math.sqrt(MAP_WIDTH * MAP_HEIGHT) / 2);
     
     public static final float PIXELS_TO_METRES = 1f / 32f;
+    
+    public static final int TYPE_PLAYER = 1;
+    public static final int TYPE_ENEMY = 2;
     
     public static final FileHandle LOG_FILE = Gdx.files.local("log.txt");
     
