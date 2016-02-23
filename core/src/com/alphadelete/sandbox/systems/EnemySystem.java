@@ -13,6 +13,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
@@ -133,6 +134,8 @@ public class EnemySystem extends IteratingSystem {
 	
 	private Fixture rayCastFixture;
 	private void searchPlayer(Entity enemy) {
+		StateComponent state = sm.get(enemy);
+		
 		@SuppressWarnings("unchecked")
 		ImmutableArray<Entity> players = gameWorld.getEngine().getEntitiesFor(Family.all(PlayerComponent.class, TransformComponent.class, StateComponent.class).get());
 		
@@ -143,9 +146,29 @@ public class EnemySystem extends IteratingSystem {
 			
 			Vector2 playerPos2d = playerPos.body.getPosition().cpy();
 			Vector2 enemyPos2d = enemyPos.body.getPosition().cpy();
-					
+			
+			EnemyComponent enemyComp = em.get(enemy);
+
 			if(enemyPos2d.dst2(playerPos2d) < 30f) {
-				
+				if(enemyPos2d.dst2(playerPos2d) > 5f) {
+		            // do path finding every 0.1 second
+					enemyComp.nextNode = gameWorld.getAStartPathFinding().findNextNode(enemyPos2d, playerPos2d);
+					
+					if (enemyComp.nextNode != null) {
+						
+						Vector2 nodePos = new Vector2 (enemyComp.nextNode.x, enemyComp.nextNode.y);
+						Vector2 enemyIntPos = new Vector2 (MathUtils.floor(enemyPos2d.x),MathUtils.floor(enemyPos2d.y)); 
+						Vector2 att = enemyIntPos.cpy().sub(nodePos).nor().scl(Constants.GAME_ACCEL);
+						
+						if(enemyComp.knockbackTimeMillis == 0) {
+							enemyComp.accel = att;
+						}
+						enemyComp.target = nodePos;
+					}
+				} else {
+					state.set(EnemyComponent.STATE_WALK);
+				}
+				/*	
 				RayCastCallback callbackFirstBody = new RayCastCallback(){
 					
 					float _fraction = 1;
@@ -176,7 +199,7 @@ public class EnemySystem extends IteratingSystem {
 					enemyComp.target = playerPos2d;
 
 				}
-				
+				*/
 			}
 		}
 	}

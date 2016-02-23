@@ -17,6 +17,7 @@ import com.alphadelete.sandbox.components.WeaponComponent;
 import com.alphadelete.sandbox.systems.EnemySystem;
 import com.alphadelete.sandbox.systems.RenderingSystem;
 import com.alphadelete.utils.astar.AStarMap;
+import com.alphadelete.utils.astar.AStartPathFinding;
 import com.alphadelete.sandbox.map.Level;
 import com.alphadelete.sandbox.map.Tile;
 import com.badlogic.ashley.core.ComponentMapper;
@@ -53,14 +54,12 @@ public class GameWorld {
 	private World world;
 	private Long seed;
 	
-	private AStarMap aStarMap;
+	private AStartPathFinding aStartPathFinding;
 	
 	public GameWorld(PooledEngine engine, World world, long seed) {
 		this.engine = engine;
 		this.world = world;
 		this.seed = seed;
-		// create map for A* path finding
-		this.aStarMap = new AStarMap((int)Constants.MAP_WIDTH, (int)Constants.MAP_HEIGHT);
 	}
 	
 	public PooledEngine getEngine() {
@@ -75,8 +74,8 @@ public class GameWorld {
 		return this.seed;
 	}
 	
-	public AStarMap getAStarMap() {
-		return this.aStarMap;
+	public AStartPathFinding getAStartPathFinding() {
+		return this.aStartPathFinding;
 	}
 
 	public void create() {
@@ -123,7 +122,10 @@ public class GameWorld {
 		
 		Level dungeon = new Level(this.seed);
 		this.seed = dungeon.getSeed();
-				
+		
+		// create map for A* path finding
+		AStarMap aStarMap = new AStarMap((int)Constants.MAP_WIDTH, (int)Constants.MAP_HEIGHT);
+		
 		//ArrayMap<Vector2, Tile> tileMap = dungeon.generateDungeon();
 		ArrayMap<Vector2, Tile> tileMap = dungeon.generateTestRoom();
 		for(Entry<Vector2, Tile> map : tileMap.entries()) {
@@ -155,13 +157,15 @@ public class GameWorld {
 				map.value.type == Tile.TileType.WallEnterUp ||
 				map.value.type == Tile.TileType.WallExitUp ) {
 				createWall(coord.x, coord.y, 5, map.value.texture);
-				this.aStarMap.getNodeAt((int)coord.x, (int)coord.y).isWall = true;
+				aStarMap.getNodeAt((int)coord.x, (int)coord.y).isWall = true;
 				} 
 			else {
 				createWall(coord.x, coord.y, -5, map.value.texture);
-				this.aStarMap.getNodeAt((int)coord.x, (int)coord.y).isWall = true;
+				aStarMap.getNodeAt((int)coord.x, (int)coord.y).isWall = true;
 			}
 		}
+		
+		this.aStartPathFinding = new AStartPathFinding(aStarMap);
 		
 		for(Entry<Vector2, Tile> map : tileMap.entries()) {
 			if (map.value.type == Tile.TileType.WallEnter ) {
