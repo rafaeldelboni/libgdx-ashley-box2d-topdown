@@ -15,6 +15,7 @@ import com.alphadelete.sandbox.components.TransformComponent;
 import com.alphadelete.sandbox.components.WallComponent;
 import com.alphadelete.sandbox.components.WeaponComponent;
 import com.alphadelete.sandbox.systems.EnemySystem;
+import com.alphadelete.sandbox.systems.PlayerSystem;
 import com.alphadelete.sandbox.systems.RenderingSystem;
 import com.alphadelete.utils.astar.AStarMap;
 import com.alphadelete.utils.astar.AStartPathFinding;
@@ -23,7 +24,6 @@ import com.alphadelete.sandbox.map.Tile;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -182,9 +182,7 @@ public class GameWorld {
 				aStarMap.getNodeAt((int)coord.x, (int)coord.y).isWall = true;
 			}
 		}
-		
-		this.aStartPathFinding = new AStartPathFinding(aStarMap);
-		
+
 		for(Entry<Vector2, Tile> map : tileMap.entries()) {
 			if (map.value.type == Tile.TileType.WallEnter ) {
 				Entity player = createPlayer(map.key.x, map.key.y-1);
@@ -192,6 +190,8 @@ public class GameWorld {
 				break;
 			}
 		}
+		
+		this.aStartPathFinding = new AStartPathFinding(aStarMap);
 		
 		//Entity player = createPlayer(0, 0);
 		//createCamera(player, 0, 0);
@@ -214,6 +214,8 @@ public class GameWorld {
 		TransformComponent position = engine.createComponent(TransformComponent.class);
 		StateComponent state = engine.createComponent(StateComponent.class);
 		TextureComponent texture = engine.createComponent(TextureComponent.class);
+		
+		player.health = 10;
 		
 		WeaponComponent weapon = new WeaponComponent(
 			engine, 
@@ -500,7 +502,8 @@ public class GameWorld {
 			EnemySystem enemySystem = engine.getSystem(EnemySystem.class);
 			enemySystem.takeDamage(attacked, attackPos.pos.x, attackPos.pos.y, attackCom.damage);
 		} else if (type == Constants.TYPE_ENEMY) {
-			Gdx.app.debug("Enemy", "Hit Player");
+			PlayerSystem playerSystem = engine.getSystem(PlayerSystem.class);
+			playerSystem.takeDamage(attacked, attackPos.pos.x, attackPos.pos.y, attackCom.damage);
 		}
 	}
 	

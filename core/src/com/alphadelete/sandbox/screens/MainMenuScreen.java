@@ -4,6 +4,7 @@ import com.alphadelete.sandbox.Assets;
 import com.alphadelete.sandbox.Constants;
 import com.alphadelete.sandbox.Sandbox;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -31,6 +32,7 @@ public class MainMenuScreen extends ScreenAdapter {
 			guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
 			
 			if (playBounds.contains(touchPoint.x, touchPoint.y)) {
+				Gdx.app.log("Start", "Click");
 				game.setScreen(new GameScreen(game));
 				dispose();
 			}

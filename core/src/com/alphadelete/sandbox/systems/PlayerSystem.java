@@ -53,6 +53,16 @@ public class PlayerSystem extends IteratingSystem {
 		TransformComponent t = tm.get(entity);
 		StateComponent state = sm.get(entity);
 		MovementComponent mov = mm.get(entity);
+		TextureComponent tex = txm.get(entity);
+		
+		if (player.knockbackTimeMillis >= 0){
+			player.knockbackTimeMillis -= deltaTime * 1000;
+		} else if (player.knockbackTimeMillis < 0){
+			// Stop red paint
+			tex.color = null;
+			// Stop knock back
+			player.knockbackTimeMillis = 0;
+		}
 		
 		// Copy Vectors
 		Vector2 targetPos = player.target.cpy();
@@ -122,17 +132,17 @@ public class PlayerSystem extends IteratingSystem {
 		TransformComponent t = tm.get(entity);
 		TextureComponent tex = txm.get(entity);
 		
-		Vector2 enemyPos = t.getPosition();
+		Vector2 playerPos = t.getPosition();
 		
 		// Knock back
-		Vector2 att = attackPos.cpy().sub(enemyPos).nor().scl(10f);
+		Vector2 att = attackPos.cpy().sub(playerPos).nor().scl(10f);
 		player.accel = att;
 				
 		player.health -= damage; 
 		
 		tex.color = Color.RED;
 		
-		player.knockbackTimeMillis = 250;
+		player.knockbackTimeMillis = 150;
 	}
 			
 }

@@ -216,7 +216,7 @@ public class EnemySystem extends IteratingSystem {
 							state.set(EnemyComponent.STATE_ATTACK);
 						}
 						if (state.get() == EnemyComponent.STATE_ATTACK && enemyComp.attackTimeMillis == 0) {
-							// 45% of chance to hit player
+							// 45% of chance to attack player
 							if (new Random().nextFloat() <= 0.45f) {
 								Vector2 relativeTarget = Vector2DUtils.getPointInBetweenByLen(enemyPos2d, playerPos2d, 1f);
 								float angle = Vector2DUtils.getAngleInBetween(enemyPos2d, playerPos2d);

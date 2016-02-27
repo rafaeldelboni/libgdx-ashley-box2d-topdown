@@ -5,6 +5,9 @@ import java.util.Random;
 import com.alphadelete.sandbox.Assets;
 import com.alphadelete.sandbox.Constants;
 import com.alphadelete.sandbox.Sandbox;
+import com.alphadelete.sandbox.components.PlayerComponent;
+import com.alphadelete.sandbox.components.StateComponent;
+import com.alphadelete.sandbox.components.TransformComponent;
 import com.alphadelete.sandbox.GameWorld;
 import com.alphadelete.sandbox.systems.AnimationSystem;
 import com.alphadelete.sandbox.systems.BackgroundSystem;
@@ -17,7 +20,11 @@ import com.alphadelete.sandbox.systems.PlayerSystem;
 import com.alphadelete.sandbox.systems.RenderingSystem;
 import com.alphadelete.sandbox.systems.StateSystem;
 import com.alphadelete.sandbox.systems.WeaponSystem;
+import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.Input.Keys;
@@ -38,6 +45,8 @@ public class GameScreen extends ScreenAdapter {
 	Rectangle resumeBounds;
 	Rectangle quitBounds;
 	String scoreString;
+	String p1LifeString;
+	long p1Life;
 	
 	private GlyphLayout layout = new GlyphLayout();
 
@@ -87,6 +96,9 @@ public class GameScreen extends ScreenAdapter {
 		quitBounds = new Rectangle(Constants.APP_WIDTH / 2 - 192 / 2, Constants.APP_HEIGHT / 2 - 36, 192, 36);
 		scoreString = "SCORE: 0";
 		
+		p1Life = getFirstPlayerLife();
+		p1LifeString = "Life: ";
+		
 		pauseSystems();
 	}
 
@@ -116,6 +128,14 @@ public class GameScreen extends ScreenAdapter {
 	private void updateRunning(float deltaTime) {
 		gameWorld.getWorld().step(deltaTime,6,2);
 		gameWorld.getWorld().clearForces();
+		
+		p1Life = getFirstPlayerLife();
+		
+		if (p1Life < 1) {
+			state = Constants.GAME_OVER;
+			pauseSystems();
+			return;
+		}
 		
 		boolean isAttacking = false;
 		Vector3 targetPos = new Vector3();
@@ -205,12 +225,13 @@ public class GameScreen extends ScreenAdapter {
 	private void presentRunning() {
 		game.batcher.draw(Assets.buttonPause, Constants.APP_WIDTH - 64, Constants.APP_HEIGHT - 64, 64, 64);
 		Assets.font.draw(game.batcher, scoreString, 16, Constants.APP_HEIGHT - 20);
-
+		Assets.font.draw(game.batcher, p1LifeString + p1Life, 16, Constants.APP_HEIGHT - 40);
 	}
 
 	private void presentPaused() {
 		game.batcher.draw(Assets.menuPause, Constants.APP_WIDTH / 2 - 192 / 2, Constants.APP_HEIGHT / 2 - 96 / 2, 192,96);
 		Assets.font.draw(game.batcher, scoreString, 16, Constants.APP_HEIGHT - 20);
+		Assets.font.draw(game.batcher, p1LifeString + p1Life, 16, Constants.APP_HEIGHT - 40);
 	}
 
 	private void presentLevelEnd() {
@@ -254,6 +275,17 @@ public class GameScreen extends ScreenAdapter {
 		gameWorld.getEngine().getSystem(WeaponSystem.class).setProcessing(true);
 		gameWorld.getEngine().getSystem(AnimationSystem.class).setProcessing(true);
 		gameWorld.getEngine().getSystem(ControllerSystem.class).setProcessing(true);
+	}
+	
+	private long getFirstPlayerLife() {
+		@SuppressWarnings("unchecked")
+		ImmutableArray<Entity> players = gameWorld.getEngine().getEntitiesFor(Family.all(PlayerComponent.class, TransformComponent.class, StateComponent.class).get());
+		// First in the array is the first player?
+		Entity player = players.get(0);
+		ComponentMapper<PlayerComponent> pm = ComponentMapper.getFor(PlayerComponent.class);
+		PlayerComponent playerComp = pm.get(player);
+		
+		return playerComp.health;
 	}
 
 	@Override
