@@ -5,6 +5,7 @@ import java.util.Random;
 import com.alphadelete.sandbox.Assets;
 import com.alphadelete.sandbox.Constants;
 import com.alphadelete.sandbox.Sandbox;
+import com.alphadelete.sandbox.Settings;
 import com.alphadelete.sandbox.components.PlayerComponent;
 import com.alphadelete.sandbox.components.StateComponent;
 import com.alphadelete.sandbox.components.TransformComponent;
@@ -47,6 +48,7 @@ public class GameScreen extends ScreenAdapter {
 	String scoreString;
 	String p1LifeString;
 	long p1Life;
+	long lastScore;
 	
 	private GlyphLayout layout = new GlyphLayout();
 
@@ -66,7 +68,8 @@ public class GameScreen extends ScreenAdapter {
 	}
 	public void startGame (Sandbox game, long seed){
 		this.game = game;
-
+		
+		lastScore = 0;
 		state = Constants.GAME_RUNNING;
 		guiCam = new OrthographicCamera(Constants.APP_WIDTH, Constants.APP_HEIGHT);
 		guiCam.position.set(Constants.APP_WIDTH / 2, Constants.APP_HEIGHT / 2, 0);
@@ -94,7 +97,7 @@ public class GameScreen extends ScreenAdapter {
 		pauseBounds = new Rectangle(Constants.APP_WIDTH - 64, Constants.APP_HEIGHT - 64, 64, 64);
 		resumeBounds = new Rectangle(Constants.APP_WIDTH / 2 - 192 / 2, Constants.APP_HEIGHT / 2, 192, 36);
 		quitBounds = new Rectangle(Constants.APP_WIDTH / 2 - 192 / 2, Constants.APP_HEIGHT / 2 - 36, 192, 36);
-		scoreString = "SCORE: 0";
+		scoreString = "SCORE: ";
 		
 		p1Life = getFirstPlayerLife();
 		p1LifeString = "Life: ";
@@ -130,13 +133,7 @@ public class GameScreen extends ScreenAdapter {
 		gameWorld.getWorld().clearForces();
 		
 		p1Life = getFirstPlayerLife();
-		
-		if (p1Life < 1) {
-			state = Constants.GAME_OVER;
-			pauseSystems();
-			return;
-		}
-		
+				
 		boolean isAttacking = false;
 		Vector3 targetPos = new Vector3();
 		
@@ -163,6 +160,20 @@ public class GameScreen extends ScreenAdapter {
 		}
 		if (Gdx.input.isKeyPressed(Keys.T)) {
 			startGame(this.game);
+		}
+		
+		if (gameWorld.score != lastScore) {
+			lastScore = gameWorld.score;
+		}
+		if (gameWorld.state == GameWorld.WORLD_STATE_GAME_OVER) {
+			state = Constants.GAME_OVER;
+			if (lastScore >= Settings.highscores[4])
+				scoreString = "NEW HIGHSCORE: ";
+			else
+				scoreString = "SCORE: ";
+			pauseSystems();
+			Settings.addScore(lastScore);
+			Settings.save();
 		}
 	}
 
@@ -194,8 +205,8 @@ public class GameScreen extends ScreenAdapter {
 			state = Constants.GAME_RUNNING;
 		}
 	}
-
-	private void updateGameOver() {
+	
+	private void updateGameOver () {
 		if (Gdx.input.justTouched()) {
 			game.setScreen(new MainMenuScreen(game));
 		}
@@ -224,13 +235,13 @@ public class GameScreen extends ScreenAdapter {
 
 	private void presentRunning() {
 		game.batcher.draw(Assets.buttonPause, Constants.APP_WIDTH - 64, Constants.APP_HEIGHT - 64, 64, 64);
-		Assets.font.draw(game.batcher, scoreString, 16, Constants.APP_HEIGHT - 20);
+		Assets.font.draw(game.batcher, scoreString + lastScore, 16, Constants.APP_HEIGHT - 20);
 		Assets.font.draw(game.batcher, p1LifeString + p1Life, 16, Constants.APP_HEIGHT - 40);
 	}
 
 	private void presentPaused() {
 		game.batcher.draw(Assets.menuPause, Constants.APP_WIDTH / 2 - 192 / 2, Constants.APP_HEIGHT / 2 - 96 / 2, 192,96);
-		Assets.font.draw(game.batcher, scoreString, 16, Constants.APP_HEIGHT - 20);
+		Assets.font.draw(game.batcher, scoreString + lastScore, 16, Constants.APP_HEIGHT - 20);
 		Assets.font.draw(game.batcher, p1LifeString + p1Life, 16, Constants.APP_HEIGHT - 40);
 	}
 
@@ -250,9 +261,9 @@ public class GameScreen extends ScreenAdapter {
 	private void presentGameOver() {
 		game.batcher.draw(Assets.menuGameOver, Constants.APP_WIDTH / 2 - 160 / 2, Constants.APP_HEIGHT / 2 - 96 / 2, 160, 96);
 
-		layout.setText(Assets.font, scoreString);
+		layout.setText(Assets.font, scoreString + lastScore);
 		float scoreWidth = layout.width;
-		Assets.font.draw(game.batcher, scoreString, Constants.APP_WIDTH / 2 - scoreWidth / 2, Constants.APP_HEIGHT - 20);
+		Assets.font.draw(game.batcher, scoreString + lastScore, Constants.APP_WIDTH / 2 - scoreWidth / 2, Constants.APP_HEIGHT - 20);
 	}
 
 	private void pauseSystems() {

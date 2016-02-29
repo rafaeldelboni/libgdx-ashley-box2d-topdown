@@ -119,6 +119,10 @@ public class PlayerSystem extends IteratingSystem {
 			player.scaleSide = Constants.SCALE_RIGHT;
 		}
 		t.scale.x = Math.abs(t.scale.x) * player.scaleSide;
+		
+		if (player.health < 1) {
+			gameWorld.state = GameWorld.WORLD_STATE_GAME_OVER;
+		}
 
 	}
 	

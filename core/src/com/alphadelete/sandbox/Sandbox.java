@@ -14,7 +14,7 @@ public class Sandbox extends Game {
 	@Override
 	public void create() {
 		batcher = new SpriteBatch();
-
+		Settings.load();
 		Assets.load();	
 		setScreen(new MainMenuScreen(this));
 

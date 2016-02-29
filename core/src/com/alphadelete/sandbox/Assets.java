@@ -18,11 +18,13 @@ public class Assets {
 	public static TextureAtlas warriorAtlas = new TextureAtlas(Gdx.files.internal("images/warrior2.atlas"));
 	public static TextureAtlas goblinAtlas = new TextureAtlas(Gdx.files.internal("images/goblin2.atlas"));
 	public static TextureAtlas attackAtlas = new TextureAtlas(Gdx.files.internal("images/atk_slash.atlas"));
-	public static TextureRegion menuMain;
+	public static TextureRegion menuPlay;
+	public static TextureRegion menuHighScore;
 	public static TextureRegion menuPause;
 	public static TextureRegion menuReady;
 	public static TextureRegion menuGameOver;
 	public static TextureRegion buttonPause;
+	public static TextureRegion buttonBack;
 	public static BitmapFont font;
 	public static Animation warriorIdleAnimation;
 	public static Animation warriorWalkAnimation;
@@ -58,11 +60,13 @@ public class Assets {
 	}
 	
 	private static void loadMenu () {
-		menuMain = loadAtlasTextureRegion("main", menuAtlas);
+		menuPlay = loadAtlasTextureRegion("play", menuAtlas);
+		menuHighScore = loadAtlasTextureRegion("highscore", menuAtlas);
 		menuPause = loadAtlasTextureRegion("pause", menuAtlas);
 		menuReady = loadAtlasTextureRegion("ready", menuAtlas);
 		menuGameOver = loadAtlasTextureRegion("gameover", menuAtlas);
 		buttonPause = loadAtlasTextureRegion("pause-btn", menuAtlas);
+		buttonBack = loadAtlasTextureRegion("back-btn", menuAtlas);
 		font = new BitmapFont(Gdx.files.internal("fonts/font.fnt"), Gdx.files.internal("fonts/font.png"), false);
 		
 		background = loadTexture("images/background.png");

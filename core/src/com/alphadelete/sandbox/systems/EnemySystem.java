@@ -88,9 +88,9 @@ public class EnemySystem extends IteratingSystem {
 		{
 			if (state.get() != EnemyComponent.STATE_DIE) {
 				state.set(EnemyComponent.STATE_DIE);
-			}
-			body.setAsSensor(true);
-			
+				gameWorld.score += 1;
+				body.setAsSensor(true);
+			}			
 		} else {
 			
 			// Search for player
