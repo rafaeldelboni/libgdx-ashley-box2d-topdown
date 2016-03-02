@@ -42,9 +42,10 @@ public class Level {
 		
 		placeWallFix();
 		placeCeilingFix();
-		
 		placeFirstDoor();
 		placeLastDoor();
+		
+		placeEnemies();
 		
 		return this.tileMap;
 	}
@@ -62,6 +63,8 @@ public class Level {
 		
 		placeFirstDoor();
 		placeLastDoor();
+		
+		placeEnemies();
 		
 		return this.tileMap;
 	}
@@ -670,6 +673,18 @@ public class Level {
 						lastDoor++;
 						break;
 					}
+				}
+			}
+		}
+	}
+	
+	private void placeEnemies() {
+
+		for(Entry<Vector2, Tile> map : this.tileMap.entries()) {
+			if(getTileValue(map.key) == TileType.Floor || getTileValue(map.key) == TileType.Corridor) {
+				// 2% of chance to floor become enemy
+				if (rdm.nextFloat() <= 0.02f) {
+					this.tileMap.setValue(this.tileMap.indexOfKey(map.key), createTile(TileType.FloorEnemy));
 				}
 			}
 		}

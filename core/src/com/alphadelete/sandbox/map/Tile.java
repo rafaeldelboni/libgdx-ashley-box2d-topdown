@@ -23,6 +23,7 @@ public class Tile {
 		CeilingUpDown (2, "ceiling-up-down-"),
 		Floor (5, "floor-"),
 		Corridor (5, "floor-"),
+		FloorEnemy (5, "floor-"),
 		//Corridor (3, "floor-stone-"),
 		None (1, "none-"),
 		WallBase (4, "wall-base-"),

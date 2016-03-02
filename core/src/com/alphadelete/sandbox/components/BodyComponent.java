@@ -18,6 +18,7 @@ public class BodyComponent implements Component {
     public final static short CATEGORY_ATTACK = 0x0008;
     public final static short CATEGORY_PLAYER_ATTACK = 0x0016;
     public final static short CATEGORY_MONSTER_ATTACK = 0x0032;
+    public final static short CATEGORY_EXIT = 0x0064;
     // Box2d MASKS
     public final static short MASK_PLAYER = CATEGORY_MONSTER | CATEGORY_SCENERY; // or ~CATEGORY_PLAYER
     public final static short MASK_MONSTER = CATEGORY_PLAYER | CATEGORY_MONSTER | CATEGORY_SCENERY; // or ~CATEGORY_MONSTER
@@ -25,6 +26,7 @@ public class BodyComponent implements Component {
     public final static short MASK_PLAYER_ATTACK = CATEGORY_MONSTER | CATEGORY_SCENERY;
     public final static short MASK_MONSTER_ATTACK = CATEGORY_PLAYER | CATEGORY_SCENERY;
     public final static short MASK_SCENERY = -1;
+    public final static short MASK_EXIT = CATEGORY_PLAYER;
     
 	public Body body;
 	

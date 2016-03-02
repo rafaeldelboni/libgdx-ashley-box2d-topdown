@@ -1,5 +1,6 @@
 package com.alphadelete.utils.astar;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.DefaultConnection;
 import com.badlogic.gdx.ai.pfa.DefaultGraphPath;
@@ -59,6 +60,8 @@ public class AStartPathFinding {
         new int[] { 0,  1},
         new int[] { 1,  0}
     };
+    
+
 
     public static MyGraph createGraph (AStarMap map) {
         final int height = map.getHeight();
@@ -78,6 +81,7 @@ public class AStartPathFinding {
                         Node neighbor = map.getNodeAt(neighborX, neighborY);
                         if (!neighbor.isWall) {
                             // Add connection to walkable neighbor
+                        	Gdx.app.log("Index", neighbor.toString());
                             node.getConnections().add(new DefaultConnection<Node>(node, neighbor));
                         }
                     }

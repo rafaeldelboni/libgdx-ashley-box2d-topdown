@@ -25,10 +25,7 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 
 public class EnemySystem extends IteratingSystem {
 	@SuppressWarnings("unchecked")
-	private static final Family family = Family.all(EnemyComponent.class,
-													   StateComponent.class,
-													   TransformComponent.class,
-													   MovementComponent.class).get();
+	private static final Family family = Family.all(EnemyComponent.class).get();
 
 	private ComponentMapper<EnemyComponent> em;
 	private ComponentMapper<StateComponent> sm;
@@ -88,7 +85,11 @@ public class EnemySystem extends IteratingSystem {
 		{
 			if (state.get() != EnemyComponent.STATE_DIE) {
 				state.set(EnemyComponent.STATE_DIE);
+				
 				gameWorld.score += 1;
+				gameWorld.killEnemy();
+				t.setPosition(t.pos.x, t.pos.y, 4);
+				
 				body.setAsSensor(true);
 			}			
 		} else {

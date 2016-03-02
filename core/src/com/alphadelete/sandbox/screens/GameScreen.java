@@ -6,6 +6,8 @@ import com.alphadelete.sandbox.Assets;
 import com.alphadelete.sandbox.Constants;
 import com.alphadelete.sandbox.Sandbox;
 import com.alphadelete.sandbox.Settings;
+import com.alphadelete.sandbox.components.AttackComponent;
+import com.alphadelete.sandbox.components.BodyComponent;
 import com.alphadelete.sandbox.components.PlayerComponent;
 import com.alphadelete.sandbox.components.StateComponent;
 import com.alphadelete.sandbox.components.TransformComponent;
@@ -34,6 +36,11 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class GameScreen extends ScreenAdapter {
@@ -48,7 +55,7 @@ public class GameScreen extends ScreenAdapter {
 	String scoreString;
 	String p1LifeString;
 	long p1Life;
-	long lastScore;
+	long lastScore = 0;
 	
 	private GlyphLayout layout = new GlyphLayout();
 
@@ -66,16 +73,15 @@ public class GameScreen extends ScreenAdapter {
 			Constants.LOG_FILE.writeString("Error: " + ex.toString(), true);
 		}
 	}
-	public void startGame (Sandbox game, long seed){
+	public void startGame (final Sandbox game, long seed){
 		this.game = game;
-		
-		lastScore = 0;
+
 		state = Constants.GAME_RUNNING;
 		guiCam = new OrthographicCamera(Constants.APP_WIDTH, Constants.APP_HEIGHT);
 		guiCam.position.set(Constants.APP_WIDTH / 2, Constants.APP_HEIGHT / 2, 0);
 		touchPoint = new Vector3();
 
-		gameWorld = new GameWorld(new PooledEngine(), new World(Vector2.Zero,true), seed);
+		gameWorld = new GameWorld(new PooledEngine(), new World(Vector2.Zero,true), seed, lastScore);
 
 		gameWorld.getEngine().addSystem(new PlayerSystem(gameWorld));
 		gameWorld.getEngine().addSystem(new EnemySystem(gameWorld));
@@ -93,6 +99,71 @@ public class GameScreen extends ScreenAdapter {
 		gameWorld.getEngine().getSystem(RenderingSystem.class).resizeCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
 		gameWorld.create();
+		
+		gameWorld.getWorld().setContactListener(new ContactListener() {
+	            @Override
+	            public void beginContact(Contact contact) {
+					Fixture fixA = contact.getFixtureA();
+					Fixture fixB = contact.getFixtureB();
+					// Player attack
+					if (fixA.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER_ATTACK &&
+						fixB.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER ) {
+
+						Entity attack = (Entity) fixA.getBody().getUserData();		
+						Entity attacked = (Entity) fixB.getBody().getUserData();
+						
+						doAttack(attack, attacked, Constants.TYPE_PLAYER);
+					}
+					if (fixA.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER &&
+						fixB.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER_ATTACK ) {
+
+						Entity attacked = (Entity) fixA.getBody().getUserData();		
+						Entity attack = (Entity) fixB.getBody().getUserData();
+						
+						doAttack(attack, attacked, Constants.TYPE_PLAYER);
+					}
+					// Enemy Attack
+					if (fixA.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER_ATTACK &&
+						fixB.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER ) {
+
+						Entity attack = (Entity) fixA.getBody().getUserData();		
+						Entity attacked = (Entity) fixB.getBody().getUserData();
+						
+						doAttack(attack, attacked, Constants.TYPE_ENEMY);
+					}
+					if (fixA.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER &&
+						fixB.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER_ATTACK ) {
+
+						Entity attacked = (Entity) fixA.getBody().getUserData();		
+						Entity attack = (Entity) fixB.getBody().getUserData();
+						
+						doAttack(attack, attacked, Constants.TYPE_ENEMY);
+					}
+					// Player on exit
+					if (fixA.getFilterData().categoryBits == BodyComponent.CATEGORY_EXIT &&
+						fixB.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER ) {
+						
+						if (gameWorld.enemies < 1) {
+							long oldP1Life = p1Life;
+							startGame(game);
+							setFirstPlayerLife(oldP1Life);
+						}
+					}
+				}
+
+	            @Override
+	            public void endContact(Contact contact) {
+	            }
+
+	            @Override
+	            public void preSolve(Contact contact, Manifold oldManifold) {
+	            }
+
+	            @Override
+	            public void postSolve(Contact contact, ContactImpulse impulse) {
+	            }
+	        }
+		 );
 
 		pauseBounds = new Rectangle(Constants.APP_WIDTH - 64, Constants.APP_HEIGHT - 64, 64, 64);
 		resumeBounds = new Rectangle(Constants.APP_WIDTH / 2 - 192 / 2, Constants.APP_HEIGHT / 2, 192, 36);
@@ -201,7 +272,7 @@ public class GameScreen extends ScreenAdapter {
 		if (Gdx.input.justTouched()) {
 			gameWorld.getEngine().removeAllEntities();
 			this.seed = new Random().nextLong();
-			gameWorld = new GameWorld(gameWorld.getEngine(), gameWorld.getWorld(), this.seed);
+			gameWorld = new GameWorld(gameWorld.getEngine(), gameWorld.getWorld(), this.seed, this.lastScore);
 			state = Constants.GAME_RUNNING;
 		}
 	}
@@ -289,6 +360,20 @@ public class GameScreen extends ScreenAdapter {
 	}
 	
 	private long getFirstPlayerLife() {
+		long life = 0;
+		@SuppressWarnings("unchecked")
+		ImmutableArray<Entity> players = gameWorld.getEngine().getEntitiesFor(Family.all(PlayerComponent.class, TransformComponent.class, StateComponent.class).get());
+		// First in the array is the first player?
+		if (players.size() > 0) {
+			Entity player = players.get(0);
+			ComponentMapper<PlayerComponent> pm = ComponentMapper.getFor(PlayerComponent.class);
+			PlayerComponent playerComp = pm.get(player);
+			life = playerComp.health; 
+		}
+		return life;
+	}
+	
+	private void setFirstPlayerLife(long life) {
 		@SuppressWarnings("unchecked")
 		ImmutableArray<Entity> players = gameWorld.getEngine().getEntitiesFor(Family.all(PlayerComponent.class, TransformComponent.class, StateComponent.class).get());
 		// First in the array is the first player?
@@ -296,7 +381,22 @@ public class GameScreen extends ScreenAdapter {
 		ComponentMapper<PlayerComponent> pm = ComponentMapper.getFor(PlayerComponent.class);
 		PlayerComponent playerComp = pm.get(player);
 		
-		return playerComp.health;
+		playerComp.health = life;
+	}
+	
+	private void doAttack (Entity attack, Entity attacked, int type) {
+		
+		ComponentMapper<TransformComponent> ap = ComponentMapper.getFor(TransformComponent.class);
+		ComponentMapper<AttackComponent> aa = ComponentMapper.getFor(AttackComponent.class);
+		TransformComponent attackPos = ap.get(attack);
+		AttackComponent attackCom = aa.get(attack);
+		if (type == Constants.TYPE_PLAYER) {
+			EnemySystem enemySystem = gameWorld.getEngine().getSystem(EnemySystem.class);
+			enemySystem.takeDamage(attacked, attackPos.pos.x, attackPos.pos.y, attackCom.damage);
+		} else if (type == Constants.TYPE_ENEMY) {
+			PlayerSystem playerSystem = gameWorld.getEngine().getSystem(PlayerSystem.class);
+			playerSystem.takeDamage(attacked, attackPos.pos.x, attackPos.pos.y, attackCom.damage);
+		}
 	}
 
 	@Override

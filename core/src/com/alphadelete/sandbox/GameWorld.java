@@ -7,6 +7,7 @@ import com.alphadelete.sandbox.components.BodyComponent;
 import com.alphadelete.sandbox.components.CameraComponent;
 import com.alphadelete.sandbox.components.EffectsComponent;
 import com.alphadelete.sandbox.components.EnemyComponent;
+import com.alphadelete.sandbox.components.GateComponent;
 import com.alphadelete.sandbox.components.MovementComponent;
 import com.alphadelete.sandbox.components.PlayerComponent;
 import com.alphadelete.sandbox.components.StateComponent;
@@ -14,27 +15,21 @@ import com.alphadelete.sandbox.components.TextureComponent;
 import com.alphadelete.sandbox.components.TransformComponent;
 import com.alphadelete.sandbox.components.WallComponent;
 import com.alphadelete.sandbox.components.WeaponComponent;
-import com.alphadelete.sandbox.systems.EnemySystem;
-import com.alphadelete.sandbox.systems.PlayerSystem;
 import com.alphadelete.sandbox.systems.RenderingSystem;
 import com.alphadelete.utils.astar.AStarMap;
 import com.alphadelete.utils.astar.AStartPathFinding;
 import com.alphadelete.sandbox.map.Level;
 import com.alphadelete.sandbox.map.Tile;
-import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ArrayMap;
@@ -48,19 +43,22 @@ public class GameWorld {
 	public static final int WORLD_STATE_GAME_OVER = 2;
 	public static final Vector2 gravity = new Vector2(0, -12);
 
-	public int score;
+	public long score;
 	public int state;
-
+	public long enemies;
+	
 	private PooledEngine engine;
 	private World world;
 	private Long seed;
 	
 	private AStartPathFinding aStartPathFinding;
 	
-	public GameWorld(PooledEngine engine, World world, long seed) {
+	public GameWorld(PooledEngine engine, World world, long seed, long lastScore) {
 		this.engine = engine;
 		this.world = world;
 		this.seed = seed;
+		this.enemies = 0;
+		this.score = lastScore;
 	}
 	
 	public PooledEngine getEngine() {
@@ -80,61 +78,6 @@ public class GameWorld {
 	}
 
 	public void create() {
-		
-		 world.setContactListener(new ContactListener() {
-	            @Override
-	            public void beginContact(Contact contact) {
-					Fixture fixA = contact.getFixtureA();
-					Fixture fixB = contact.getFixtureB();
-					// Player attack
-					if (fixA.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER_ATTACK &&
-						fixB.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER ) {
-
-						Entity attack = (Entity) fixA.getBody().getUserData();		
-						Entity attacked = (Entity) fixB.getBody().getUserData();
-						
-						doAttack(attack, attacked, Constants.TYPE_PLAYER);
-					}
-					if (fixA.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER &&
-						fixB.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER_ATTACK ) {
-
-						Entity attacked = (Entity) fixA.getBody().getUserData();		
-						Entity attack = (Entity) fixB.getBody().getUserData();
-						
-						doAttack(attack, attacked, Constants.TYPE_PLAYER);
-					}
-					// Enemy Attack
-					if (fixA.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER_ATTACK &&
-						fixB.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER ) {
-
-						Entity attack = (Entity) fixA.getBody().getUserData();		
-						Entity attacked = (Entity) fixB.getBody().getUserData();
-						
-						doAttack(attack, attacked, Constants.TYPE_ENEMY);
-					}
-					if (fixA.getFilterData().categoryBits == BodyComponent.CATEGORY_PLAYER &&
-						fixB.getFilterData().categoryBits == BodyComponent.CATEGORY_MONSTER_ATTACK ) {
-
-						Entity attacked = (Entity) fixA.getBody().getUserData();		
-						Entity attack = (Entity) fixB.getBody().getUserData();
-						
-						doAttack(attack, attacked, Constants.TYPE_ENEMY);
-					}
-				}
-
-	            @Override
-	            public void endContact(Contact contact) {
-	            }
-
-	            @Override
-	            public void preSolve(Contact contact, Manifold oldManifold) {
-	            }
-
-	            @Override
-	            public void postSolve(Contact contact, ContactImpulse impulse) {
-	            }
-	        }
-		 );
 
 		createBackground();
 		
@@ -144,21 +87,24 @@ public class GameWorld {
 		// create map for A* path finding
 		AStarMap aStarMap = new AStarMap((int)Constants.MAP_WIDTH, (int)Constants.MAP_HEIGHT);
 		
-		//ArrayMap<Vector2, Tile> tileMap = dungeon.generateDungeon();
-		ArrayMap<Vector2, Tile> tileMap = dungeon.generateTestRoom();
+		ArrayMap<Vector2, Tile> tileMap = dungeon.generateDungeon();
+		//ArrayMap<Vector2, Tile> tileMap = dungeon.generateTestRoom();
 		for(Entry<Vector2, Tile> map : tileMap.entries()) {
 			
 			Vector2 coord = map.key;
 
 			if (map.value.type == Tile.TileType.Floor || 
+				map.value.type == Tile.TileType.FloorEnemy ||
 				map.value.type == Tile.TileType.Corridor ||
 				map.value.type == Tile.TileType.WallBase ||
 				map.value.type == Tile.TileType.WallCornerLeft ||
 				map.value.type == Tile.TileType.WallCornerRight ||
 				map.value.type == Tile.TileType.WallCornerDouble ||
-				map.value.type == Tile.TileType.WallEnter ||
-				map.value.type == Tile.TileType.WallExit ) {
+				map.value.type == Tile.TileType.WallEnter) {
 				createFloor(coord.x, coord.y, 5, map.value.texture);
+				if(map.value.type == Tile.TileType.FloorEnemy) {
+					createEnemy(coord.x, coord.y);
+				}
 			} else if (map.value.type == Tile.TileType.CeilingDown || 
 				map.value.type == Tile.TileType.CeilingLeftDown ||
 				map.value.type == Tile.TileType.CeilingRightDown ||
@@ -176,7 +122,14 @@ public class GameWorld {
 				map.value.type == Tile.TileType.WallExitUp ) {
 				createWall(coord.x, coord.y, 5, map.value.texture);
 				aStarMap.getNodeAt((int)coord.x, (int)coord.y).isWall = true;
-				} 
+				if(map.value.type == Tile.TileType.WallExitUp) {
+					createGate(coord.x, coord.y, 4, Assets.loadAtlasTextureRegion("exit-gate-up-1", Assets.dungeonAtlas));	
+				}
+			}
+			else if (map.value.type == Tile.TileType.WallExit) {
+				createExit(coord.x, coord.y, 5, map.value.texture);
+				createGate(coord.x, coord.y, 4, Assets.loadAtlasTextureRegion("exit-gate-1", Assets.dungeonAtlas));
+			}
 			else {
 				createWall(coord.x, coord.y, -5, map.value.texture);
 				aStarMap.getNodeAt((int)coord.x, (int)coord.y).isWall = true;
@@ -195,13 +148,8 @@ public class GameWorld {
 		
 		//Entity player = createPlayer(0, 0);
 		//createCamera(player, 0, 0);
-		createEnemy(6, 2);
-		createEnemy(8, 2);
-		createEnemy(10, 2);
-		createEnemy(12, 2);
-		createEnemy(14, 2);
+		//createEnemy(6, 2);
 		
-		this.score = 0;
 		this.state = WORLD_STATE_RUNNING;
 	}
 
@@ -307,7 +255,24 @@ public class GameWorld {
 
 		engine.addEntity(entity);
 	}
+	
+	private void createGate(float x, float y, float z, TextureRegion assetTexture) {
+		Entity entity = engine.createEntity();
 
+		GateComponent gate = engine.createComponent(GateComponent.class);
+		TransformComponent position = engine.createComponent(TransformComponent.class);
+		TextureComponent texture = engine.createComponent(TextureComponent.class);
+
+		position.pos.set(x, y, z);
+		texture.region = assetTexture;
+		
+		entity.add(gate);
+		entity.add(position);
+		entity.add(texture);
+
+		engine.addEntity(entity);
+	}
+	
 	private void createWall(float x, float y, float z, TextureRegion assetTexture) {
 		Entity entity = engine.createEntity();
 
@@ -327,6 +292,43 @@ public class GameWorld {
 			false,
 			BodyComponent.CATEGORY_SCENERY,
 			BodyComponent.MASK_SCENERY
+		);
+		body.body.setTransform(x, y, 0f);
+		body.body.setFixedRotation(true);
+		body.body.setUserData(entity);
+		shape.dispose();
+		
+		position.pos.set(x, y, z);
+
+		texture.region = assetTexture;
+		
+		entity.add(body);
+		entity.add(wall);
+		entity.add(position);
+		entity.add(texture);
+
+		engine.addEntity(entity);
+	}
+
+	private void createExit(float x, float y, float z, TextureRegion assetTexture) {
+		Entity entity = engine.createEntity();
+
+		WallComponent wall = engine.createComponent(WallComponent.class);
+		TransformComponent position = engine.createComponent(TransformComponent.class);
+		TextureComponent texture = engine.createComponent(TextureComponent.class);
+
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(WallComponent.WIDTH / 2, WallComponent.HEIGHT / 2);
+		BodyComponent body = new BodyComponent(
+			entity,
+			world, 
+			BodyType.StaticBody, 
+			shape, 
+			new Vector3(x, y, z), 
+			9f, 0.5f, 0.5f,
+			true,
+			BodyComponent.CATEGORY_EXIT,
+			BodyComponent.MASK_EXIT
 		);
 		body.body.setTransform(x, y, 0f);
 		body.body.setFixedRotation(true);
@@ -394,7 +396,9 @@ public class GameWorld {
 		entity.add(texture);
 
 		engine.addEntity(entity);
-
+		
+		this.enemies++;
+		
 		return entity;
 	}
 	
@@ -491,19 +495,17 @@ public class GameWorld {
 		     world.destroyBody(body);
 		}
 	}
-	
-	private void doAttack (Entity attack, Entity attacked, int type) {
+			
+	public void killEnemy() {
 		
-		ComponentMapper<TransformComponent> ap = ComponentMapper.getFor(TransformComponent.class);
-		ComponentMapper<AttackComponent> aa = ComponentMapper.getFor(AttackComponent.class);
-		TransformComponent attackPos = ap.get(attack);
-		AttackComponent attackCom = aa.get(attack);
-		if (type == Constants.TYPE_PLAYER) {
-			EnemySystem enemySystem = engine.getSystem(EnemySystem.class);
-			enemySystem.takeDamage(attacked, attackPos.pos.x, attackPos.pos.y, attackCom.damage);
-		} else if (type == Constants.TYPE_ENEMY) {
-			PlayerSystem playerSystem = engine.getSystem(PlayerSystem.class);
-			playerSystem.takeDamage(attacked, attackPos.pos.x, attackPos.pos.y, attackCom.damage);
+		this.enemies--;
+		
+		if (this.enemies < 1) {
+			@SuppressWarnings("unchecked")
+			ImmutableArray<Entity> gates = engine.getEntitiesFor(Family.all(GateComponent.class).get());
+			for (int i = 0; i < gates.size(); ++i) {
+				engine.removeEntity(gates.get(i));
+			}
 		}
 	}
 	

@@ -12,11 +12,13 @@ public class AStarMap {
         this.height = height;
 
         map = new Node[height][width];
+        int index = 0; 
         for (int y = 0; y < height; y++) {
-           for (int x = 0; x < width; x++) {
-         	  map[y][x] = new Node(this, x, y);
-           }
-       }
+        	for (int x = 0; x < width; x++) {
+    			map[y][x] = new Node(x, y, index++);       	   
+    		}
+        }
+
     }
 
     public int getWidth() {
